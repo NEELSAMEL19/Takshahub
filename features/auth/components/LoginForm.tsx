@@ -63,11 +63,11 @@ export function LoginForm() {
       if (err instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
 
-        err.errors.forEach((error) => {
-          const field = error.path[0];
+        err.issues.forEach((issue) => {
+          const field = issue.path[0];
 
           if (typeof field === "string") {
-            fieldErrors[field] = error.message;
+            fieldErrors[field] = issue.message;
           }
         });
 
@@ -78,7 +78,7 @@ export function LoginForm() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to login. Please try again."
+          : "Failed to login. Please try again.",
       );
     }
   };
