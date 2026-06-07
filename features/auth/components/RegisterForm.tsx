@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import Link from "next/link";
 
 import { registerSchema, RegisterFormData } from "../validation";
-import { useRegister } from  "@/hooks/auth/useAuth";
+import { useRegister } from "@/hooks/auth/useAuth";
 
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
@@ -90,7 +90,7 @@ export function RegisterForm() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -132,17 +132,18 @@ export function RegisterForm() {
       await registerMutation.mutateAsync(validatedData);
 
       router.push(
-        `/verify-otp?email=${encodeURIComponent(
-          validatedData.email
-        )}`
+        `/verify-otp?email=${encodeURIComponent(validatedData.email)}`,
       );
     } catch (err) {
       if (err instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
 
-        err.errors.forEach((error) => {
-          const path = error.path.join(".");
-          fieldErrors[path] = error.message;
+        err.issues.forEach((issue) => {
+          const field = issue.path[0];
+
+          if (typeof field === "string") {
+            fieldErrors[field] = issue.message;
+          }
         });
 
         setValidationErrors(fieldErrors);
@@ -152,20 +153,14 @@ export function RegisterForm() {
       setError(
         err instanceof Error
           ? err.message
-          : "Registration failed. Please try again."
+          : "Registration failed. Please try again.",
       );
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert
-          type="error"
-          message={error}
-          onClose={clearError}
-        />
-      )}
+      {error && <Alert type="error" message={error} onClose={clearError} />}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Input
@@ -246,10 +241,7 @@ export function RegisterForm() {
                 <option value="">Select School Type</option>
 
                 {SCHOOL_TYPES.map((type) => (
-                  <option
-                    key={type.value}
-                    value={type.value}
-                  >
+                  <option key={type.value} value={type.value}>
                     {type.label}
                   </option>
                 ))}
@@ -280,10 +272,7 @@ export function RegisterForm() {
                 <option value="">Select Board</option>
 
                 {BOARDS.map((board) => (
-                  <option
-                    key={board.value}
-                    value={board.value}
-                  >
+                  <option key={board.value} value={board.value}>
                     {board.label}
                   </option>
                 ))}
@@ -362,12 +351,7 @@ export function RegisterForm() {
         </div>
       </div>
 
-      <Button
-        type="submit"
-        size="md"
-        loading={isLoading}
-        className="w-full"
-      >
+      <Button type="submit" size="md" loading={isLoading} className="w-full">
         Register
       </Button>
 

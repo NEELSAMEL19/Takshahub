@@ -31,8 +31,7 @@ export function OtpForm() {
   const [error, setError] = useState("");
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  const isLoading =
-    verifyOtpMutation.isPending || resendOtpMutation.isPending;
+  const isLoading = verifyOtpMutation.isPending || resendOtpMutation.isPending;
 
   const clearError = () => {
     setError("");
@@ -80,11 +79,11 @@ export function OtpForm() {
       if (err instanceof ZodError) {
         const fieldErrors: Record<string, string> = {};
 
-        err.errors.forEach((error) => {
-          const field = error.path[0];
+        err.issues.forEach((issue) => {
+          const field = issue.path[0];
 
           if (typeof field === "string") {
-            fieldErrors[field] = error.message;
+            fieldErrors[field] = issue.message;
           }
         });
 
@@ -92,11 +91,7 @@ export function OtpForm() {
         return;
       }
 
-      setError(
-        err instanceof Error
-          ? err.message
-          : "OTP verification failed"
-      );
+      setError(err instanceof Error ? err.message : "OTP verification failed");
     }
   };
 
@@ -117,29 +112,16 @@ export function OtpForm() {
 
       setResendSuccess(true);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to resend OTP"
-      );
+      setError(err instanceof Error ? err.message : "Failed to resend OTP");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert
-          type="error"
-          message={error}
-          onClose={clearError}
-        />
-      )}
+      {error && <Alert type="error" message={error} onClose={clearError} />}
 
       {resendSuccess && (
-        <Alert
-          type="success"
-          message="OTP resent successfully to your email"
-        />
+        <Alert type="success" message="OTP resent successfully to your email" />
       )}
 
       <div className="text-center text-sm text-gray-600">
@@ -160,12 +142,7 @@ export function OtpForm() {
         className="text-center text-2xl tracking-widest"
       />
 
-      <Button
-        type="submit"
-        size="md"
-        loading={isLoading}
-        className="w-full"
-      >
+      <Button type="submit" size="md" loading={isLoading} className="w-full">
         Verify OTP
       </Button>
 
