@@ -3,28 +3,29 @@
 import { apiClient } from "./client";
 import { API_ENDPOINTS } from "./routes";
 import {
-  AuthResponse, 
+  AuthResponse,
   LoginPayload,
-  OtpPayload,
+  LoginResponse,
   RegisterPayload,
+  RegisterResponse,
+  ResendOtpPayload,
+  ResendOtpResponse,
+  VerifyOtpPayload,
+  VerifyOtpResponse,
 } from "@/types/auth";
 
 export const authApi = {
-  register: (payload: RegisterPayload): Promise<AuthResponse> =>
-    apiClient.post(API_ENDPOINTS.AUTH.REGISTER, payload),
+  register: (payload: RegisterPayload) =>
+    apiClient.post<RegisterResponse>(API_ENDPOINTS.AUTH.REGISTER, payload),
 
-  login: (payload: LoginPayload): Promise<AuthResponse> =>
-    apiClient.post(API_ENDPOINTS.AUTH.LOGIN, payload),
+  login: (payload: LoginPayload) =>
+    apiClient.post<LoginResponse>(API_ENDPOINTS.AUTH.LOGIN, payload),
 
-  verifyOtp: (payload: OtpPayload): Promise<AuthResponse> =>
-    apiClient.post(API_ENDPOINTS.AUTH.VERIFY_OTP, payload),
+  resendOtp: (payload: ResendOtpPayload) =>
+    apiClient.post<ResendOtpResponse>(API_ENDPOINTS.AUTH.RESEND_OTP, payload),
 
-  resendOtp: (payload: OtpPayload): Promise<AuthResponse> =>
-    apiClient.post(API_ENDPOINTS.AUTH.RESEND_OTP, payload),
+  verifyOtp: (payload: VerifyOtpPayload) =>
+    apiClient.post<VerifyOtpResponse>(API_ENDPOINTS.AUTH.VERIFY_OTP, payload),
 
-  me: (): Promise<AuthResponse> =>
-    apiClient.get(API_ENDPOINTS.AUTH.ME),
-
-  logout: (): Promise<{ success: boolean }> =>
-    apiClient.post(API_ENDPOINTS.AUTH.LOGOUT),
+  me: () => apiClient.get<AuthResponse>(API_ENDPOINTS.AUTH.ME),
 };

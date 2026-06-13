@@ -1,58 +1,79 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ZodError } from "zod";
 import Link from "next/link";
-
 import { loginSchema, LoginFormData } from "../validation";
-import { Input } from "@/components/common/Input";
-import { Button } from "@/components/common/Button";
-import { Alert } from "@/components/common/Alert";
-
 import { useLogin } from "@/hooks/auth/useAuth";
+import { TextField } from "@/components/UI";
+import { Button } from "@/components/UI";
+import { Status } from "../types";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const router = useRouter();
-
-  const loginMutation = useLogin();
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
   });
 
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
 
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState<{ email: Status; password: Status }>({
+    email: "info",
+    password: "info",
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  // ✅ FIX: handle backend errors + status
+  const loginMutation = useLogin((backendErrors: any) => {
+    setErrors(backendErrors);
+
+    setStatus((prev) => ({
+      ...prev,
+      email: backendErrors.email ? "error" : prev.email,
+      password: backendErrors.password ? "error" : prev.password,
+    }));
+  });
+
+  const handleEmailChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const value = evt.target.value;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      email: value,
     }));
 
-    if (validationErrors[name]) {
-      setValidationErrors((prev) => {
-        const copy = { ...prev };
-        delete copy[name];
-        return copy;
-      });
+    const result = loginSchema.shape.email.safeParse(value);
+
+    if (!result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        email: result.error.issues[0].message,
+      }));
+      setStatus((prev) => ({ ...prev, email: "error" }));
+    } else {
+      setErrors((prev) => ({ ...prev, email: undefined }));
+      setStatus((prev) => ({
+        ...prev,
+        email: value ? "success" : "info",
+      }));
     }
   };
 
-  const clearError = () => setError("");
+  const handlePasswordChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const value = evt.target.value;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    setFormData((prev) => ({
+      ...prev,
+      password: value,
+    }));
 
-    setValidationErrors({});
-    setError("");
+    const result = loginSchema.shape.password.safeParse(value);
 
+<<<<<<< Updated upstream
     try {
       const validatedData = loginSchema.parse(formData);
 
@@ -80,31 +101,81 @@ export function LoginForm() {
           ? err.message
           : "Failed to login. Please try again.",
       );
+=======
+    if (!result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        password: result.error.issues[0].message,
+      }));
+      setStatus((prev) => ({ ...prev, password: "error" }));
+    } else {
+      setErrors((prev) => ({ ...prev, password: undefined }));
+      setStatus((prev) => ({
+        ...prev,
+        password: value ? "success" : "info",
+      }));
+>>>>>>> Stashed changes
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <Alert type="error" message={error} onClose={clearError} />}
+  const onSubmit = async () => {
+    const result = loginSchema.safeParse(formData);
 
-      <Input
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+
+      result.error.issues.forEach((e) => {
+        const field = e.path[0] as "email" | "password";
+
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = e.message;
+        }
+      });
+
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    await loginMutation.mutateAsync(formData);
+    router.refresh();
+    router.replace("/dashboard");
+  };
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+      className="space-y-4"
+    >
+      <TextField
+        type="text"
         label="Email"
-        type="email"
         name="email"
+        required
+        maxLength={30}
+        color={errors.email ? "error" : status.email}
+        autoComplete="off"
         value={formData.email}
-        onChange={handleChange}
-        error={validationErrors.email}
-        placeholder="you@example.com"
+        onChange={handleEmailChange}
+        error={errors.email || ""}
+        data-error={!!errors.email}
       />
 
-      <Input
+      <TextField
         label="Password"
         type="password"
         name="password"
+        required
+        maxLength={30}
+        color={errors.password ? "error" : status.password}
+        autoComplete="off"
         value={formData.password}
-        onChange={handleChange}
-        error={validationErrors.password}
-        placeholder="••••••"
+        onChange={handlePasswordChange}
+        error={errors.password || ""}
+        data-error={!!errors.password}
       />
 
       <Button
@@ -120,7 +191,7 @@ export function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
-          className="font-semibold text-blue-600 hover:text-blue-700"
+          className=" font-semibold text-blue-600 hover:text-blue-700"
         >
           Register here
         </Link>
