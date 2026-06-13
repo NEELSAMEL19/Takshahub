@@ -1,5 +1,9 @@
 // API Configuration
-export const API_BASE_URL = process.env.API_BASE_URL 
+export const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3000";
+
+if (!API_BASE_URL) {
+  throw new Error("API_BASE_URL is not defined in environment variables");
+}
 
 export const API_ENDPOINTS = {
   AUTH: {
