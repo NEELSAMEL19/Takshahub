@@ -105,12 +105,9 @@ export function LoginForm() {
     try {
       setErrors({});
 
-      const response = await loginMutation.mutateAsync(formData);
+      await loginMutation.mutateAsync(formData);
 
-      const role = response.data.auth.role;
-
-      window.localStorage.setItem("authRole", role);
-      router.replace(`/${role.toLowerCase()}`);
+      router.replace("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
     }

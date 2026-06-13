@@ -28,7 +28,11 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isLoginPage = pathname === "/login";
 
-  const isProtectedRoute = pathname === "/dashboard";
+  const isProtectedRoute =
+    pathname === "/dashboard" ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/teacher") ||
+    pathname.startsWith("/student");
 
   const user = token ? await verifyToken(token) : null;
 
@@ -38,8 +42,28 @@ export async function proxy(req: NextRequest) {
     );
   }
 
-  if (isProtectedRoute && !user) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  if (isProtectedRoute) {
+    if (!user) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    if (pathname === "/dashboard") {
+      return NextResponse.redirect(
+        new URL(`/${user.role.toLowerCase()}`, req.url),
+      );
+    }
+
+    if (pathname.startsWith("/admin") && user.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    if (pathname.startsWith("/teacher") && user.role !== "TEACHER") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    if (pathname.startsWith("/student") && user.role !== "STUDENT") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
   }
 
   return NextResponse.next();
