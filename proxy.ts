@@ -13,7 +13,7 @@ const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_VALUE);
 async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    
+
     return payload as {
       id: string;
       role: "ADMIN" | "TEACHER" | "STUDENT";
@@ -28,11 +28,7 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isLoginPage = pathname === "/login";
 
-  const isProtectedRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/teacher") ||
-    pathname.startsWith("/student");
+  const isProtectedRoute = pathname === "/dashboard";
 
   const user = token ? await verifyToken(token) : null;
 
@@ -42,29 +38,10 @@ export async function proxy(req: NextRequest) {
     );
   }
 
-  if (isProtectedRoute) {
-    if (!user) {
-      const res = NextResponse.redirect(new URL("/login", req.url));
-
-      if (token) {
-        res.cookies.delete("token");
-      }
-
-      return res;
-    }
-
-    if (pathname.startsWith("/admin") && user.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-
-    if (pathname.startsWith("/teacher") && user.role !== "TEACHER") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-
-    if (pathname.startsWith("/student") && user.role !== "STUDENT") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
+  if (isProtectedRoute && !user) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
+
   return NextResponse.next();
 }
 
