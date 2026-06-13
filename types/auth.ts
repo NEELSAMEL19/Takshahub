@@ -1,22 +1,3 @@
-export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  phoneNumber?: string;
-  isVerified: boolean;
-  school: {
-    name: string;
-    type: string;
-    board: string;
-    city: string;
-    state: string;
-    website?: string;
-    udiseNumber: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface School {
   name: string;
   type: string;
@@ -35,23 +16,65 @@ export interface RegisterPayload {
   school: School;
 }
 
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+  };
+}
+
 export interface LoginPayload {
   email: string;
   password: string;
 }
 
-export interface AuthResponse {
+export interface LoginResponse {
   success: boolean;
   message: string;
-  data?: {
-    user: User;
-    token?: string;
+  data: {
+    user: {
+      id: string;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      isVerified: boolean;
+    };
+    auth: {
+      role: "ADMIN" | "TEACHER" | "STUDENT";
+      schoolId: string;
+    };
   };
 }
 
-export interface OtpPayload {
+export interface ResendOtpPayload {
   email: string;
-  otp?: string;
+  otp: string;
 }
 
+export interface ResendOtpResponse {
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+  };
+}
 
+export interface VerifyOtpPayload {
+  email: string;
+}
+export interface VerifyOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    auth: {
+      role: "ADMIN" | "TEACHER" | "STUDENT";
+      schoolId: string;
+    };
+  };
+}

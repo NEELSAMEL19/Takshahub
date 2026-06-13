@@ -1,63 +1,79 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/service/auth";
 import {
+  AuthResponse,
   LoginPayload,
   RegisterPayload,
-  OtpPayload,
+  ResendOtpPayload,
+  VerifyOtpPayload,
 } from "@/types/auth";
+import { handleError, handleSuccess } from "@/utils/toast";
 
 // ---------------- REGISTER ----------------
-export const useRegister = () => {
+export const useRegister = (onFieldError?: (errors: any) => void) => {
   return useMutation({
     mutationFn: (data: RegisterPayload) => authApi.register(data),
+
+    onSuccess: (response) => {
+      handleSuccess(response.message, "Otp send to your email");
+    },
+
+    onError: (error) => {
+      handleError(error, "Registration failed", onFieldError);
+    },
   });
 };
 
-// ---------------- LOGIN ----------------
-export const useLogin = () => {
-  const queryClient = useQueryClient();
-
+export const useLogin = (onFieldError?: (errors: any) => void) => {
   return useMutation({
     mutationFn: (data: LoginPayload) => authApi.login(data),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
+    onSuccess: async (response) => {
+      handleSuccess(response.message, "Login successful");
+    },
+
+    onError: (error) => {
+      handleError(error, "Login failed", onFieldError);
     },
   });
 };
 
 // ---------------- VERIFY OTP ----------------
-export const useVerifyOtp = () => {
+export const useVerifyOtp = (onFieldError?: (errors: any) => void) => {
   return useMutation({
-    mutationFn: (data: OtpPayload) => authApi.verifyOtp(data),
+    mutationFn: (data: VerifyOtpPayload) => authApi.verifyOtp(data),
+
+    onSuccess: (response) => {
+      handleSuccess(response.message, "OTP verified successfully");
+    },
+
+    onError: (error) => {
+      handleError(error, "OTP verification failed", onFieldError);
+    },
   });
 };
 
 // ---------------- RESEND OTP ----------------
-export const useResendOtp = () => {
+export const useResendOtp = (onFieldError?: (errors: any) => void) => {
   return useMutation({
-    mutationFn: (data: OtpPayload) => authApi.resendOtp(data),
+    mutationFn: (data: ResendOtpPayload) => authApi.resendOtp(data),
+
+    onSuccess: (response) => {
+      handleSuccess(response.message, "OTP resent successfully");
+    },
+
+    onError: (error) => {
+      handleError(error, "Failed to resend OTP", onFieldError);
+    },
   });
 };
 
 // ---------------- ME ----------------
 export const useMe = () => {
-  return useQuery({
+  return useQuery<AuthResponse>({
     queryKey: ["me"],
     queryFn: authApi.me,
     retry: false,
-  });
-};
-
-// ---------------- LOGOUT ----------------
-export const useLogout = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: authApi.logout,
-
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["me"] });
-    },
+    staleTime: 1000 * 60 * 5,
   });
 };

@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sample-shui.onrender.com";
+export const API_BASE_URL = process.env.API_BASE_URL 
 
 export const API_ENDPOINTS = {
   AUTH: {
