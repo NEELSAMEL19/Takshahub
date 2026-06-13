@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LoginForm, LoginRedirect } from "@/features/auth/components";
+import { LoginForm } from "@/features/auth/components";
 import { API_BASE_URL, API_ENDPOINTS } from "@/service/routes";
 
 async function getMe() {
@@ -35,8 +35,6 @@ export default async function LoginPage() {
             <h1 className="text-3xl font-bold text-gray-900">Takshahub</h1>
             <p className="text-gray-600 mt-2">Sign in to your account</p>
           </div>
-
-          <LoginRedirect />
 
           <LoginForm />
         </div>
