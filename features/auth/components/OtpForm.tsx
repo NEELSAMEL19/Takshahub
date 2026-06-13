@@ -35,7 +35,7 @@ export function OtpForm() {
 
   const [timer, setTimer] = useState(30);
 
-  const verifyOtpMutation = useVerifyOtp((backendErrors: any) => {
+  const verifyOtpMutation = useVerifyOtp((backendErrors: Record<string, string>) => {
     setErrors(backendErrors);
 
     setStatus({

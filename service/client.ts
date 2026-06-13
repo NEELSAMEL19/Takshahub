@@ -7,6 +7,63 @@ interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const parseResponseData = async (response: Response): Promise<unknown> => {
+  const text = await response.text();
+
+  if (!text.trim()) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return {};
+  }
+};
+
+const getResponseMessage = (data: unknown) => {
+  if (isRecord(data) && typeof data.message === "string") {
+    return data.message;
+  }
+
+  return "Request failed";
+};
+
+const getResponseErrors = (data: unknown) => {
+  if (!isRecord(data) || !isRecord(data.errors)) {
+    return undefined;
+  }
+
+  const errors: Record<string, string> = {};
+
+  Object.entries(data.errors).forEach(([key, value]) => {
+    if (typeof value === "string") {
+      errors[key] = value;
+    }
+  });
+
+  return Object.keys(errors).length ? errors : undefined;
+};
+
+const getRequestBody = (body: unknown): BodyInit | undefined => {
+  if (body === undefined) {
+    return undefined;
+  }
+
+  if (
+    body instanceof FormData ||
+    body instanceof Blob ||
+    body instanceof ArrayBuffer
+  ) {
+    return body as BodyInit;
+  }
+
+  return JSON.stringify(body);
+};
+
 export class ApiClient {
   private baseUrl: string;
 
@@ -32,25 +89,13 @@ export class ApiClient {
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
-    const contentType = response.headers.get("content-type");
-
-    let data: any = {};
-
-    try {
-      if (contentType?.includes("application/json")) {
-        data = await response.json();
-      } else {
-        data = {};
-      }
-    } catch {
-      data = {};
-    }
+    const data = await parseResponseData(response);
 
     if (!response.ok) {
       throw new ApiError(
-        data?.message || "Request failed",
+        getResponseMessage(data),
         response.status,
-        data?.errors,
+        getResponseErrors(data),
       );
     }
 
@@ -70,32 +115,30 @@ export class ApiClient {
       credentials: "include",
       signal: controller.signal,
       headers: {
-        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...(!isFormData ? { "Content-Type": "application/json" } : {}),
         ...options.headers,
       },
-      body: isFormData ? options.body : options.body,
+      body: getRequestBody(options.body),
     };
 
     try {
       const response = await fetch(url, config);
       clearTimeout(timeout);
       return await this.handleResponse<T>(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
       clearTimeout(timeout);
 
-      // API error
       if (error instanceof ApiError) {
         throw error;
       }
 
-      // Abort / network error
-      if (error?.name === "AbortError" || error instanceof TypeError) {
-        const err = new ApiError(
+      const name = isRecord(error) ? error.name : undefined;
+
+      if (name === "AbortError" || error instanceof TypeError) {
+        throw new ApiError(
           "Request failed. Please check your connection.",
           0,
         );
-        (err as any).isNetworkError = true;
-        throw err;
       }
 
       throw new ApiError("Something went wrong", 0);
@@ -117,7 +160,7 @@ export class ApiClient {
     return this.request<T>(endpoint, {
       ...options,
       method: "POST",
-      body: body ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : (body as BodyInit),
     });
   }
 
@@ -129,7 +172,7 @@ export class ApiClient {
     return this.request<T>(endpoint, {
       ...options,
       method: "PUT",
-      body: body ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : (body as BodyInit),
     });
   }
 

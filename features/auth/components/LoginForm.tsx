@@ -30,7 +30,7 @@ export function LoginForm() {
     password: "info",
   });
 
-  const loginMutation = useLogin((backendErrors: any) => {
+  const loginMutation = useLogin((backendErrors: Record<string, string>) => {
     setErrors(backendErrors);
 
     setStatus({
@@ -158,7 +158,7 @@ export function LoginForm() {
       </Button>
 
       <p className="text-center text-sm text-gray-600">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link
           href="/register"
           className="font-semibold text-blue-600 hover:text-blue-700"

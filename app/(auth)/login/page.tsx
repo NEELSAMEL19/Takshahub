@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/features/auth/components";
-import { API_BASE_URL } from "@/service/routes";
+import { API_BASE_URL, API_ENDPOINTS } from "@/service/routes";
 
 async function getMe() {
   const cookieStore = await cookies();
@@ -9,7 +9,7 @@ async function getMe() {
 
   if (!token) return null;
 
-  const res = await fetch(`${API_BASE_URL}/me`, {
+  const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

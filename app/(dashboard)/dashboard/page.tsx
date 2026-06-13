@@ -1,12 +1,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { API_BASE_URL, API_ENDPOINTS } from "@/service/routes";
 
 async function getMe() {
-  const cookieStore = await cookies(); // ✅ IMPORTANT FIX
+  const cookieStore = await cookies();
 
   const token = cookieStore.get("token")?.value;
 
-  const res = await fetch("http://localhost:3030/me", {
+  const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
     headers: {
       Authorization: `Bearer ${token ?? ""}`,
     },

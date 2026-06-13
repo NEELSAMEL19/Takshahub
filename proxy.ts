@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+const JWT_SECRET_VALUE = process.env.JWT_SECRET;
+
+if (!JWT_SECRET_VALUE) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
+
+const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_VALUE);
 
 async function verifyToken(token: string) {
   try {
@@ -12,7 +18,7 @@ async function verifyToken(token: string) {
       id: string;
       role: "ADMIN" | "TEACHER" | "STUDENT";
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }

@@ -1,31 +1,27 @@
 import { toast } from "react-toastify";
 import { ApiError } from "./errors";
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
 export const handleError = (
-  error: any,
+  error: unknown,
   fallbackMessage = "Something went wrong",
   setFieldErrors?: (errors: Record<string, string>) => void,
 ) => {
   let message = fallbackMessage;
 
-  // ✅ Handle fetch/network errors
   if (error instanceof TypeError) {
     message = "Cannot connect to server. Please check your connection.";
-  }
-
-  // ✅ Handle your custom API errors
-  else if (error instanceof ApiError) {
+  } else if (error instanceof ApiError) {
     message = error.message;
-  }
-
-  // ✅ fallback
-  else if (error?.message) {
+  } else if (isRecord(error) && typeof error.message === "string") {
     message = error.message;
   }
 
   toast.error(message);
 
-  if (error?.errors) {
+  if (error instanceof ApiError && error.errors) {
     setFieldErrors?.(error.errors);
     return;
   }
