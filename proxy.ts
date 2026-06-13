@@ -7,6 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
+    
     return payload as {
       id: string;
       role: "ADMIN" | "TEACHER" | "STUDENT";
@@ -19,7 +20,6 @@ async function verifyToken(token: string) {
 export async function proxy(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const { pathname } = req.nextUrl;
-
   const isLoginPage = pathname === "/login";
 
   const isProtectedRoute =

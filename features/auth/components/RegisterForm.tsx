@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TextField } from "@/components/UI/TextField";
-import { Button } from "@/components/UI/Button";
-import { Dropdown } from "@/components/UI/Dropdown";
+
 import { registerSchema, RegisterFormData } from "../validation";
 import { useRegister } from "@/hooks/auth/useAuth";
+import { TextField, Button, Dropdown } from "@/components/UI";
+import { Status } from "../types";
 
 const SCHOOL_TYPES = [
   { label: "Government", value: "PUBLIC" },
@@ -22,9 +22,6 @@ const BOARDS = [
 ];
 
 const STATES = ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka"];
-
-type FormErrors = Partial<Record<string, string>>;
-type SchoolField = keyof RegisterFormData["school"];
 
 export function RegisterForm() {
   const router = useRouter();
@@ -45,400 +42,283 @@ export function RegisterForm() {
     },
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState<Record<string, Status>>({});
 
-  const registerMutation = useRegister((backendErrors: any) => {
-    setErrors(backendErrors);
-  });
+  const registerMutation = useRegister(
+    (backendErrors: Record<string, string>) => {
+      setErrors(backendErrors);
 
-<<<<<<< Updated upstream
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-
-    if (name.startsWith("school.")) {
-      const schoolField = name.replace("school.", "");
-
-      setFormData((prev) => ({
+      const errorStatus = Object.keys(backendErrors).reduce<
+        Record<string, Status>
+      >((acc, key) => {
+        acc[key] = "error";
+        return acc;
+      }, {});
+      
+      setStatus((prev) => ({
         ...prev,
-        school: {
-          ...prev.school,
-          [schoolField]: value,
-        },
+        ...errorStatus,
       }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+    },
+  );
+
+  const getFieldSchema = (path: string) => {
+    if (path.startsWith("school.")) {
+      const field = path.split(".")[1];
+      return (registerSchema.shape.school as any).shape[field];
     }
 
-    if (validationErrors[name]) {
-      setValidationErrors((prev) => {
-        const copy = { ...prev };
-        delete copy[name];
-        return copy;
-      });
-    }
+    return (registerSchema.shape as any)[path];
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateField = (path: string, value: string) => {
+    const schema = getFieldSchema(path);
 
-    clearError();
-    setValidationErrors({});
+    if (!schema) return;
 
-    try {
-      const validatedData = registerSchema.parse(formData);
+    const result = schema.safeParse(value);
 
-      await registerMutation.mutateAsync(validatedData);
+    if (!result.success) {
+      setErrors((prev) => ({
+        ...prev,
+        [path]: result.error.issues[0]?.message || "Invalid value",
+      }));
 
-      router.push(
-        `/verify-otp?email=${encodeURIComponent(validatedData.email)}`,
-      );
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const fieldErrors: Record<string, string> = {};
+      setStatus((prev) => ({
+        ...prev,
+        [path]: "error",
+      }));
 
-        err.issues.forEach((issue) => {
-          const field = issue.path[0];
+      return;
+    }
 
-          if (typeof field === "string") {
-            fieldErrors[field] = issue.message;
-          }
-        });
-
-        setValidationErrors(fieldErrors);
-        return;
-      }
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Registration failed. Please try again.",
-      );
-=======
-  // ---------------------------
-  // UPDATE FIELD (SAFE + CLEAN)
-  // ---------------------------
-  const updateField = (path: string, value: any) => {
-    setFormData((prev) => {
-      const updated = { ...prev };
-
-      if (path.startsWith("school.")) {
-        const key = path.split(".")[1] as SchoolField;
-        updated.school[key] = value;
-      } else {
-        (updated as any)[path] = value;
-      }
-
-      return updated;
-    });
-
-    // clear error on change
     setErrors((prev) => ({
       ...prev,
-      [path]: undefined,
+      [path]: "",
+    }));
+
+    setStatus((prev) => ({
+      ...prev,
+      [path]: value ? "success" : "info",
     }));
   };
 
-  // ---------------------------
-  // SUBMIT
-  // ---------------------------
-  const onSubmit = () => {
-    const result = registerSchema.safeParse(formData);
+  const updateFormData = (path: string, value: string) => {
+    setFormData((prev) => {
+      const updated = structuredClone(prev);
+      const keys = path.split(".");
 
-    if (!result.success) {
-      const fieldErrors: FormErrors = {};
+      let current: any = updated;
 
-      result.error.issues.forEach((e) => {
-        fieldErrors[e.path.join(".")] = e.message;
-      });
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
 
-      setErrors(fieldErrors);
-      return;
->>>>>>> Stashed changes
-    }
+      current[keys[keys.length - 1]] = value;
 
-    registerMutation.mutate(formData, {
-      onSuccess: () => {
-        localStorage.setItem("verifyEmail", formData.email);
-        router.push("/verify-otp");
-      },
+      return updated;
     });
   };
 
-  return (
-<<<<<<< Updated upstream
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <Alert type="error" message={error} onClose={clearError} />}
+  const handleInputChange =
+    (path: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const value = e.target.value;
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Input
-=======
+      updateFormData(path, value);
+      validateField(path, value);
+    };
+
+  const handleDropdownChange = (
+    path: string,
+    value: string | number | (string | number)[],
+  ) => {
+    if (Array.isArray(value)) return;
+
+    const stringValue = String(value);
+
+    updateFormData(path, stringValue);
+    validateField(path, stringValue);
+  };
+
+  const handleSubmit = async () => {
+    const validation = registerSchema.safeParse(formData);
+
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      const fieldStatus: Record<string, Status> = {};
+
+      validation.error.issues.forEach((issue) => {
+        const path = issue.path.join(".");
+
+        if (!fieldErrors[path]) {
+          fieldErrors[path] = issue.message;
+        }
+
+        fieldStatus[path] = "error";
+      });
+
+      setErrors(fieldErrors);
+      setStatus((prev) => ({
+        ...prev,
+        ...fieldStatus,
+      }));
+
+      return;
+    }
+
+    try {
+      setErrors({});
+
+      await registerMutation.mutateAsync(formData);
+
+      localStorage.setItem("verifyEmail", formData.email);
+
+      router.push("/verify-otp");
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  };
+
+  return (
     <form
+      className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit();
+        handleSubmit();
       }}
-      className="space-y-4"
     >
-      {/* ROW 1 */}
-      <div className="grid md:grid-cols-2 gap-4">
+      {/* User Details */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <TextField
->>>>>>> Stashed changes
           label="Full Name"
-          value={formData.fullName}
-          onChange={(e) => updateField("fullName", e.target.value)}
-          error={errors.fullName || ""}
-          data-error={!!errors.fullName}
+          name="fullName"
           required
+          value={formData.fullName}
+          onChange={handleInputChange("fullName")}
+          error={errors.fullName}
+          color={status.fullName}
         />
 
         <TextField
           label="Email"
+          type="email"
+          name="email"
+          required
           value={formData.email}
-          onChange={(e) => updateField("email", e.target.value)}
-          error={errors.email || ""}
-          data-error={!!errors.email}
-          required
+          onChange={handleInputChange("email")}
+          error={errors.email}
+          color={status.email}
         />
       </div>
 
-      {/* ROW 2 */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <TextField
-          type="password"
           label="Password"
-          value={formData.password}
-          onChange={(e) => updateField("password", e.target.value)}
-          error={errors.password || ""}
-          data-error={!!errors.password}
+          type="password"
+          name="password"
           required
+          value={formData.password}
+          onChange={handleInputChange("password")}
+          error={errors.password}
+          color={status.password}
         />
 
         <TextField
-          type="tel"
           label="Phone Number"
-          value={formData.phoneNumber}
-          onChange={(e) => updateField("phoneNumber", e.target.value)}
-          error={errors.phoneNumber || ""}
-          data-error={!!errors.phoneNumber}
+          type="tel"
+          name="phoneNumber"
           required
+          value={formData.phoneNumber}
+          onChange={handleInputChange("phoneNumber")}
+          error={errors.phoneNumber}
+          color={status.phoneNumber}
         />
       </div>
 
-      {/* SCHOOL SECTION */}
-      <div className="border-t pt-4 space-y-4">
+      {/* School Details */}
+      <div className="space-y-4 border-t pt-4">
         <h3 className="text-lg font-semibold">School Information</h3>
 
         <TextField
           label="School Name"
-          value={formData.school.name}
-          onChange={(e) => updateField("school.name", e.target.value)}
-          error={errors["school.name"] || ""}
-          data-error={!!errors["school.name"]}
+          name="school.name"
           required
+          value={formData.school.name}
+          onChange={handleInputChange("school.name")}
+          error={errors["school.name"]}
+          color={status["school.name"]}
         />
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Dropdown
             label="School Type"
             options={SCHOOL_TYPES}
             value={formData.school.type}
-            onSelect={(e, val) => updateField("school.type", val)}
+            onSelect={(_, value) => handleDropdownChange("school.type", value)}
             error={errors["school.type"]}
           />
 
-<<<<<<< Updated upstream
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                School Type
-              </label>
-
-              <select
-                name="school.type"
-                value={formData.school.type}
-                onChange={handleChange}
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  validationErrors["school.type"]
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              >
-                <option value="">Select School Type</option>
-
-                {SCHOOL_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-
-              {validationErrors["school.type"] && (
-                <p className="mt-1 text-sm text-red-600">
-                  {validationErrors["school.type"]}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Board
-              </label>
-
-              <select
-                name="school.board"
-                value={formData.school.board}
-                onChange={handleChange}
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  validationErrors["school.board"]
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              >
-                <option value="">Select Board</option>
-
-                {BOARDS.map((board) => (
-                  <option key={board.value} value={board.value}>
-                    {board.label}
-                  </option>
-                ))}
-              </select>
-
-              {validationErrors["school.board"] && (
-                <p className="mt-1 text-sm text-red-600">
-                  {validationErrors["school.board"]}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input
-              label="City"
-              type="text"
-              name="school.city"
-              value={formData.school.city}
-              onChange={handleChange}
-              error={validationErrors["school.city"]}
-              placeholder="City"
-            />
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                State
-              </label>
-
-              <select
-                name="school.state"
-                value={formData.school.state}
-                onChange={handleChange}
-                className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  validationErrors["school.state"]
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              >
-                <option value="">Select State</option>
-
-                {STATES.map((state) => (
-                  <option key={state} value={state}>
-                    {state}
-                  </option>
-                ))}
-              </select>
-
-              {validationErrors["school.state"] && (
-                <p className="mt-1 text-sm text-red-600">
-                  {validationErrors["school.state"]}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <Input
-            label="Website (Optional)"
-            type="url"
-            name="school.website"
-            value={formData.school.website}
-            onChange={handleChange}
-            error={validationErrors["school.website"]}
-            placeholder="https://school.com"
-          />
-
-          <Input
-            label="UDISE Number"
-            type="text"
-            name="school.udiseNumber"
-            value={formData.school.udiseNumber}
-            onChange={handleChange}
-            error={validationErrors["school.udiseNumber"]}
-            placeholder="UDISE Number"
-=======
           <Dropdown
             label="Board"
             options={BOARDS}
             value={formData.school.board}
-            onSelect={(e, val) => updateField("school.board", val)}
+            onSelect={(_, value) => handleDropdownChange("school.board", value)}
             error={errors["school.board"]}
->>>>>>> Stashed changes
           />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <TextField
             label="City"
-            value={formData.school.city}
-            onChange={(e) => updateField("school.city", e.target.value)}
-            error={errors["school.city"] || ""}
+            name="school.city"
             required
+            value={formData.school.city}
+            onChange={handleInputChange("school.city")}
+            error={errors["school.city"]}
+            color={status["school.city"]}
           />
 
           <Dropdown
             label="State"
-            options={STATES.map((s) => ({ label: s, value: s }))}
+            options={STATES.map((state) => ({
+              label: state,
+              value: state,
+            }))}
             value={formData.school.state}
-            onSelect={(e, val) => updateField("school.state", val)}
+            onSelect={(_, value) => handleDropdownChange("school.state", value)}
             error={errors["school.state"]}
           />
         </div>
 
         <TextField
           label="Website (Optional)"
+          name="school.website"
           value={formData.school.website}
-          onChange={(e) => updateField("school.website", e.target.value)}
-          error={errors["school.website"] || ""}
+          onChange={handleInputChange("school.website")}
+          error={errors["school.website"]}
+          color={status["school.website"]}
         />
 
         <TextField
           label="UDISE Number"
-          value={formData.school.udiseNumber}
-          onChange={(e) => updateField("school.udiseNumber", e.target.value)}
-          error={errors["school.udiseNumber"] || ""}
+          name="school.udiseNumber"
           required
+          value={formData.school.udiseNumber}
+          onChange={handleInputChange("school.udiseNumber")}
+          error={errors["school.udiseNumber"]}
+          color={status["school.udiseNumber"]}
         />
       </div>
 
-<<<<<<< Updated upstream
-      <Button type="submit" size="md" loading={isLoading} className="w-full">
-=======
-<<<<<<< Updated upstream
       <Button
         type="submit"
         size="md"
-        loading={isLoading}
+        loading={registerMutation.isPending}
         className="w-full"
       >
->>>>>>> Stashed changes
         Register
-=======
-      {/* SUBMIT */}
-      <Button type="submit" disabled={registerMutation.isPending}>
-        {registerMutation.isPending ? "Registering..." : "Register"}
->>>>>>> Stashed changes
       </Button>
     </form>
   );

@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { loginSchema, LoginFormData } from "../validation";
 import { useLogin } from "@/hooks/auth/useAuth";
-import { TextField } from "@/components/UI";
-import { Button } from "@/components/UI";
+import { TextField, Button } from "@/components/UI";
 import { Status } from "../types";
-import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const router = useRouter();
@@ -22,101 +22,61 @@ export function LoginForm() {
     password?: string;
   }>({});
 
-  const [status, setStatus] = useState<{ email: Status; password: Status }>({
+  const [status, setStatus] = useState<{
+    email: Status;
+    password: Status;
+  }>({
     email: "info",
     password: "info",
   });
 
-  // ✅ FIX: handle backend errors + status
   const loginMutation = useLogin((backendErrors: any) => {
     setErrors(backendErrors);
 
-    setStatus((prev) => ({
-      ...prev,
-      email: backendErrors.email ? "error" : prev.email,
-      password: backendErrors.password ? "error" : prev.password,
-    }));
+    setStatus({
+      email: backendErrors?.email ? "error" : "success",
+      password: backendErrors?.password ? "error" : "success",
+    });
   });
 
-  const handleEmailChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-
-    setFormData((prev) => ({
-      ...prev,
-      email: value,
-    }));
-
-    const result = loginSchema.shape.email.safeParse(value);
+  const validateField = (field: "email" | "password", value: string) => {
+    const result = loginSchema.shape[field].safeParse(value);
 
     if (!result.success) {
       setErrors((prev) => ({
         ...prev,
-        email: result.error.issues[0].message,
+        [field]: result.error.issues[0].message,
       }));
-      setStatus((prev) => ({ ...prev, email: "error" }));
-    } else {
-      setErrors((prev) => ({ ...prev, email: undefined }));
+
       setStatus((prev) => ({
         ...prev,
-        email: value ? "success" : "info",
+        [field]: "error",
       }));
-    }
-  };
-
-  const handlePasswordChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-
-    setFormData((prev) => ({
-      ...prev,
-      password: value,
-    }));
-
-    const result = loginSchema.shape.password.safeParse(value);
-
-<<<<<<< Updated upstream
-    try {
-      const validatedData = loginSchema.parse(formData);
-
-      await loginMutation.mutateAsync(validatedData);
-
-      router.push("/dashboard");
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const fieldErrors: Record<string, string> = {};
-
-        err.issues.forEach((issue) => {
-          const field = issue.path[0];
-
-          if (typeof field === "string") {
-            fieldErrors[field] = issue.message;
-          }
-        });
-
-        setValidationErrors(fieldErrors);
-        return;
-      }
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to login. Please try again.",
-      );
-=======
-    if (!result.success) {
+    } else {
       setErrors((prev) => ({
         ...prev,
-        password: result.error.issues[0].message,
+        [field]: undefined,
       }));
-      setStatus((prev) => ({ ...prev, password: "error" }));
-    } else {
-      setErrors((prev) => ({ ...prev, password: undefined }));
+
       setStatus((prev) => ({
         ...prev,
-        password: value ? "success" : "info",
+        [field]: value ? "success" : "info",
       }));
->>>>>>> Stashed changes
     }
   };
+
+  const handleChange =
+    (field: "email" | "password") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+
+      validateField(field, value);
+    };
 
   const onSubmit = async () => {
     const result = loginSchema.safeParse(formData);
@@ -124,22 +84,34 @@ export function LoginForm() {
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
 
-      result.error.issues.forEach((e) => {
-        const field = e.path[0] as "email" | "password";
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as "email" | "password";
 
         if (!fieldErrors[field]) {
-          fieldErrors[field] = e.message;
+          fieldErrors[field] = issue.message;
         }
       });
 
       setErrors(fieldErrors);
+
+      setStatus({
+        email: fieldErrors.email ? "error" : status.email,
+        password: fieldErrors.password ? "error" : status.password,
+      });
+
       return;
     }
 
-    setErrors({});
-    await loginMutation.mutateAsync(formData);
-    router.refresh();
-    router.replace("/dashboard");
+    try {
+      setErrors({});
+
+      await loginMutation.mutateAsync(formData);
+
+      router.replace("/dashboard");
+      router.refresh();
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -151,17 +123,16 @@ export function LoginForm() {
       className="space-y-4"
     >
       <TextField
-        type="text"
         label="Email"
+        type="email"
         name="email"
         required
-        maxLength={30}
-        color={errors.email ? "error" : status.email}
-        autoComplete="off"
+        maxLength={100}
+        autoComplete="email"
         value={formData.email}
-        onChange={handleEmailChange}
+        onChange={handleChange("email")}
+        color={errors.email ? "error" : status.email}
         error={errors.email || ""}
-        data-error={!!errors.email}
       />
 
       <TextField
@@ -169,13 +140,12 @@ export function LoginForm() {
         type="password"
         name="password"
         required
-        maxLength={30}
-        color={errors.password ? "error" : status.password}
-        autoComplete="off"
+        maxLength={100}
+        autoComplete="current-password"
         value={formData.password}
-        onChange={handlePasswordChange}
+        onChange={handleChange("password")}
+        color={errors.password ? "error" : status.password}
         error={errors.password || ""}
-        data-error={!!errors.password}
       />
 
       <Button
@@ -188,10 +158,10 @@ export function LoginForm() {
       </Button>
 
       <p className="text-center text-sm text-gray-600">
-        Don&apos;t have an account?{" "}
+        Don't have an account?{" "}
         <Link
           href="/register"
-          className=" font-semibold text-blue-600 hover:text-blue-700"
+          className="font-semibold text-blue-600 hover:text-blue-700"
         >
           Register here
         </Link>

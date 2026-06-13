@@ -49,7 +49,6 @@ export interface LoginResponse {
 
 export interface ResendOtpPayload {
   email: string;
-  otp: string;
 }
 
 export interface ResendOtpResponse {
@@ -62,6 +61,7 @@ export interface ResendOtpResponse {
 
 export interface VerifyOtpPayload {
   email: string;
+  otp: string;
 }
 export interface VerifyOtpResponse {
   success: boolean;
