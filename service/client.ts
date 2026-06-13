@@ -61,7 +61,7 @@ export class ApiClient {
     const url = this.buildUrl(endpoint, options.params);
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), 60000);
 
     const isFormData = options.body instanceof FormData;
 
