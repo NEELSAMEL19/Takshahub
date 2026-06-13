@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*Background Color*/
+
+.bg-theme-background {
+  background-color: rgb(44, 60, 78);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/*Text Color*/
+
+.text-typography-secondary {
+  color: rgba(31, 31, 31, 0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.text-typography-primary {
+  color: rgba(31, 31, 31, 1);
 }
 
+/*Font-Style*/
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-work-sans), sans-serif;
 }
+
+.text-regular {
+  font-weight: 400;
+}
+
+.text-medium {
+  font-weight: 500;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+/*Height*/
+
+.h-screen-90 {
+  height: 90vh;
+}
+
+/*Color*/
+
+.text-primary {
+  color: #fd5151;
+}
+
+.text-progress {
+  color: #ff8300;
+}
+
+.text-success {
+  color: #048236;
+}
+
+.text-error {
+  color: #ff0000;
+}
+
+.text-warning {
+  color: #996c15;
+}
+
+/* rgba(107, 161, 161, 1) [#6ba1a1]
+
+rgba(4, 38, 70, 1) [#042646]
+
+rgba(246, 255, 255, 1) [#f6ffff] */

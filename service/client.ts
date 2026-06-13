@@ -14,8 +14,12 @@ export class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private buildUrl(endpoint: string, params?: RequestOptions["params"]): string {
+  private buildUrl(
+    endpoint: string,
+    params?: RequestOptions["params"],
+  ): string {
     const url = new URL(`${this.baseUrl}${endpoint}`);
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -23,49 +27,78 @@ export class ApiClient {
         }
       });
     }
+
     return url.toString();
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : {};
+    const contentType = response.headers.get("content-type");
+
+    let data: any = {};
+
+    try {
+      if (contentType?.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = {};
+      }
+    } catch {
+      data = {};
+    }
 
     if (!response.ok) {
       throw new ApiError(
-        data.message || "An error occurred",
-        response.status
+        data?.message || "Request failed",
+        response.status,
+        data?.errors,
       );
     }
 
-    return data;
+    return data as T;
   }
 
-  async request<T>(
-    endpoint: string,
-    options: RequestOptions = {}
-  ): Promise<T> {
+  async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = this.buildUrl(endpoint, options.params);
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    const isFormData = options.body instanceof FormData;
 
     const config: RequestInit = {
       ...options,
+      credentials: "include",
+      signal: controller.signal,
       headers: {
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...options.headers,
       },
-      credentials: "include", // Include cookies in requests
+      body: isFormData ? options.body : options.body,
     };
 
     try {
       const response = await fetch(url, config);
-      return this.handleResponse<T>(response);
-    } catch (error) {
+      clearTimeout(timeout);
+      return await this.handleResponse<T>(response);
+    } catch (error: any) {
+      clearTimeout(timeout);
+
+      // API error
       if (error instanceof ApiError) {
         throw error;
       }
-      throw new ApiError(
-        error instanceof Error ? error.message : "Network error",
-        0
-      );
+
+      // Abort / network error
+      if (error?.name === "AbortError" || error instanceof TypeError) {
+        const err = new ApiError(
+          "Request failed. Please check your connection.",
+          0,
+        );
+        (err as any).isNetworkError = true;
+        throw err;
+      }
+
+      throw new ApiError("Something went wrong", 0);
     }
   }
 
@@ -79,7 +112,7 @@ export class ApiClient {
   async post<T>(
     endpoint: string,
     body?: unknown,
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -91,7 +124,7 @@ export class ApiClient {
   async put<T>(
     endpoint: string,
     body?: unknown,
-    options?: RequestOptions
+    options?: RequestOptions,
   ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,

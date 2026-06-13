@@ -1,74 +1,99 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ZodError } from "zod";
-
 import { otpSchema, OtpFormData } from "../validation";
 import { useVerifyOtp, useResendOtp } from "@/hooks/auth/useAuth";
-
-import { Input } from "@/components/common/Input";
-import { Button } from "@/components/common/Button";
-import { Alert } from "@/components/common/Alert";
+import { TextField } from "@/components/UI/TextField";
+import { Button } from "@/components/UI/Button";
+import { Status } from "../types";
 
 export function OtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const email = searchParams.get("email");
+  // ✅ Get email from query OR localStorage
+  const email =
+    searchParams.get("email") ||
+    (typeof window !== "undefined"
+      ? localStorage.getItem("verifyEmail") || ""
+      : "");
 
-  const verifyOtpMutation = useVerifyOtp();
-  const resendOtpMutation = useResendOtp();
+  const [formData, setFormData] = useState<OtpFormData>({ otp: "" });
+  const [errors, setErrors] = useState<{ otp?: string }>({});
+  const [status, setStatus] = useState<{ otp: Status }>({ otp: "info" });
+  const [timer, setTimer] = useState(30);
 
-  const [formData, setFormData] = useState<OtpFormData>({
-    otp: "",
+  // ✅ Timer countdown
+  useEffect(() => {
+    if (timer <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  // ✅ Verify OTP
+  const otpMutation = useVerifyOtp((backendErrors: any) => {
+    setErrors(backendErrors);
+
+    setStatus((prev) => ({
+      ...prev,
+      otp: backendErrors.otp ? "error" : prev.otp,
+    }));
   });
 
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  // ✅ Resend OTP
+  const resendOtpMutation = useResendOtp();
 
-  const [error, setError] = useState("");
-  const [resendSuccess, setResendSuccess] = useState(false);
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
 
+<<<<<<< Updated upstream
   const isLoading = verifyOtpMutation.isPending || resendOtpMutation.isPending;
+=======
+<<<<<<< Updated upstream
+  const isLoading =
+    verifyOtpMutation.isPending || resendOtpMutation.isPending;
+=======
+    setFormData({ otp: value });
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
-  const clearError = () => {
-    setError("");
-  };
+    const result = otpSchema.shape.otp.safeParse(value);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
-    if (/^\d*$/.test(value) && value.length <= 6) {
-      setFormData({
-        otp: value,
-      });
-
-      if (validationErrors.otp) {
-        setValidationErrors((prev) => {
-          const copy = { ...prev };
-          delete copy.otp;
-          return copy;
-        });
-      }
+    if (!result.success) {
+      setErrors({ otp: result.error.issues[0].message });
+      setStatus({ otp: "error" });
+    } else {
+      setErrors({ otp: undefined });
+      setStatus({ otp: value ? "success" : "info" });
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = () => {
+    const payload = { ...formData, email };
 
-    clearError();
-    setValidationErrors({});
+    const result = otpSchema.safeParse(payload);
 
-    if (!email) {
-      setError("Email is missing");
+    if (!result.success) {
+      const fieldErrors: any = {};
+
+      result.error.issues.forEach((e) => {
+        const field = e.path[0] as "otp";
+        if (!fieldErrors[field]) fieldErrors[field] = e.message;
+      });
+
+      setErrors(fieldErrors);
+      setStatus({ otp: "error" });
       return;
     }
 
-    try {
-      const validatedData = otpSchema.parse(formData);
+    setErrors({});
 
+<<<<<<< Updated upstream
       await verifyOtpMutation.mutateAsync({
         email,
         otp: validatedData.otp,
@@ -93,14 +118,20 @@ export function OtpForm() {
 
       setError(err instanceof Error ? err.message : "OTP verification failed");
     }
+=======
+    otpMutation.mutate(payload, {
+      onSuccess: () => {
+        localStorage.removeItem("verifyEmail"); // ✅ cleanup
+        router.push("/login");
+      },
+    });
+>>>>>>> Stashed changes
   };
 
-  const handleResendOtp = async () => {
-    if (!email) {
-      setError("Email is missing");
-      return;
-    }
+  const handleResendOtp = () => {
+    if (!email || timer > 0) return;
 
+<<<<<<< Updated upstream
     clearError();
     setResendSuccess(false);
 
@@ -124,35 +155,66 @@ export function OtpForm() {
         <Alert type="success" message="OTP resent successfully to your email" />
       )}
 
-      <div className="text-center text-sm text-gray-600">
-        <p>Enter the 6-digit OTP sent to</p>
-        <p className="font-semibold text-gray-900">{email}</p>
-      </div>
+=======
+    resendOtpMutation.mutate(
+      { email },
+      {
+        onSuccess: () => {
+          setFormData({ otp: "" });
+          setStatus({ otp: "info" });
+          setTimer(30); // ✅ restart timer
+        },
+      },
+    );
+  };
 
-      <Input
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+      className="space-y-4"
+    >
+      {" "}
+>>>>>>> Stashed changes
+      <div className="text-center text-sm text-gray-600">
+        {" "}
+        <p>Enter the 6-digit OTP sent to</p>{" "}
+        <p className="font-semibold text-gray-900">{email}</p>{" "}
+      </div>
+      <TextField
         label="One-Time Password (OTP)"
-        type="text"
         name="otp"
-        inputMode="numeric"
         maxLength={6}
+        required
+        autoComplete="off"
         value={formData.otp}
-        onChange={handleChange}
-        error={validationErrors.otp}
-        placeholder="000000"
-        className="text-center text-2xl tracking-widest"
+        onChange={handleOtpChange}
+        error={errors.otp || ""}
+        data-error={!!errors.otp}
+        color={errors.otp ? "error" : status.otp}
       />
+<<<<<<< Updated upstream
 
       <Button type="submit" size="md" loading={isLoading} className="w-full">
         Verify OTP
+=======
+      <Button type="submit" className="w-full" disabled={otpMutation.isPending}>
+        {otpMutation.isPending ? "Verifying..." : "Verify OTP"}
+>>>>>>> Stashed changes
       </Button>
-
       <button
         type="button"
         onClick={handleResendOtp}
-        disabled={isLoading}
+        disabled={resendOtpMutation.isPending || timer > 0}
         className="w-full font-semibold text-sm text-blue-600 hover:text-blue-700 disabled:opacity-50"
       >
-        Resend OTP
+        {resendOtpMutation.isPending
+          ? "Sending..."
+          : timer > 0
+            ? `Resend in ${timer}s`
+            : "Resend OTP"}
       </button>
     </form>
   );

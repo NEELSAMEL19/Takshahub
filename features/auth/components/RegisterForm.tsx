@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ZodError } from "zod";
-import Link from "next/link";
-
+import { TextField } from "@/components/UI/TextField";
+import { Button } from "@/components/UI/Button";
+import { Dropdown } from "@/components/UI/Dropdown";
 import { registerSchema, RegisterFormData } from "../validation";
 import { useRegister } from "@/hooks/auth/useAuth";
-
-import { Input } from "@/components/common/Input";
-import { Button } from "@/components/common/Button";
-import { Alert } from "@/components/common/Alert";
 
 const SCHOOL_TYPES = [
   { label: "Government", value: "PUBLIC" },
@@ -25,47 +21,13 @@ const BOARDS = [
   { label: "Other", value: "OTHER" },
 ];
 
-const STATES = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-];
+const STATES = ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka"];
+
+type FormErrors = Partial<Record<string, string>>;
+type SchoolField = keyof RegisterFormData["school"];
 
 export function RegisterForm() {
   const router = useRouter();
-
-  const registerMutation = useRegister();
-
-  const [error, setError] = useState("");
-
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
 
   const [formData, setFormData] = useState<RegisterFormData>({
     fullName: "",
@@ -83,12 +45,13 @@ export function RegisterForm() {
     },
   });
 
-  const isLoading = registerMutation.isPending;
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const clearError = () => {
-    setError("");
-  };
+  const registerMutation = useRegister((backendErrors: any) => {
+    setErrors(backendErrors);
+  });
 
+<<<<<<< Updated upstream
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -155,73 +118,140 @@ export function RegisterForm() {
           ? err.message
           : "Registration failed. Please try again.",
       );
+=======
+  // ---------------------------
+  // UPDATE FIELD (SAFE + CLEAN)
+  // ---------------------------
+  const updateField = (path: string, value: any) => {
+    setFormData((prev) => {
+      const updated = { ...prev };
+
+      if (path.startsWith("school.")) {
+        const key = path.split(".")[1] as SchoolField;
+        updated.school[key] = value;
+      } else {
+        (updated as any)[path] = value;
+      }
+
+      return updated;
+    });
+
+    // clear error on change
+    setErrors((prev) => ({
+      ...prev,
+      [path]: undefined,
+    }));
+  };
+
+  // ---------------------------
+  // SUBMIT
+  // ---------------------------
+  const onSubmit = () => {
+    const result = registerSchema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+
+      result.error.issues.forEach((e) => {
+        fieldErrors[e.path.join(".")] = e.message;
+      });
+
+      setErrors(fieldErrors);
+      return;
+>>>>>>> Stashed changes
     }
+
+    registerMutation.mutate(formData, {
+      onSuccess: () => {
+        localStorage.setItem("verifyEmail", formData.email);
+        router.push("/verify-otp");
+      },
+    });
   };
 
   return (
+<<<<<<< Updated upstream
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <Alert type="error" message={error} onClose={clearError} />}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Input
+=======
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit();
+      }}
+      className="space-y-4"
+    >
+      {/* ROW 1 */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <TextField
+>>>>>>> Stashed changes
           label="Full Name"
-          type="text"
-          name="fullName"
           value={formData.fullName}
-          onChange={handleChange}
-          error={validationErrors.fullName}
-          placeholder="John Doe"
+          onChange={(e) => updateField("fullName", e.target.value)}
+          error={errors.fullName || ""}
+          data-error={!!errors.fullName}
+          required
         />
 
-        <Input
+        <TextField
           label="Email"
-          type="email"
-          name="email"
           value={formData.email}
-          onChange={handleChange}
-          error={validationErrors.email}
-          placeholder="you@example.com"
+          onChange={(e) => updateField("email", e.target.value)}
+          error={errors.email || ""}
+          data-error={!!errors.email}
+          required
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Input
-          label="Password"
+      {/* ROW 2 */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <TextField
           type="password"
-          name="password"
+          label="Password"
           value={formData.password}
-          onChange={handleChange}
-          error={validationErrors.password}
-          placeholder="••••••••"
+          onChange={(e) => updateField("password", e.target.value)}
+          error={errors.password || ""}
+          data-error={!!errors.password}
+          required
         />
 
-        <Input
-          label="Phone Number (Optional)"
+        <TextField
           type="tel"
-          name="phoneNumber"
+          label="Phone Number"
           value={formData.phoneNumber}
-          onChange={handleChange}
-          error={validationErrors.phoneNumber}
-          placeholder="+91 9876543210"
+          onChange={(e) => updateField("phoneNumber", e.target.value)}
+          error={errors.phoneNumber || ""}
+          data-error={!!errors.phoneNumber}
+          required
         />
       </div>
 
-      <div className="border-t pt-4">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">
-          School Information
-        </h3>
+      {/* SCHOOL SECTION */}
+      <div className="border-t pt-4 space-y-4">
+        <h3 className="text-lg font-semibold">School Information</h3>
 
-        <div className="space-y-4">
-          <Input
-            label="School Name"
-            type="text"
-            name="school.name"
-            value={formData.school.name}
-            onChange={handleChange}
-            error={validationErrors["school.name"]}
-            placeholder="Your School Name"
+        <TextField
+          label="School Name"
+          value={formData.school.name}
+          onChange={(e) => updateField("school.name", e.target.value)}
+          error={errors["school.name"] || ""}
+          data-error={!!errors["school.name"]}
+          required
+        />
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <Dropdown
+            label="School Type"
+            options={SCHOOL_TYPES}
+            value={formData.school.type}
+            onSelect={(e, val) => updateField("school.type", val)}
+            error={errors["school.type"]}
           />
 
+<<<<<<< Updated upstream
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">
@@ -347,23 +377,69 @@ export function RegisterForm() {
             onChange={handleChange}
             error={validationErrors["school.udiseNumber"]}
             placeholder="UDISE Number"
+=======
+          <Dropdown
+            label="Board"
+            options={BOARDS}
+            value={formData.school.board}
+            onSelect={(e, val) => updateField("school.board", val)}
+            error={errors["school.board"]}
+>>>>>>> Stashed changes
           />
         </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <TextField
+            label="City"
+            value={formData.school.city}
+            onChange={(e) => updateField("school.city", e.target.value)}
+            error={errors["school.city"] || ""}
+            required
+          />
+
+          <Dropdown
+            label="State"
+            options={STATES.map((s) => ({ label: s, value: s }))}
+            value={formData.school.state}
+            onSelect={(e, val) => updateField("school.state", val)}
+            error={errors["school.state"]}
+          />
+        </div>
+
+        <TextField
+          label="Website (Optional)"
+          value={formData.school.website}
+          onChange={(e) => updateField("school.website", e.target.value)}
+          error={errors["school.website"] || ""}
+        />
+
+        <TextField
+          label="UDISE Number"
+          value={formData.school.udiseNumber}
+          onChange={(e) => updateField("school.udiseNumber", e.target.value)}
+          error={errors["school.udiseNumber"] || ""}
+          required
+        />
       </div>
 
+<<<<<<< Updated upstream
       <Button type="submit" size="md" loading={isLoading} className="w-full">
+=======
+<<<<<<< Updated upstream
+      <Button
+        type="submit"
+        size="md"
+        loading={isLoading}
+        className="w-full"
+      >
+>>>>>>> Stashed changes
         Register
+=======
+      {/* SUBMIT */}
+      <Button type="submit" disabled={registerMutation.isPending}>
+        {registerMutation.isPending ? "Registering..." : "Register"}
+>>>>>>> Stashed changes
       </Button>
-
-      <p className="text-center text-sm text-gray-600">
-        Already have an account?{" "}
-        <Link
-          href="/login"
-          className="font-semibold text-blue-600 hover:text-blue-700"
-        >
-          Login here
-        </Link>
-      </p>
     </form>
   );
 }
