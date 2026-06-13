@@ -105,10 +105,12 @@ export function LoginForm() {
     try {
       setErrors({});
 
-      await loginMutation.mutateAsync(formData);
+      const response = await loginMutation.mutateAsync(formData);
 
-      router.replace("/dashboard");
-      router.refresh();
+      const role = response.data.auth.role;
+
+      window.localStorage.setItem("authRole", role);
+      router.replace(`/${role.toLowerCase()}`);
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -161,6 +163,7 @@ export function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link
           href="/register"
+          prefetch={false}
           className="font-semibold text-blue-600 hover:text-blue-700"
         >
           Register here
