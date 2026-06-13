@@ -22,7 +22,10 @@ interface DropdownProps {
 
   value?: string | number | (string | number)[];
 
-  onSelect?: (e: any, value: string | number | (string | number)[]) => void;
+  onSelect?: (
+    e: React.MouseEvent<HTMLDivElement>,
+    value: string | number | (string | number)[],
+  ) => void;
 }
 
 export function Dropdown({
@@ -72,8 +75,10 @@ export function Dropdown({
       ? [value as string | number]
       : [];
 
-  // handle select (KEEP YOUR FLOW: e + value)
-  const handleSelect = (e: any, selectedValue: string | number) => {
+  const handleSelect = (
+    e: React.MouseEvent<HTMLDivElement>,
+    selectedValue: string | number,
+  ) => {
     if (multiple) {
       const exists = selectedValues.includes(selectedValue);
 

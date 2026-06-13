@@ -32,16 +32,18 @@ export function TextField({
 
   const borderColor = hasError ? "border-red-500" : "border-gray-200";
 
+  const inputId = id ?? name;
+
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={id} className="block text-sm font-sans mb-1">
+        <label htmlFor={inputId} className="block text-sm font-sans mb-1">
           {label} {required && <span className="text-red-500 mr-1">*</span>}
         </label>
       )}
 
       <input
-        id={id}
+        id={inputId}
         name={name}
         type={type}
         required={required}

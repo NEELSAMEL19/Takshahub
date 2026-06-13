@@ -1,9 +1,8 @@
 // API Configuration
-export const API_BASE_URL = process.env.API_BASE_URL ?? "https://takshahub.onrender.com";
-
-if (!API_BASE_URL) {
-  throw new Error("API_BASE_URL is not defined in environment variables");
-}
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  process.env.API_BASE_URL ??
+  "https://takshahub.onrender.com";
 
 export const API_ENDPOINTS = {
   AUTH: {

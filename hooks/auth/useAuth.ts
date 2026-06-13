@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { authApi } from "@/service/auth";
 import {
   AuthResponse,
@@ -9,8 +9,10 @@ import {
 } from "@/types/auth";
 import { handleError, handleSuccess } from "@/utils/toast";
 
+type FieldErrors = Record<string, string>;
+
 // ---------------- REGISTER ----------------
-export const useRegister = (onFieldError?: (errors: any) => void) => {
+export const useRegister = (onFieldError?: (errors: FieldErrors) => void) => {
   return useMutation({
     mutationFn: (data: RegisterPayload) => authApi.register(data),
 
@@ -24,7 +26,7 @@ export const useRegister = (onFieldError?: (errors: any) => void) => {
   });
 };
 
-export const useLogin = (onFieldError?: (errors: any) => void) => {
+export const useLogin = (onFieldError?: (errors: FieldErrors) => void) => {
   return useMutation({
     mutationFn: (data: LoginPayload) => authApi.login(data),
 
@@ -39,7 +41,7 @@ export const useLogin = (onFieldError?: (errors: any) => void) => {
 };
 
 // ---------------- VERIFY OTP ----------------
-export const useVerifyOtp = (onFieldError?: (errors: any) => void) => {
+export const useVerifyOtp = (onFieldError?: (errors: FieldErrors) => void) => {
   return useMutation({
     mutationFn: (data: VerifyOtpPayload) => authApi.verifyOtp(data),
 
@@ -54,7 +56,7 @@ export const useVerifyOtp = (onFieldError?: (errors: any) => void) => {
 };
 
 // ---------------- RESEND OTP ----------------
-export const useResendOtp = (onFieldError?: (errors: any) => void) => {
+export const useResendOtp = (onFieldError?: (errors: FieldErrors) => void) => {
   return useMutation({
     mutationFn: (data: ResendOtpPayload) => authApi.resendOtp(data),
 

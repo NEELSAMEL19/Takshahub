@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { z } from "zod";
 
 import { registerSchema, RegisterFormData } from "../validation";
 import { useRegister } from "@/hooks/auth/useAuth";
@@ -22,6 +23,9 @@ const BOARDS = [
 ];
 
 const STATES = ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka"];
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
 
 export function RegisterForm() {
   const router = useRouter();
@@ -63,13 +67,13 @@ export function RegisterForm() {
     },
   );
 
-  const getFieldSchema = (path: string) => {
+  const getFieldSchema = (path: string): z.ZodTypeAny | undefined => {
     if (path.startsWith("school.")) {
       const field = path.split(".")[1];
-      return (registerSchema.shape.school as any).shape[field];
+      return registerSchema.shape.school.shape[field as keyof typeof registerSchema.shape.school.shape];
     }
 
-    return (registerSchema.shape as any)[path];
+    return registerSchema.shape[path as keyof typeof registerSchema.shape];
   };
 
   const validateField = (path: string, value: string) => {
@@ -108,12 +112,14 @@ export function RegisterForm() {
     setFormData((prev) => {
       const updated = structuredClone(prev);
       const keys = path.split(".");
-
-      let current: any = updated;
+      let current: unknown = updated;
 
       for (let i = 0; i < keys.length - 1; i++) {
+        if (!isRecord(current)) return prev;
         current = current[keys[i]];
       }
+
+      if (!isRecord(current)) return prev;
 
       current[keys[keys.length - 1]] = value;
 

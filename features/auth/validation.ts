@@ -53,7 +53,6 @@ export const registerSchema = z.object({
     udiseNumber: z.string().min(1, "Please enter UDISE number"),
   }),
 });
-
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type OtpFormData = z.infer<typeof otpSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
