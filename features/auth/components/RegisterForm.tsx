@@ -59,7 +59,7 @@ export function RegisterForm() {
         acc[key] = "error";
         return acc;
       }, {});
-      
+
       setStatus((prev) => ({
         ...prev,
         ...errorStatus,
@@ -70,7 +70,9 @@ export function RegisterForm() {
   const getFieldSchema = (path: string): z.ZodTypeAny | undefined => {
     if (path.startsWith("school.")) {
       const field = path.split(".")[1];
-      return registerSchema.shape.school.shape[field as keyof typeof registerSchema.shape.school.shape];
+      return registerSchema.shape.school.shape[
+        field as keyof typeof registerSchema.shape.school.shape
+      ];
     }
 
     return registerSchema.shape[path as keyof typeof registerSchema.shape];
@@ -173,18 +175,8 @@ export function RegisterForm() {
 
       return;
     }
-
-    try {
-      setErrors({});
-
-      await registerMutation.mutateAsync(formData);
-
-      localStorage.setItem("verifyEmail", formData.email);
-
-      router.push("/verify-otp");
-    } catch (error) {
-      console.error("Registration failed:", error);
-    }
+    await registerMutation.mutateAsync(formData);
+    router.replace("/dashboard");
   };
 
   return (
