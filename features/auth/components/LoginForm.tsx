@@ -102,15 +102,9 @@ export function LoginForm() {
       return;
     }
 
-    try {
-      setErrors({});
-
-      await loginMutation.mutateAsync(formData);
-
-      router.replace("/dashboard");
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    setErrors({});
+    await loginMutation.mutateAsync(formData);
+    router.replace("/dashboard");
   };
 
   return (

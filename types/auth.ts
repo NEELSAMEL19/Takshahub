@@ -47,27 +47,6 @@ export interface LoginResponse {
   };
 }
 
-export interface ResendOtpPayload {
-  email: string;
-}
-
-export interface ResendOtpResponse {
-  success: boolean;
-  message: string;
-  data: {
-    message: string;
-  };
-}
-
-export interface VerifyOtpPayload {
-  email: string;
-  otp: string;
-}
-export interface VerifyOtpResponse {
-  success: boolean;
-  message: string;
-}
-
 export interface AuthResponse {
   success: boolean;
   message: string;

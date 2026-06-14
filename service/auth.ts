@@ -8,10 +8,6 @@ import {
   LoginResponse,
   RegisterPayload,
   RegisterResponse,
-  ResendOtpPayload,
-  ResendOtpResponse,
-  VerifyOtpPayload,
-  VerifyOtpResponse,
 } from "@/types/auth";
 
 const getFrontendApiClient = () => {
@@ -27,12 +23,6 @@ export const authApi = {
 
   login: (payload: LoginPayload) =>
     getFrontendApiClient().post<LoginResponse>("/api/auth/login", payload),
-
-  resendOtp: (payload: ResendOtpPayload) =>
-    apiClient.post<ResendOtpResponse>(API_ENDPOINTS.AUTH.RESEND_OTP, payload),
-
-  verifyOtp: (payload: VerifyOtpPayload) =>
-    apiClient.post<VerifyOtpResponse>(API_ENDPOINTS.AUTH.VERIFY_OTP, payload),
 
   me: () => apiClient.get<AuthResponse>(API_ENDPOINTS.AUTH.ME),
 };

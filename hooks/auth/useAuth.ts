@@ -4,8 +4,6 @@ import {
   AuthResponse,
   LoginPayload,
   RegisterPayload,
-  ResendOtpPayload,
-  VerifyOtpPayload,
 } from "@/types/auth";
 import { handleError, handleSuccess } from "@/utils/toast";
 
@@ -17,7 +15,7 @@ export const useRegister = (onFieldError?: (errors: FieldErrors) => void) => {
     mutationFn: (data: RegisterPayload) => authApi.register(data),
 
     onSuccess: (response) => {
-      handleSuccess(response.message, "Otp send to your email");
+      handleSuccess(response.message, "Register successful");
     },
 
     onError: (error) => {
@@ -36,36 +34,6 @@ export const useLogin = (onFieldError?: (errors: FieldErrors) => void) => {
 
     onError: (error) => {
       handleError(error, "Login failed", onFieldError);
-    },
-  });
-};
-
-// ---------------- VERIFY OTP ----------------
-export const useVerifyOtp = (onFieldError?: (errors: FieldErrors) => void) => {
-  return useMutation({
-    mutationFn: (data: VerifyOtpPayload) => authApi.verifyOtp(data),
-
-    onSuccess: (response) => {
-      handleSuccess(response.message, "OTP verified successfully");
-    },
-
-    onError: (error) => {
-      handleError(error, "OTP verification failed", onFieldError);
-    },
-  });
-};
-
-// ---------------- RESEND OTP ----------------
-export const useResendOtp = (onFieldError?: (errors: FieldErrors) => void) => {
-  return useMutation({
-    mutationFn: (data: ResendOtpPayload) => authApi.resendOtp(data),
-
-    onSuccess: (response) => {
-      handleSuccess(response.message, "OTP resent successfully");
-    },
-
-    onError: (error) => {
-      handleError(error, "Failed to resend OTP", onFieldError);
     },
   });
 };
