@@ -19,7 +19,7 @@ const getFrontendApiClient = () => {
 
 export const authApi = {
   register: (payload: RegisterPayload) =>
-    apiClient.post<RegisterResponse>(API_ENDPOINTS.AUTH.REGISTER, payload),
+    getFrontendApiClient().post<RegisterResponse>("/api/auth/register", payload),
 
   login: (payload: LoginPayload) =>
     getFrontendApiClient().post<LoginResponse>("/api/auth/login", payload),
