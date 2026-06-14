@@ -21,6 +21,19 @@ export interface RegisterResponse {
   message: string;
   data: {
     message: string;
+    user: {
+      id: string;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      isVerified: boolean;
+      isActive: boolean;
+    };
+    auth: {
+      role: "ADMIN" | "TEACHER" | "STUDENT";
+      schoolId: string;
+    };
+    token: string;
   };
 }
 
