@@ -12,12 +12,6 @@ export const loginSchema = z.object({
     .min(6, "Password must be at least 6 characters"),
 });
 
-export const otpSchema = z.object({
-  otp: z
-    .string()
-    .length(6, "OTP must be 6 digits")
-    .regex(/^\d+$/, "OTP must contain only numbers"),
-});
 
 export const registerSchema = z.object({
   fullName: z
@@ -54,5 +48,4 @@ export const registerSchema = z.object({
   }),
 });
 export type LoginFormData = z.infer<typeof loginSchema>;
-export type OtpFormData = z.infer<typeof otpSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
