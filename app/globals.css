@@ -3,17 +3,16 @@
 /*Background Color*/
 
 .bg-theme-background {
-  background-color: rgb(44, 60, 78);
+  background-color: rgba(4, 38, 70, 1);
 }
 
 /*Text Color*/
-
-.text-typography-secondary {
-  color: rgba(31, 31, 31, 0.6);
-}
-
 .text-typography-primary {
   color: rgba(31, 31, 31, 1);
+}
+
+.text-typography-secondary {
+  color: rgb(192, 189, 189);
 }
 
 /*Font-Style*/
@@ -61,8 +60,4 @@ body {
   color: #996c15;
 }
 
-/* rgba(107, 161, 161, 1) [#6ba1a1]
-
-rgba(4, 38, 70, 1) [#042646]
-
-rgba(246, 255, 255, 1) [#f6ffff] */
+/* rgba(4, 38, 70, 1) [#042646] */ 
