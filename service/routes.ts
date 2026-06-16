@@ -11,4 +11,9 @@ export const API_ENDPOINTS = {
     ME: "/api/auth/me",
     LOGOUT: "/api/auth/logout",
   },
+  SIDEMENU: {
+    ADMINMENU: "/api/sidebar",
+    TEACHERMENU: "/api/sidebar/teacher",
+    STUDENTMENU: "/api/sidebar/student",
+  },
 };
