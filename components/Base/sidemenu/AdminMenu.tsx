@@ -44,7 +44,9 @@ const AdminMenu = () => {
             aria-label={item.name}
           >
             <div className="text-gray-600 group-hover:text-blue-600 transition-colors duration-200">
-              {item.icon || (
+              {item.icon ? (
+                <item.icon />
+              ) : (
                 <svg
                   className="w-6 h-6 sidemenu-icon"
                   fill="none"
