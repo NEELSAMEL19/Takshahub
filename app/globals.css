@@ -60,4 +60,10 @@ body {
   color: #996c15;
 }
 
+/*Side Menu Icon*/
+.sidemenu-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 /* rgba(4, 38, 70, 1) [#042646] */ 
