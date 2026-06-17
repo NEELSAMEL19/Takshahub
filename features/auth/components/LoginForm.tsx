@@ -103,8 +103,17 @@ export function LoginForm() {
     }
 
     setErrors({});
-    await loginMutation.mutateAsync(formData);
-    router.replace("/dashboard");
+    try {
+      const response = await loginMutation.mutateAsync(formData);
+      
+      const role = response?.data?.auth?.role;
+      if (role === "ADMIN") router.replace("/admin");
+      else if (role === "TEACHER") router.replace("/teacher");
+      else if (role === "STUDENT") router.replace("/student");
+      else router.replace("/dashboard");
+    } catch (error) {
+      // Error is already handled by useLogin onError
+    }
   };
 
   return (

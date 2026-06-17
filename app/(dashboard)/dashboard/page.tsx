@@ -4,12 +4,11 @@ import { API_BASE_URL, API_ENDPOINTS } from "@/service/routes";
 
 async function getMe() {
   const cookieStore = await cookies();
-
   const token = cookieStore.get("token")?.value;
 
   const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
     headers: {
-      Authorization: `Bearer ${token ?? ""}`,
+      Cookie: `token=${token ?? ""}`,
     },
     cache: "no-store",
   });

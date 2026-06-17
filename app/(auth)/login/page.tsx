@@ -11,7 +11,7 @@ async function getMe() {
 
   const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Cookie: `token=${token}`,
     },
     cache: "no-store",
   });
