@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/features/auth/components";
-import { API_BASE_URL, API_ENDPOINTS } from "@/service/routes";
+import { API_ENDPOINTS } from "@/service/routes"; // 🟩 Removed API_BASE_URL import
 
 async function getMe() {
   const cookieStore = await cookies();
@@ -9,7 +9,9 @@ async function getMe() {
 
   if (!token) return null;
 
-  const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+  const res = await fetch(`${appUrl}${API_ENDPOINTS.AUTH.ME}`, {
     headers: {
       Cookie: `token=${token}`,
     },
@@ -26,7 +28,6 @@ export default async function LoginPage() {
 
   const role = me?.data?.auth?.role;
 
-  // 🔥 If user is NOT logged in → show login page
   if (!role) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -42,7 +43,6 @@ export default async function LoginPage() {
     );
   }
 
-  // 🔥 If logged in → redirect by role
   if (role === "ADMIN") redirect("/admin");
   if (role === "TEACHER") redirect("/teacher");
 
