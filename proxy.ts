@@ -26,7 +26,14 @@ export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (pathname.startsWith("/api/backend")) {
-    return NextResponse.next();
+    const backendUrl =
+      process.env.API_BASE_URL ?? "https://takshahub.onrender.com";
+
+    // 🟩 This rewrites "/api/backend/..." to "/api/..." on your Render server
+    const cleanPath = pathname.replace("/api/backend", "/api");
+    const targetUrl = new URL(cleanPath + req.nextUrl.search, backendUrl);
+
+    return NextResponse.rewrite(targetUrl);
   }
 
   const token = req.cookies.get("token")?.value;
