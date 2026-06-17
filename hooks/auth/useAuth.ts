@@ -4,6 +4,7 @@ import {
   AuthResponse,
   LoginPayload,
   RegisterPayload,
+  LoginResponse,
 } from "@/types/auth";
 import { handleError, handleSuccess } from "@/utils/toast";
 
@@ -28,7 +29,7 @@ export const useLogin = (onFieldError?: (errors: FieldErrors) => void) => {
   return useMutation({
     mutationFn: (data: LoginPayload) => authApi.login(data),
 
-    onSuccess: async (response) => {
+    onSuccess: async (response: LoginResponse) => {
       handleSuccess(response.message, "Login successful");
     },
 

@@ -20,7 +20,6 @@ export interface RegisterResponse {
   success: boolean;
   message: string;
   data: {
-    message: string;
     user: {
       id: string;
       fullName: string;
@@ -33,7 +32,10 @@ export interface RegisterResponse {
       role: "ADMIN" | "TEACHER" | "STUDENT";
       schoolId: string;
     };
-    token: string;
+    school?: {
+      id: string;
+      name: string;
+    };
   };
 }
 
@@ -57,6 +59,10 @@ export interface LoginResponse {
       role: "ADMIN" | "TEACHER" | "STUDENT";
       schoolId: string;
     };
+    school?: {
+      id: string;
+      name: string;
+    };
   };
 }
 
@@ -64,9 +70,21 @@ export interface AuthResponse {
   success: boolean;
   message: string;
   data: {
+    user?: {
+      id: string;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      isVerified: boolean;
+      isActive: boolean;
+    };
     auth: {
       role: "ADMIN" | "TEACHER" | "STUDENT";
       schoolId: string;
+    };
+    school?: {
+      id: string;
+      name: string;
     };
   };
 }
