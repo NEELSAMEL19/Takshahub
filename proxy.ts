@@ -13,7 +13,6 @@ const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_VALUE);
 async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-
     return payload as {
       id: string;
       role: "ADMIN" | "TEACHER" | "STUDENT";
@@ -24,8 +23,13 @@ async function verifyToken(token: string) {
 }
 
 export async function proxy(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
   const { pathname } = req.nextUrl;
+
+  if (pathname.startsWith("/api/backend")) {
+    return NextResponse.next();
+  }
+
+  const token = req.cookies.get("token")?.value;
   const isLoginPage = pathname === "/login";
 
   const isProtectedRoute =
