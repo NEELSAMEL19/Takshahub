@@ -5,12 +5,11 @@ import { authApi } from "../../../service/auth";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
-    const router = useRouter();
+  const router = useRouter();
   const user = { name: "John Doe" };
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  const getInitials = (name) => {
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const getInitials = (name: string): string => {
     if (!name) return "";
     const parts = name.trim().split(" ");
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
@@ -23,8 +22,11 @@ const Navbar = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -39,7 +41,7 @@ const Navbar = () => {
     try {
       await authApi.logout();
       setIsOpen(false);
-            router.replace("/login"); // or router.push("/login")
+      router.replace("/login"); // or router.push("/login")
     } catch (error) {
       console.error("Logout failed:", error);
     }
