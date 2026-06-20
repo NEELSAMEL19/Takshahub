@@ -35,7 +35,7 @@ const AdminMenu = () => {
   }
 
   return (
-    <div className="flex flex-col h-full p-4 items-center space-y-4 overflow-y-auto">
+    <div className="flex flex-col h-full p-4 items-center space-y-4 ">
       {menuItems.map((item) => (
         <Tooltip key={item.id} content={item.name} placement="right">
           <button
