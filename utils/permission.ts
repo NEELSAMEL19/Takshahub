@@ -1,15 +1,20 @@
+import { RiOrganizationChart } from "react-icons/ri";
 import { FaBuilding } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
 export const menuIcons: Record<string, IconType> = {
-  Organization: FaBuilding,
+  Organization: RiOrganizationChart,
 };
 
-type PathHandler = (category: string, subcategories: any) => string;
+type PathHandler = (
+  baseRoute: string,
+  category: string,
+  subcategories: any,
+) => string;
 
 const pathTypeHandlers: Record<string, PathHandler> = {
-  Organization: (category, subcategories) => {
-    const basePath = `/${category.toLowerCase()}`;
+  Organization: (baseRoute, category, subcategories) => {
+    const basePath = `/${baseRoute}/${category.toLowerCase()}`;
 
     if (!subcategories || typeof subcategories !== "object") {
       return basePath;
@@ -19,26 +24,28 @@ const pathTypeHandlers: Record<string, PathHandler> = {
     return firstKey ? `${basePath}/${firstKey}` : basePath;
   },
 
-  default: (category) => `/${category.toLowerCase()}`,
+  default: (baseRoute, category) => `/${baseRoute}/${category.toLowerCase()}`,
 };
 
 export const getSideMenuItems = (sideMenus: any) => {
   if (!sideMenus) return [];
 
-  return Object.entries(sideMenus).map(([category, subcategories]: any) => {
-    const handler = pathTypeHandlers[category] ?? pathTypeHandlers.default;
+  return Object.entries(sideMenus).map(
+    ([category, subcategories]: [string, any]) => {
+      const handler = pathTypeHandlers[category] ?? pathTypeHandlers.default;
 
-    const pathType = handler(category, subcategories);
+      const path = handler("admin", category, subcategories);
 
-    const Icon = menuIcons[category] ?? FaBuilding; 
+      const Icon = menuIcons[category] ?? FaBuilding;
 
-    return {
-      icon: Icon,
-      name: category,
-      path: pathType,
-      id: category.toLowerCase(),
-      placement: "right",
-      children: subcategories,
-    };
-  });
+      return {
+        icon: Icon,
+        name: category,
+        path,
+        id: category.toLowerCase(),
+        placement: "right",
+        children: subcategories,
+      };
+    },
+  );
 };

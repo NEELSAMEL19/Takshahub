@@ -6,6 +6,7 @@ import {
   AuthResponse,
   LoginPayload,
   LoginResponse,
+  LogoutResponse,
   RegisterPayload,
   RegisterResponse,
 } from "@/types/auth";
@@ -19,4 +20,6 @@ export const authApi = {
 
   me: () =>
     apiClient.get<AuthResponse>(API_ENDPOINTS.AUTH.ME).then((res) => res.data),
+  logout:()=>
+    apiClient.post<LogoutResponse>(API_ENDPOINTS.AUTH.LOGOUT).then((res) => res.data),
 };
