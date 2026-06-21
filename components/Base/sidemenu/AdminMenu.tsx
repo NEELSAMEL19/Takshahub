@@ -42,7 +42,7 @@ const AdminMenu = () => {
           onClick={toggle}
           className={` flex items-center justify-center
       absolute top-6 -right-5
-      w-8 h-8
+      w-6 h-6
       rounded-full ${isOpen ? "bg-white" : "theme-primary-background"}
     `}
         >
@@ -76,7 +76,7 @@ const AdminMenu = () => {
       `}
               >
                 <div
-                  className={`text-xl ${
+                  className={`text-lg ${
                     isActive ? "text-white" : "text-white/80"
                   }`}
                 >
@@ -84,7 +84,7 @@ const AdminMenu = () => {
                 </div>
 
                 <span
-                  className={`font-medium text-typography-secondary ${
+                  className={`text-lg font-medium text-typography-secondary ${
                     isActive ? "text-white" : "text-white/90"
                   }`}
                 >
@@ -108,14 +108,14 @@ const AdminMenu = () => {
                   onClick={() => handleClick(item.path || "")}
                   className={`cursor-pointer
                   group flex items-center justify-center
-                  w-12 h-12 rounded-xl
+                  w-6 h-6 rounded-xl
                   transition-all duration-200
                   hover:bg-white/15
                   ${isActive ? "bg-white/20 shadow-lg scale-105" : ""}
                 `}
                 >
                   <div
-                    className={`text-2xl ${
+                    className={`text-lg ${
                       isActive ? "text-white" : "text-white/80"
                     }`}
                   >

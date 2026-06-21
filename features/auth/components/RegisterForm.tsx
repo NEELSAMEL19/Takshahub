@@ -253,7 +253,7 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen px-4">
+    <div className="flex flex-col items-center w-full max-h-1/5 px-4">
       <div className="w-full max-w-lg mt-8 md:mt-12 lg:mt-16">
         {" "}
         <Stepper
@@ -264,7 +264,7 @@ export function RegisterForm() {
       </div>
 
       <form
-        className="w-full max-w-sm mt-8"
+        className="w-full max-w-64 mt-8"
         onSubmit={(e) => {
           e.preventDefault();
           if (step === signupSteps.length) handleSubmit();
