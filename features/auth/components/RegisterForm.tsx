@@ -2,33 +2,28 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { z } from "zod";
+import { useQueryClient } from "@tanstack/react-query";
 
+import Stepper from "@/components/UI/Stepper";
+import { Button } from "@/components/UI";
+import PersonalDetails from "./PersonalDetails";
+import SchoolDetails from "./SchoolDetails";
 import { registerSchema, RegisterFormData } from "../validation";
 import { useRegister } from "@/hooks/auth/useAuth";
-import { TextField, Button, Dropdown } from "@/components/UI";
+import { sideMenuApi } from "@/service/sideMenu";
+import { getSideMenuItems } from "@/utils/permission";
 import { Status } from "../types";
 
-const SCHOOL_TYPES = [
-  { label: "Government", value: "PUBLIC" },
-  { label: "Private", value: "PRIVATE" },
-  { label: "Other", value: "OTHER" },
-];
-
-const BOARDS = [
-  { label: "CBSE", value: "CBSE" },
-  { label: "ICSE", value: "ICSE" },
-  { label: "State Board", value: "STATE" },
-  { label: "Other", value: "OTHER" },
-];
-
-const STATES = ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka"];
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
+type SchoolField = keyof typeof registerSchema.shape.school.shape;
+type PersonalFields = "fullName" | "email" | "password" | "phoneNumber";
+type SchoolTextFields = "name" | "city" | "website" | "udiseNumber";
 
 export function RegisterForm() {
   const router = useRouter();
+  const queryClient = useQueryClient(); // Core addition to query client context
+
+  const [signupSteps] = useState<string[]>(["Basic Details", "School Details"]);
+  const [step, setStep] = useState(1);
 
   const [formData, setFormData] = useState<RegisterFormData>({
     fullName: "",
@@ -46,287 +41,275 @@ export function RegisterForm() {
     },
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [status, setStatus] = useState<Record<string, Status>>({});
+  const [errors, setErrors] = useState<{
+    personal: Partial<Record<PersonalFields, string>>;
+    school: Partial<Record<SchoolField, string>>;
+  }>({
+    personal: {},
+    school: {},
+  });
+
+  const [status, setStatus] = useState<{
+    personal: Record<PersonalFields, Status>;
+    school: Record<SchoolTextFields, Status>;
+  }>({
+    personal: {
+      fullName: "info",
+      email: "info",
+      password: "info",
+      phoneNumber: "info",
+    },
+    school: {
+      name: "info",
+      city: "info",
+      website: "info",
+      udiseNumber: "info",
+    },
+  });
 
   const registerMutation = useRegister(
     (backendErrors: Record<string, string>) => {
-      setErrors(backendErrors);
+      const personalErrors: Partial<Record<PersonalFields, string>> = {};
+      const schoolErrors: Partial<Record<SchoolField, string>> = {};
 
-      const errorStatus = Object.keys(backendErrors).reduce<
-        Record<string, Status>
-      >((acc, key) => {
-        acc[key] = "error";
-        return acc;
-      }, {});
+      Object.entries(backendErrors).forEach(([key, msg]) => {
+        if (key.startsWith("school.")) {
+          const schoolKey = key.split(".")[1] as SchoolField;
+          schoolErrors[schoolKey] = msg;
+        } else {
+          personalErrors[key as PersonalFields] = msg;
+        }
+      });
 
-      setStatus((prev) => ({
-        ...prev,
-        ...errorStatus,
-      }));
+      setErrors({ personal: personalErrors, school: schoolErrors });
+
+      setStatus({
+        personal: {
+          fullName: personalErrors.fullName ? "error" : "success",
+          email: personalErrors.email ? "error" : "success",
+          password: personalErrors.password ? "error" : "success",
+          phoneNumber: personalErrors.phoneNumber ? "error" : "success",
+        },
+        school: {
+          name: schoolErrors.name ? "error" : "success",
+          city: schoolErrors.city ? "error" : "success",
+          website: schoolErrors.website ? "error" : "success",
+          udiseNumber: schoolErrors.udiseNumber ? "error" : "success",
+        },
+      });
     },
   );
 
-  const getFieldSchema = (path: string): z.ZodTypeAny | undefined => {
-    if (path.startsWith("school.")) {
-      const field = path.split(".")[1];
-      return registerSchema.shape.school.shape[
-        field as keyof typeof registerSchema.shape.school.shape
-      ];
-    }
+  const handlePersonalChange = (field: PersonalFields, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-    return registerSchema.shape[path as keyof typeof registerSchema.shape];
-  };
-
-  const validateField = (path: string, value: string) => {
-    const schema = getFieldSchema(path);
-
-    if (!schema) return;
-
-    const result = schema.safeParse(value);
-
-    if (!result.success) {
-      setErrors((prev) => ({
-        ...prev,
-        [path]: result.error.issues[0]?.message || "Invalid value",
-      }));
-
-      setStatus((prev) => ({
-        ...prev,
-        [path]: "error",
-      }));
-
-      return;
-    }
-
+    const result = registerSchema.shape[field].safeParse(value);
     setErrors((prev) => ({
       ...prev,
-      [path]: "",
+      personal: {
+        ...prev.personal,
+        [field]: result.success ? undefined : result.error.issues[0].message,
+      },
     }));
-
     setStatus((prev) => ({
       ...prev,
-      [path]: value ? "success" : "info",
+      personal: {
+        ...prev.personal,
+        [field]: result.success ? (value ? "success" : "info") : "error",
+      },
     }));
   };
 
-  const updateFormData = (path: string, value: string) => {
-    setFormData((prev) => {
-      const updated = structuredClone(prev);
-      const keys = path.split(".");
-      let current: unknown = updated;
+  const handleSchoolChange = (field: SchoolField, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      school: { ...prev.school, [field]: value },
+    }));
 
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!isRecord(current)) return prev;
-        current = current[keys[i]];
-      }
+    const result = registerSchema.shape.school.shape[field].safeParse(value);
+    setErrors((prev) => ({
+      ...prev,
+      school: {
+        ...prev.school,
+        [field]: result.success ? undefined : result.error.issues[0].message,
+      },
+    }));
 
-      if (!isRecord(current)) return prev;
-
-      current[keys[keys.length - 1]] = value;
-
-      return updated;
-    });
+    if (
+      field === "name" ||
+      field === "city" ||
+      field === "website" ||
+      field === "udiseNumber"
+    ) {
+      setStatus((prev) => ({
+        ...prev,
+        school: {
+          ...prev.school,
+          [field]: result.success ? (value ? "success" : "info") : "error",
+        },
+      }));
+    }
   };
 
-  const handleInputChange =
-    (path: string) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const value = e.target.value;
+  const handleNext = () => {
+    if (step < signupSteps.length) {
+      setStep((prevStep) => prevStep + 1);
+    } else {
+      handleSubmit();
+    }
+  };
 
-      updateFormData(path, value);
-      validateField(path, value);
-    };
-
-  const handleDropdownChange = (
-    path: string,
-    value: string | number | (string | number)[],
-  ) => {
-    if (Array.isArray(value)) return;
-
-    const stringValue = String(value);
-
-    updateFormData(path, stringValue);
-    validateField(path, stringValue);
+  const handleBack = () => {
+    if (step > 1) {
+      setStep((prevStep) => prevStep - 1);
+    }
   };
 
   const handleSubmit = async () => {
-    const validation = registerSchema.safeParse(formData);
+    const result = registerSchema.safeParse(formData);
 
-    if (!validation.success) {
-      const fieldErrors: Record<string, string> = {};
-      const fieldStatus: Record<string, Status> = {};
+    if (!result.success) {
+      const personalErrors: Partial<Record<PersonalFields, string>> = {};
+      const schoolErrors: Partial<Record<SchoolField, string>> = {};
 
-      validation.error.issues.forEach((issue) => {
-        const path = issue.path.join(".");
-
-        if (!fieldErrors[path]) {
-          fieldErrors[path] = issue.message;
+      result.error.issues.forEach((issue) => {
+        const isSchoolField = issue.path[0] === "school";
+        if (isSchoolField) {
+          const field = issue.path[1] as SchoolField;
+          if (!schoolErrors[field]) schoolErrors[field] = issue.message;
+        } else {
+          const field = issue.path[0] as PersonalFields;
+          if (!personalErrors[field]) personalErrors[field] = issue.message;
         }
-
-        fieldStatus[path] = "error";
       });
 
-      setErrors(fieldErrors);
-      setStatus((prev) => ({
-        ...prev,
-        ...fieldStatus,
-      }));
+      setErrors({ personal: personalErrors, school: schoolErrors });
 
+      setStatus({
+        personal: {
+          fullName: personalErrors.fullName
+            ? "error"
+            : status.personal.fullName,
+          email: personalErrors.email ? "error" : status.personal.email,
+          password: personalErrors.password
+            ? "error"
+            : status.personal.password,
+          phoneNumber: personalErrors.phoneNumber
+            ? "error"
+            : status.personal.phoneNumber,
+        },
+        school: {
+          name: schoolErrors.name ? "error" : status.school.name,
+          city: schoolErrors.city ? "error" : status.school.city,
+          website: schoolErrors.website ? "error" : status.school.website,
+          udiseNumber: schoolErrors.udiseNumber
+            ? "error"
+            : status.school.udiseNumber,
+        },
+      });
+
+      if (Object.keys(personalErrors).length > 0) {
+        setStep(1);
+      }
       return;
     }
+
+    setErrors({ personal: {}, school: {} });
+
     try {
       const response = await registerMutation.mutateAsync(formData);
-      
       const role = response?.data?.auth?.role;
-      if (role === "ADMIN") router.replace("/admin");
-      else if (role === "TEACHER") router.replace("/teacher");
-      else if (role === "STUDENT") router.replace("/student");
-      else router.replace("/dashboard");
+
+      if (role === "ADMIN") {
+        // 1. Prime the specific menu configuration into memory
+        const menuData = await queryClient.fetchQuery({
+          queryKey: ["sideMenu", "admin"],
+          queryFn: sideMenuApi.adminMenu,
+          staleTime: 1000 * 60 * 5,
+        });
+
+        // 2. Resolve dynamic entry module path mapping
+        if (menuData?.data) {
+          const menuItems = getSideMenuItems(menuData.data);
+          const firstModulePath = menuItems[0]?.path;
+
+          if (firstModulePath) {
+            router.replace(firstModulePath);
+            return;
+          }
+        }
+        router.replace("/admin");
+      } else if (role === "TEACHER") {
+        router.replace("/teacher");
+      } else if (role === "STUDENT") {
+        router.replace("/student");
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (error) {
-      // Error is already handled by useRegister onError
+      // Errors are caught and parsed inside your custom registerMutation setup
+      console.error("Post-registration navigation runtime failure:", error);
     }
   };
 
   return (
-    <form
-      className="space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
-      {/* User Details */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <TextField
-          label="Full Name"
-          name="fullName"
-          required
-          value={formData.fullName}
-          onChange={handleInputChange("fullName")}
-          error={errors.fullName}
-          color={status.fullName}
-        />
-
-        <TextField
-          label="Email"
-          type="email"
-          name="email"
-          required
-          value={formData.email}
-          onChange={handleInputChange("email")}
-          error={errors.email}
-          color={status.email}
+    <div className="flex flex-col justify-between items-center w-full">
+      <div className="w-full max-w-xl mt-20 mx-auto px-4 min-[850px]:w-1/2">
+        <Stepper
+          steps={signupSteps}
+          currentStep={step}
+          onStepClick={(targetStep) => setStep(targetStep)}
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <TextField
-          label="Password"
-          type="password"
-          name="password"
-          required
-          value={formData.password}
-          onChange={handleInputChange("password")}
-          error={errors.password}
-          color={status.password}
-        />
-
-        <TextField
-          label="Phone Number"
-          type="tel"
-          name="phoneNumber"
-          required
-          value={formData.phoneNumber}
-          onChange={handleInputChange("phoneNumber")}
-          error={errors.phoneNumber}
-          color={status.phoneNumber}
-        />
-      </div>
-
-      {/* School Details */}
-      <div className="space-y-4 border-t pt-4">
-        <h3 className="text-lg font-semibold">School Information</h3>
-
-        <TextField
-          label="School Name"
-          name="school.name"
-          required
-          value={formData.school.name}
-          onChange={handleInputChange("school.name")}
-          error={errors["school.name"]}
-          color={status["school.name"]}
-        />
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Dropdown
-            label="School Type"
-            options={SCHOOL_TYPES}
-            value={formData.school.type}
-            onSelect={(_, value) => handleDropdownChange("school.type", value)}
-            error={errors["school.type"]}
-          />
-
-          <Dropdown
-            label="Board"
-            options={BOARDS}
-            value={formData.school.board}
-            onSelect={(_, value) => handleDropdownChange("school.board", value)}
-            error={errors["school.board"]}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <TextField
-            label="City"
-            name="school.city"
-            required
-            value={formData.school.city}
-            onChange={handleInputChange("school.city")}
-            error={errors["school.city"]}
-            color={status["school.city"]}
-          />
-
-          <Dropdown
-            label="State"
-            options={STATES.map((state) => ({
-              label: state,
-              value: state,
-            }))}
-            value={formData.school.state}
-            onSelect={(_, value) => handleDropdownChange("school.state", value)}
-            error={errors["school.state"]}
-          />
-        </div>
-
-        <TextField
-          label="Website (Optional)"
-          name="school.website"
-          value={formData.school.website}
-          onChange={handleInputChange("school.website")}
-          error={errors["school.website"]}
-          color={status["school.website"]}
-        />
-
-        <TextField
-          label="UDISE Number"
-          name="school.udiseNumber"
-          required
-          value={formData.school.udiseNumber}
-          onChange={handleInputChange("school.udiseNumber")}
-          error={errors["school.udiseNumber"]}
-          color={status["school.udiseNumber"]}
-        />
-      </div>
-
-      <Button
-        type="submit"
-        size="md"
-        loading={registerMutation.isPending}
-        className="w-full"
+      <form
+        className="w-full max-w-xl mt-8 px-4 min-[850px]:w-1/2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (step === signupSteps.length) handleSubmit();
+          else handleNext();
+        }}
       >
-        Register
-      </Button>
-    </form>
+        <div className="min-h-[200px] mb-6">
+          {step === 1 && (
+            <PersonalDetails
+              formData={formData}
+              errors={errors.personal}
+              status={status.personal}
+              onChange={handlePersonalChange}
+            />
+          )}
+          {step === 2 && (
+            <SchoolDetails
+              schoolData={formData.school}
+              errors={errors.school}
+              status={status.school}
+              onChange={handleSchoolChange}
+            />
+          )}
+        </div>
+
+        <div className="flex justify-end gap-4 w-full mt-6">
+          {step > 1 && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleBack}
+              disabled={registerMutation.isPending}
+            >
+              Back
+            </Button>
+          )}
+
+          <Button
+            type="submit"
+            variant="primary"
+            isLoading={registerMutation.isPending}
+          >
+            {step === signupSteps.length ? "Register" : "Next"}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

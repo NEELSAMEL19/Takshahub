@@ -1,13 +1,13 @@
-import React from 'react'
+import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="flex items-end justify-end h-full pr-6">
-      <p className="text-sm text-right text-typography-secondary">
-        © 2024 Admin Dashboard. All rights reserved.
+    <footer className="flex items-center justify-center">
+      <p className="text-base text-center text-typography-secondary max-md:text-sm">
+        © 2026 Empowering organizations.
       </p>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

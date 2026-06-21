@@ -1,15 +1,16 @@
 "use client";
 
+import AuthDesign from "@/components/Base/AuthDesign/AuthDesign";
 import { RegisterForm } from "@/features/auth/components";
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Takshahub</h1>
-          <p className="text-gray-600 mt-2">Create your account</p>
-        </div>
+    <div className="w-full h-screen flex justify-between">
+      <div className="hidden min-[850px]:block min-[850px]:w-1/3 theme-primary-background">
+        <AuthDesign />
+      </div>
+
+      <div className="w-full min-[850px]:w-2/3 h-full theme-secondary-background">
         <RegisterForm />
       </div>
     </div>
