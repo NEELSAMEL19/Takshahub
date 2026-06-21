@@ -138,7 +138,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
         {label && (
           <label
             htmlFor={dropdownId}
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm mb-1 font-medium text-gray-700"
           >
             {label} {required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -150,7 +150,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           type="button"
           onClick={() => setOpen((v) => !v)}
           data-error={hasError}
-          className={`text-sm cursor-pointer flex items-center border outline-none focus:outline-none transition-all duration-150
+          className={`text-sm cursor-pointer h-8 flex items-center border outline-none focus:outline-none transition-all duration-150
             ${variantStyles[variant]}
             ${statusStyles[status]}
             ${variant === "circle" && !className.includes("w-") ? "w-12" : ""}
