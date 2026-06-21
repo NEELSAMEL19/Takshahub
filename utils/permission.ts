@@ -1,8 +1,10 @@
 import { RiOrganizationChart } from "react-icons/ri";
 import { FaBuilding } from "react-icons/fa";
 import type { IconType } from "react-icons";
+import { TbBrandGoogleAnalytics } from "react-icons/tb";
 
 export const menuIcons: Record<string, IconType> = {
+  Analytics: TbBrandGoogleAnalytics,
   Organization: RiOrganizationChart,
 };
 

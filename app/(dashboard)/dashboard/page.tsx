@@ -6,9 +6,11 @@ async function getMe() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
+  if (!token) return null;
+
   const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.ME}`, {
     headers: {
-      Cookie: `token=${token ?? ""}`,
+      Cookie: `token=${token}`,
     },
     cache: "no-store",
   });
@@ -17,10 +19,13 @@ async function getMe() {
   return res.json();
 }
 
-export default async function Page() {
+export default async function RootPage() {
   const me = await getMe();
-
   const role = me?.data?.auth?.role;
+
+  if (!role) {
+    redirect("/login");
+  }
 
   if (role === "ADMIN") redirect("/admin");
   if (role === "TEACHER") redirect("/teacher");

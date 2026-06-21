@@ -12,7 +12,6 @@ export const loginSchema = z.object({
     .min(6, "Password must be at least 6 characters"),
 });
 
-
 export const registerSchema = z.object({
   fullName: z
     .string()
@@ -47,5 +46,6 @@ export const registerSchema = z.object({
     udiseNumber: z.string().min(1, "Please enter UDISE number"),
   }),
 });
-export type LoginFormData = z.infer<typeof loginSchema>;
+
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;

@@ -29,8 +29,9 @@ export const useLogin = (onFieldError?: (errors: FieldErrors) => void) => {
   return useMutation({
     mutationFn: (data: LoginPayload) => authApi.login(data),
 
-    onSuccess: async (response: LoginResponse) => {
+    onSuccess: (response: LoginResponse) => {
       handleSuccess(response.message, "Login successful");
+      return response;
     },
 
     onError: (error) => {

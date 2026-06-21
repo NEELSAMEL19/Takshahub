@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LoginForm } from "@/features/auth/components";
 import { API_ENDPOINTS } from "@/service/routes"; // 🟩 Removed API_BASE_URL import
+import AuthDesign from "../../../components/Base/AuthDesign/AuthDesign";
+import { LoginForm } from "@/features/auth/components";
 
 async function getMe() {
   const cookieStore = await cookies();
@@ -30,13 +31,12 @@ export default async function LoginPage() {
 
   if (!role) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Takshahub</h1>
-            <p className="text-gray-600 mt-2">Sign in to your account</p>
-          </div>
+      <div className="w-full h-screen flex justify-between">
+        <div className="hidden min-[850px]:block min-[850px]:w-1/2 theme-primary-background">
+          <AuthDesign />
+        </div>
 
+        <div className="w-full h-full flex justify-center items-center theme-secondary-background">
           <LoginForm />
         </div>
       </div>
@@ -45,6 +45,5 @@ export default async function LoginPage() {
 
   if (role === "ADMIN") redirect("/admin");
   if (role === "TEACHER") redirect("/teacher");
-
   return redirect("/student");
 }
