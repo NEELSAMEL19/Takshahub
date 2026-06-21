@@ -76,7 +76,7 @@ const AdminMenu = () => {
       `}
               >
                 <div
-                  className={`text-xl ${
+                  className={`text-lg ${
                     isActive ? "text-white" : "text-white/80"
                   }`}
                 >
@@ -84,7 +84,7 @@ const AdminMenu = () => {
                 </div>
 
                 <span
-                  className={`font-medium text-typography-secondary ${
+                  className={`text-lg font-medium text-typography-secondary ${
                     isActive ? "text-white" : "text-white/90"
                   }`}
                 >
@@ -115,7 +115,7 @@ const AdminMenu = () => {
                 `}
                 >
                   <div
-                    className={`text-2xl ${
+                    className={`text-lg ${
                       isActive ? "text-white" : "text-white/80"
                     }`}
                   >

@@ -264,7 +264,7 @@ export function RegisterForm() {
       </div>
 
       <form
-        className="w-full max-w-sm mt-8"
+        className="w-full max-w-xs mt-8"
         onSubmit={(e) => {
           e.preventDefault();
           if (step === signupSteps.length) handleSubmit();
