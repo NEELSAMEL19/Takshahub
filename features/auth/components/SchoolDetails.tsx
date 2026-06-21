@@ -2,6 +2,7 @@ import React from "react";
 import { Dropdown, TextField } from "@/components/UI";
 import { Status } from "../types";
 import { registerSchema } from "../validation";
+import type { RegisterFormData } from "../validation";
 
 const SCHOOL_TYPES = [
   { label: "Government", value: "PUBLIC" },
@@ -16,15 +17,15 @@ const BOARDS = [
   { label: "Other", value: "OTHER" },
 ];
 
-const STATES = ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka",];
+const STATES = ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka"];
 
 type SchoolField = keyof typeof registerSchema.shape.school.shape;
 type SchoolTextFields = "name" | "city" | "website" | "udiseNumber";
 
 interface SchoolDetailsProps {
-  schoolData: typeof registerSchema.shape.school._type;
+  schoolData: RegisterFormData["school"];
   errors: Partial<Record<SchoolField, string>>;
-  status: Record<SchoolTextFields, Status>; // Cleaned: only maps text status fields
+  status: Record<SchoolTextFields, Status>;
   onChange: (field: SchoolField, value: string) => void;
 }
 
@@ -52,7 +53,7 @@ const SchoolDetails = ({
         label="School Type"
         options={SCHOOL_TYPES}
         value={schoolData.type}
-        onSelect={(_, value) => onChange("type", value)}
+        onSelect={(_, value) => onChange("type", String(value))}
         error={errors.type}
         search
       />
@@ -61,7 +62,7 @@ const SchoolDetails = ({
         label="Board"
         options={BOARDS}
         value={schoolData.board}
-        onSelect={(_, value) => onChange("board", value)}
+        onSelect={(_, value) => onChange("board", String(value))}
         error={errors.board}
         search
       />
@@ -81,7 +82,7 @@ const SchoolDetails = ({
         label="State"
         options={STATES.map((state) => ({ label: state, value: state }))}
         value={schoolData.state}
-        onSelect={(_, value) => onChange("state", value)}
+        onSelect={(_, value) => onChange("type", String(value))}
         error={errors.state}
         search
       />
