@@ -48,44 +48,50 @@ const SchoolDetails = ({
         color={status.name}
       />
 
-      {/* Cleaned: color status removed from Dropdowns */}
-      <Dropdown
-        label="School Type"
-        options={SCHOOL_TYPES}
-        value={schoolData.type}
-        onSelect={(_, value) => onChange("type", String(value))}
-        error={errors.type}
-        search
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <Dropdown
+          label="School Type"
+          options={SCHOOL_TYPES}
+          value={schoolData.type}
+          onSelect={(_, value) => onChange("type", String(value))}
+          error={errors.type}
+          search
+        />
 
-      <Dropdown
-        label="Board"
-        options={BOARDS}
-        value={schoolData.board}
-        onSelect={(_, value) => onChange("board", String(value))}
-        error={errors.board}
-        search
-      />
+        <Dropdown
+          label="Board"
+          options={BOARDS}
+          value={schoolData.board}
+          onSelect={(_, value) => onChange("board", String(value))}
+          error={errors.board}
+          search
+        />
+      </div>
 
-      <TextField
-        label="City"
-        name="city"
-        required
-        placeholder="Enter city"
-        value={schoolData.city}
-        onChange={(e) => onChange("city", e.target.value)}
-        error={errors.city}
-        color={status.city}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <TextField
+          label="City"
+          name="city"
+          required
+          placeholder="Enter city"
+          value={schoolData.city}
+          onChange={(e) => onChange("city", e.target.value)}
+          error={errors.city}
+          color={status.city}
+        />
 
-      <Dropdown
-        label="State"
-        options={STATES.map((state) => ({ label: state, value: state }))}
-        value={schoolData.state}
-        onSelect={(_, value) => onChange("type", String(value))}
-        error={errors.state}
-        search
-      />
+        <Dropdown
+          label="State"
+          options={STATES.map((state) => ({
+            label: state,
+            value: state,
+          }))}
+          value={schoolData.state}
+          onSelect={(_, value) => onChange("state", String(value))}
+          error={errors.state}
+          search
+        />
+      </div>
 
       <TextField
         label="Website (Optional)"
