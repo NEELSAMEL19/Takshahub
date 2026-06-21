@@ -73,7 +73,7 @@ const Tooltip: React.FC<TooltipProps> = ({
             pointer-events-none
           "
         >
-          <div className="relative rounded-md bg-[#2c3c4e] px-3 py-2 text-xs font-medium text-white shadow-lg whitespace-nowrap">
+          <div className="relative rounded-md bg-[#2c3c4e] px-3 py-2 text-md font-medium text-white shadow-lg whitespace-nowrap">
             {content}
 
             <span

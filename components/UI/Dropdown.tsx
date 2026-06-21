@@ -8,173 +8,225 @@ export interface SelectOption {
   value: string | number;
 }
 
-interface DropdownProps {
+export interface DropdownProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onSelect" | "value"
+> {
   label?: string;
   placeholder?: string;
   id?: string;
   required?: boolean;
   error?: string;
-
+  "data-error"?: boolean;
+  color?: "info" | "success" | "error";
   options: SelectOption[];
-
   search?: boolean;
   multiple?: boolean;
-
   value?: string | number | (string | number)[];
-
   onSelect?: (
-    e: React.MouseEvent<HTMLDivElement>,
+    e: React.MouseEvent<HTMLDivElement> | React.ChangeEvent<HTMLInputElement>,
     value: string | number | (string | number)[],
   ) => void;
+  variant?: "normal" | "rounded" | "circle";
+  menuWidth?: string; // New Prop added here (Accepts Tailwind classes like w-48, w-max, etc.)
 }
 
-export function Dropdown({
-  label,
-  placeholder = "Select",
-  required,
-  error,
-  options,
-  search,
-  multiple,
-  value,
-  onSelect,
-}: DropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
+  (
+    {
+      label,
+      placeholder = "Select",
+      id,
+      required,
+      error,
+      "data-error": dataError,
+      color = "info",
+      options = [],
+      search,
+      multiple,
+      value,
+      onSelect,
+      className = "",
+      variant = "normal",
+      menuWidth, // Destructure new prop
+      ...props
+    },
+    ref,
+  ) => {
+    const [open, setOpen] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
+    const internalRef = useRef<HTMLDivElement>(null);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
+    React.useImperativeHandle(ref, () => internalRef.current!);
 
-  const hasError = Boolean(error);
+    const hasError = Boolean(error || dataError);
+    const dropdownId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
 
-  // close outside click
-  useEffect(() => {
-    const handleClose = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+    const status = hasError ? "error" : color;
+
+    const statusStyles = {
+      error: "bg-red-100 hover:bg-red-200 border-red-500 focus:border-red-500",
+      success:
+        "bg-green-100 hover:bg-green-200 border-green-500 focus:border-green-500",
+      info: "bg-white hover:bg-gray-50 border-gray-300 focus:border-gray-300",
+    };
+
+    const variantStyles = {
+      normal: "w-full px-3 py-2 rounded-md justify-between",
+      rounded: "w-full px-4 py-2 rounded-full justify-between",
+      circle:
+        "rounded-full justify-center font-bold text-xl border-red-200 cursor-pointer p-0 text-center shrink-0",
+    };
+
+    useEffect(() => {
+      const handleClose = (e: MouseEvent) => {
+        if (
+          internalRef.current &&
+          !internalRef.current.contains(e.target as Node)
+        ) {
+          setOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClose);
+      return () => document.removeEventListener("mousedown", handleClose);
+    }, []);
+
+    const filteredOptions = useMemo(() => {
+      return options.filter((o) =>
+        o.label.toLowerCase().includes(searchValue.toLowerCase()),
+      );
+    }, [options, searchValue]);
+
+    const selectedValues: (string | number)[] = multiple
+      ? (value as (string | number)[]) || []
+      : value !== undefined && value !== null
+        ? [value as string | number]
+        : [];
+
+    const handleSelect = (
+      e: React.MouseEvent<HTMLDivElement>,
+      selectedValue: string | number,
+    ) => {
+      if (multiple) {
+        const exists = selectedValues.includes(selectedValue);
+        const updated = exists
+          ? selectedValues.filter((v) => v !== selectedValue)
+          : [...selectedValues, selectedValue];
+        onSelect?.(e, updated);
+      } else {
+        onSelect?.(e, selectedValue);
         setOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClose);
-    return () => document.removeEventListener("mousedown", handleClose);
-  }, []);
+    const selectedLabels = options
+      .filter((o) => selectedValues.includes(o.value))
+      .map((o) => o.label);
 
-  // filter options
-  const filteredOptions = useMemo(() => {
-    return options.filter((o) =>
-      o.label.toLowerCase().includes(searchValue.toLowerCase()),
-    );
-  }, [options, searchValue]);
+    const displayValue = () => {
+      if (!selectedLabels.length) return placeholder;
+      if (selectedLabels.length === 1) return selectedLabels[0];
+      return `${selectedLabels[0]} +${selectedLabels.length - 1}`;
+    };
 
-  // normalize selected values
-  const selectedValues: (string | number)[] = multiple
-    ? (value as (string | number)[]) || []
-    : value !== undefined && value !== null
-      ? [value as string | number]
-      : [];
-
-  const handleSelect = (
-    e: React.MouseEvent<HTMLDivElement>,
-    selectedValue: string | number,
-  ) => {
-    if (multiple) {
-      const exists = selectedValues.includes(selectedValue);
-
-      const updated = exists
-        ? selectedValues.filter((v) => v !== selectedValue)
-        : [...selectedValues, selectedValue];
-
-      onSelect?.(e, updated);
-    } else {
-      onSelect?.(e, selectedValue);
-      setOpen(false);
-    }
-  };
-
-  // selected labels
-  const selectedLabels = options
-    .filter((o) => selectedValues.includes(o.value))
-    .map((o) => o.label);
-
-  const displayValue = () => {
-    if (!selectedLabels.length) return placeholder;
-    if (selectedLabels.length === 1) return selectedLabels[0];
-    return `${selectedLabels[0]} +${selectedLabels.length - 1}`;
-  };
-
-  return (
-    <div className="w-full relative" ref={dropdownRef}>
-      {/* Label */}
-      {label && (
-        <label className="block text-sm font-sans mb-1 text-gray-700">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-      )}
-
-      {/* Trigger */}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={`w-full px-3 py-2 text-sm font-sans text-left rounded-md shadow-sm transition-all duration-200 flex items-center justify-between
-          ${
-            hasError
-              ? "bg-red-100 hover:bg-red-200"
-              : "bg-gray-50 hover:bg-gray-100"
-          }
-        `}
+    return (
+      <div
+        ref={internalRef}
+        className={`relative flex flex-col gap-1.5 ${variant === "circle" ? "w-max" : "w-full"} ${className}`}
+        {...props}
       >
-        <span className="truncate">{displayValue()}</span>
+        {label && (
+          <label
+            htmlFor={dropdownId}
+            className="block text-sm font-medium text-gray-700"
+          >
+            {label} {required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )}
 
-        <KeyboardArrowDownIcon
-          fontSize="small"
-          className={`text-gray-600 transition-transform duration-200 ${
-            open ? "rotate-180" : "rotate-0"
-          }`}
-        />
-      </button>
+        {/* Trigger */}
+        <button
+          id={dropdownId}
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          data-error={hasError}
+          className={`text-sm cursor-pointer flex items-center border outline-none focus:outline-none transition-all duration-150
+            ${variantStyles[variant]}
+            ${statusStyles[status]}
+            ${variant === "circle" && !className.includes("w-") ? "w-12" : ""}
+            ${variant === "circle" && !className.includes("h-") ? "h-12" : ""}
+          `}
+        >
+          <span className="truncate">{displayValue()}</span>
 
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white rounded-md shadow-lg overflow-hidden">
-          {/* Search */}
-          {search && (
-            <div className="p-2">
-              <input
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="Search..."
-                className="w-full px-3 py-2 text-sm font-sans bg-gray-50 rounded-md outline-none focus:bg-gray-100"
-              />
-            </div>
+          {variant !== "circle" && (
+            <KeyboardArrowDownIcon
+              fontSize="small"
+              className={`text-gray-500 transition-transform duration-200 ${
+                open ? "rotate-180" : "rotate-0"
+              }`}
+            />
           )}
+        </button>
 
-          {/* Options */}
-          <div className="max-h-60 overflow-y-auto">
-            {filteredOptions.map((option) => (
-              <div
-                key={option.value}
-                onClick={(e) => handleSelect(e, option.value)}
-                className="flex items-center gap-2 px-3 py-2 cursor-pointer text-sm font-sans hover:bg-gray-100 transition"
-              >
-                {multiple && (
-                  <input
-                    type="checkbox"
-                    readOnly
-                    checked={selectedValues.includes(option.value)}
-                    className="accent-black"
-                  />
-                )}
-                <span className="truncate">{option.label}</span>
+        {/* Dropdown Menu */}
+        {open && (
+          <div
+            className={`absolute top-full z-50 mt-2 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-hidden animate-in fade-in duration-100
+              ${variant === "circle" ? "right-0" : "left-0"}
+              ${menuWidth ? menuWidth : "w-full"}
+            `}
+          >
+            {search && (
+              <div className="p-2 border-b border-gray-100">
+                <input
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full px-3 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-md outline-none focus:outline-none focus:bg-white focus:border-gray-300 transition-colors"
+                />
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            )}
 
-      {/* Error */}
-      {error && <p className="mt-1 text-xs font-sans text-red-500">{error}</p>}
-    </div>
-  );
-}
+            <div className="max-h-48 overflow-y-auto">
+              {filteredOptions.length === 0 ? (
+                <div className="px-3 py-2 text-sm text-gray-400 italic text-center">
+                  No options found
+                </div>
+              ) : (
+                filteredOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    onClick={(e) => handleSelect(e, option.value)}
+                    className="flex items-center gap-2 px-3 py-2 cursor-pointer text-sm hover:bg-gray-50 text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    {multiple && (
+                      <input
+                        type="checkbox"
+                        readOnly
+                        checked={selectedValues.includes(option.value)}
+                        className="h-4 w-4 rounded border-gray-300 accent-black"
+                      />
+                    )}
+                    <span className="truncate font-semibold text-typography-primary">{option.label}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <p
+            id={`${dropdownId}-error`}
+            className="mt-1 text-xs text-red-500 font-medium"
+          >
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  },
+);
+
+Dropdown.displayName = "Dropdown";

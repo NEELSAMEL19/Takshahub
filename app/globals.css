@@ -2,8 +2,27 @@
 
 /*Background Color*/
 
-.bg-theme-background {
-  background-color: rgba(4, 38, 70, 1);
+.theme-primary-background {
+  background-color: rgba(27, 38, 59, 1);
+}
+
+.theme-secondary-background {
+  background-color: #f6f6f6;
+}
+
+.theme-text {
+  background: linear-gradient(
+    135deg,
+    #00d2ff 0%,
+    #7f00ff 35%,
+    #ff7b00 70%,
+    #ff007f 100%
+  );
+  font-weight: bold;
+  /* The magic properties that force the gradient into the text */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /*Text Color*/
@@ -12,7 +31,7 @@
 }
 
 .text-typography-secondary {
-  color: rgb(192, 189, 189);
+  color: rgba(226, 232, 240, 1);
 }
 
 /*Font-Style*/
@@ -65,5 +84,3 @@ body {
   width: 1.5rem;
   height: 1.5rem;
 }
-
-/* rgba(4, 38, 70, 1) [#042646] */ 

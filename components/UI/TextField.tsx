@@ -28,16 +28,16 @@ export function TextField({
       ? "bg-red-100"
       : color === "success"
         ? "bg-green-100"
-        : "bg-gray-50";
+        : "bg-white";
 
-  const borderColor = hasError ? "border-red-500" : "border-gray-200";
+  const borderColor = hasError ? "border-red-500" : "border-gray-300";
 
   const inputId = id ?? name;
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={inputId} className="block text-sm font-sans mb-1">
+        <label htmlFor={inputId} className="block text-sm mb-1">
           {label} {required && <span className="text-red-500 mr-1">*</span>}
         </label>
       )}
@@ -50,13 +50,13 @@ export function TextField({
         maxLength={maxLength}
         autoComplete={autoComplete}
         data-error={hasError}
-        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-transparent
+        className={`w-full px-3 py-2 border rounded-md focus:outline-none 
           ${
             color === "error"
-              ? "hover:bg-red-200"
+              ? "hover:bg-red-200 border-red-500"
               : color === "success"
-                ? "hover:bg-green-200 "
-                : "hover:bg-gray-100 "
+                ? "hover:bg-green-200 border-green-500"
+                : "hover:bg-gray-50  "
           }
           ${bgColor}
           ${borderColor}
@@ -66,7 +66,7 @@ export function TextField({
         {...props}
       />
 
-      {error && <p className="mt-1 text-xs font-sans text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }

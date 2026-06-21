@@ -3,14 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { loginSchema, LoginFormData } from "../validation";
 import { useLogin } from "@/hooks/auth/useAuth";
+import { sideMenuApi } from "@/service/sideMenu";
+import { getSideMenuItems } from "@/utils/permission";
 import { TextField, Button } from "@/components/UI";
 import { Status } from "../types";
 
 export function LoginForm() {
   const router = useRouter();
+  const queryClient = useQueryClient(); // Access the query cache client
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -103,72 +107,102 @@ export function LoginForm() {
     }
 
     setErrors({});
+
     try {
       const response = await loginMutation.mutateAsync(formData);
-      
       const role = response?.data?.auth?.role;
-      if (role === "ADMIN") router.replace("/admin");
-      else if (role === "TEACHER") router.replace("/teacher");
-      else if (role === "STUDENT") router.replace("/student");
-      else router.replace("/dashboard");
+
+      if (role === "ADMIN") {
+        // 1. Fetch menu configurations imperatively to prime TanStack's cache
+        const menuData = await queryClient.fetchQuery({
+          queryKey: ["sideMenu", "admin"],
+          queryFn: sideMenuApi.adminMenu,
+          staleTime: 1000 * 60 * 5,
+        });
+
+        if (menuData?.data) {
+          const menuItems = getSideMenuItems(menuData.data);
+          const firstModulePath = menuItems[0]?.path;
+
+          if (firstModulePath) {
+            router.replace(firstModulePath);
+            return;
+          }
+        }
+
+        // Fallback if the admin menu endpoint data is empty
+        router.replace("/admin");
+      } else if (role === "TEACHER") {
+        router.replace("/teacher");
+      } else if (role === "STUDENT") {
+        router.replace("/student");
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (error) {
-      // Error is already handled by useLogin onError
+      console.error("Redirection failure:", error);
     }
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
-      className="space-y-4"
-    >
-      <TextField
-        label="Email"
-        type="email"
-        name="email"
-        required
-        maxLength={100}
-        autoComplete="email"
-        value={formData.email}
-        onChange={handleChange("email")}
-        color={errors.email ? "error" : status.email}
-        error={errors.email || ""}
-      />
-
-      <TextField
-        label="Password"
-        type="password"
-        name="password"
-        required
-        maxLength={100}
-        autoComplete="current-password"
-        value={formData.password}
-        onChange={handleChange("password")}
-        color={errors.password ? "error" : status.password}
-        error={errors.password || ""}
-      />
-
-      <Button
-        type="submit"
-        size="md"
-        loading={loginMutation.isPending}
-        className="w-full"
+    <div className="flex flex-col gap-4 mx-3 w-96">
+      <span className="theme-text text-5xl text-theme-text">Takshahub</span>
+      <span className="text-2xl">Sign in to your account</span>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+        className="flex flex-col gap-5"
       >
-        Login
-      </Button>
+        <TextField
+          label="Email"
+          type="email"
+          name="email"
+          required
+          maxLength={100}
+          placeholder="Email"
+          autoComplete="email"
+          value={formData.email}
+          onChange={handleChange("email")}
+          color={errors.email ? "error" : status.email}
+          error={errors.email || ""}
+        />
 
-      <p className="text-center text-sm text-gray-600">
-        Don&apos;t have an account?{" "}
-        <Link
-          href="/register"
-          prefetch={false}
-          className="font-semibold text-blue-600 hover:text-blue-700"
+        <TextField
+          label="Password"
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          maxLength={100}
+          autoComplete="current-password"
+          value={formData.password}
+          onChange={handleChange("password")}
+          color={errors.password ? "error" : status.password}
+          error={errors.password || ""}
+        />
+
+        <Button
+          type="submit"
+          size="md"
+          isLoading={loginMutation.isPending}
+          className="w-full"
         >
-          Register here
-        </Link>
-      </p>
-    </form>
+          Login
+        </Button>
+
+        <p className="text-center text-sm text-gray-600">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            prefetch={false}
+            className="font-semibold text-blue-600 hover:text-blue-700"
+          >
+            Register here
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }
