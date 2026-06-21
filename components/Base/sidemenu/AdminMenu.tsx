@@ -42,7 +42,7 @@ const AdminMenu = () => {
           onClick={toggle}
           className={` flex items-center justify-center
       absolute top-6 -right-5
-      w-8 h-8
+      w-6 h-6
       rounded-full ${isOpen ? "bg-white" : "theme-primary-background"}
     `}
         >
@@ -108,7 +108,7 @@ const AdminMenu = () => {
                   onClick={() => handleClick(item.path || "")}
                   className={`cursor-pointer
                   group flex items-center justify-center
-                  w-12 h-12 rounded-xl
+                  w-6 h-6 rounded-xl
                   transition-all duration-200
                   hover:bg-white/15
                   ${isActive ? "bg-white/20 shadow-lg scale-105" : ""}

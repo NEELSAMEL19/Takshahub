@@ -36,7 +36,7 @@ export default async function LoginPage() {
           <AuthDesign />
         </div>
 
-        <div className="w-full h-full flex justify-center items-center theme-secondary-background">
+        <div className="w-full h-full flex justify-center pt-12 items-start theme-secondary-background">
           <LoginForm />
         </div>
       </div>
