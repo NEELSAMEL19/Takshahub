@@ -145,7 +145,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col gap-4 mx-3 w-96">
+    <div className="flex flex-col gap-4 mx-3 w-full max-w-sm">
       <span className="theme-text text-5xl text-theme-text">Takshahub</span>
       <span className="text-2xl">Sign in to your account</span>
       <form
