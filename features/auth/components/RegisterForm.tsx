@@ -253,8 +253,9 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="flex flex-col justify-between items-center w-full">
-      <div className="w-full max-w-xl mt-20 mx-auto px-4 min-[850px]:w-1/2">
+    <div className="flex flex-col items-center w-full min-h-screen px-4">
+      <div className="w-full max-w-2xl mt-8 md:mt-12 lg:mt-16">
+        {" "}
         <Stepper
           steps={signupSteps}
           currentStep={step}
@@ -263,7 +264,7 @@ export function RegisterForm() {
       </div>
 
       <form
-        className="w-full max-w-xl mt-8 px-4 min-[850px]:w-1/2"
+        className="w-full max-w-xl mt-8"
         onSubmit={(e) => {
           e.preventDefault();
           if (step === signupSteps.length) handleSubmit();
@@ -279,6 +280,7 @@ export function RegisterForm() {
               onChange={handlePersonalChange}
             />
           )}
+
           {step === 2 && (
             <SchoolDetails
               schoolData={formData.school}
@@ -289,13 +291,14 @@ export function RegisterForm() {
           )}
         </div>
 
-        <div className="flex justify-end gap-4 w-full mt-6">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
           {step > 1 && (
             <Button
               type="button"
               variant="secondary"
               onClick={handleBack}
               disabled={registerMutation.isPending}
+              className="w-full sm:w-auto"
             >
               Back
             </Button>
@@ -305,6 +308,7 @@ export function RegisterForm() {
             type="submit"
             variant="primary"
             isLoading={registerMutation.isPending}
+            className="w-full sm:w-auto"
           >
             {step === signupSteps.length ? "Register" : "Next"}
           </Button>
