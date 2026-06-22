@@ -11,7 +11,6 @@ import { useSidebar } from "@/features/sidebar/useSidebar";
 import Image from "next/image";
 import TakshahubLogo from "../../../public/Takshahub_logo.png";
 
-
 const AdminMenu = () => {
   const router = useRouter();
   const pathname = usePathname(); // Gets the current URL path (e.g., "/admin/organization/settings")
@@ -80,28 +79,22 @@ const AdminMenu = () => {
                 key={item.id}
                 onClick={() => handleClick(item.path || "")}
                 className={`
-        flex items-center gap-3 p-3 rounded-xl
-        text-white cursor-pointer
-        transition-all duration-200
-        hover:bg-white/15 mt-2.5
-        ${isActive ? "bg-white/20 shadow-lg scale-105" : ""}
-      `}
+    cursor-pointer
+    flex items-center gap-3
+    w-full
+    px-4 py-3
+    rounded-xl
+    transition-all duration-200
+    ${
+      isActive
+        ? "bg-white text-text-typography-primary shadow-lg scale-105"
+        : "bg-white/15 text-white/80 hover:bg-white hover:text-text-typography-primary"
+    }
+  `}
               >
-                <div
-                  className={`text-lg ${
-                    isActive ? "text-white" : "text-white/80"
-                  }`}
-                >
-                  {item.icon ? <item.icon /> : null}
-                </div>
+                {item.icon ? <item.icon className="text-lg" /> : null}
 
-                <span
-                  className={`text-lg font-medium text-typography-secondary ${
-                    isActive ? "text-white" : "text-white/90"
-                  }`}
-                >
-                  {item.name}
-                </span>
+                <span className="text-lg font-medium">{item.name}</span>
               </button>
             );
           })}
@@ -118,22 +111,20 @@ const AdminMenu = () => {
               <Tooltip key={item.id} content={item.name} placement="right">
                 <button
                   onClick={() => handleClick(item.path || "")}
-                  className={`cursor-pointer
-                  group flex items-center justify-center
-                  w-6 h-6 rounded-xl
-                  p-6
-                  transition-all duration-200
-                  hover:bg-white/15
-                  ${isActive ? "bg-white/20 shadow-lg scale-105" : ""}
-                `}
+                  className={`
+    cursor-pointer
+    flex items-center justify-center
+    w-12 h-12
+    rounded-xl
+    transition-all duration-200
+    ${
+      isActive
+        ? "bg-white text-text-typography-primary shadow-lg scale-105"
+        : "bg-white/15 text-white/80 hover:bg-white hover:text-text-typography-primary"
+    }
+  `}
                 >
-                  <div
-                    className={`text-lg ${
-                      isActive ? "text-white" : "text-white/80"
-                    }`}
-                  >
-                    {item.icon ? <item.icon /> : null}
-                  </div>
+                  {item.icon ? <item.icon className="text-lg" /> : null}
                 </button>
               </Tooltip>
             );
