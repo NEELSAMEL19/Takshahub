@@ -250,7 +250,7 @@ export function RegisterForm() {
   };
 
   return (
-      <div className="w-full space-y-6 rounded-2xl p-6 sm:p-10">
+      <div className="w-full max-w-xl space-y-6 rounded-2xl p-6 sm:p-10">
         <div className="w-full">
           <Stepper
             steps={signupSteps}
