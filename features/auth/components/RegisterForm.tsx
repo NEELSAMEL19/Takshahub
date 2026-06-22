@@ -250,6 +250,7 @@ export function RegisterForm() {
   };
 
   return (
+    <div className="flex flex-col justify-center items-center">
       <div className="w-full max-w-xl space-y-6 rounded-2xl p-6 sm:p-10">
         <div className="w-full">
           <Stepper
@@ -313,5 +314,6 @@ export function RegisterForm() {
           </div>
         </form>
       </div>
+    </div>
   );
 }
