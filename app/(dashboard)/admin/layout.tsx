@@ -24,7 +24,7 @@ export default function AdminLayout({
             shrink-0
             fixed left-0 top-0 z-50 h-screen
             transition-transform duration-300
-            md:relative md:h-auto md:translate-x-0
+            sm:relative sm:h-auto sm:translate-x-0
             ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
           `}
         >
@@ -32,11 +32,11 @@ export default function AdminLayout({
         </aside>
 
         <div className="flex flex-1 flex-col gap-2.5 my-2">
-          <main className="flex-1 overflow-y-auto theme-secondary-background bg-white md:mr-8 rounded-sm">
+          <main className="flex-1 overflow-y-auto theme-secondary-background bg-white mx-2 rounded-sm">
             {children}
           </main>
 
-          <footer className="shrink-0">
+          <footer className="shrink-0 h-4">
             <Footer />
           </footer>
         </div>
