@@ -20,7 +20,7 @@ type SchoolTextFields = "name" | "city" | "website" | "udiseNumber";
 
 export function RegisterForm() {
   const router = useRouter();
-  const queryClient = useQueryClient(); // Core addition to query client context
+  const queryClient = useQueryClient();
 
   const [signupSteps] = useState<string[]>(["Basic Details", "School Details"]);
   const [step, setStep] = useState(1);
@@ -221,14 +221,12 @@ export function RegisterForm() {
       const role = response?.data?.auth?.role;
 
       if (role === "ADMIN") {
-        // 1. Prime the specific menu configuration into memory
         const menuData = await queryClient.fetchQuery({
           queryKey: ["sideMenu", "admin"],
           queryFn: sideMenuApi.adminMenu,
           staleTime: 1000 * 60 * 5,
         });
 
-        // 2. Resolve dynamic entry module path mapping
         if (menuData?.data) {
           const menuItems = getSideMenuItems(menuData.data);
           const firstModulePath = menuItems[0]?.path;
@@ -247,73 +245,76 @@ export function RegisterForm() {
         router.replace("/dashboard");
       }
     } catch (error) {
-      // Errors are caught and parsed inside your custom registerMutation setup
       console.error("Post-registration navigation runtime failure:", error);
     }
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-h-1/5 px-4">
-      <div className="w-full max-w-lg mt-8 md:mt-12 lg:mt-16">
-        {" "}
-        <Stepper
-          steps={signupSteps}
-          currentStep={step}
-          onStepClick={(targetStep) => setStep(targetStep)}
-        />
-      </div>
-
-      <form
-        className="w-full max-w-64 mt-8"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (step === signupSteps.length) handleSubmit();
-          else handleNext();
-        }}
-      >
-        <div className="min-h-[200px] mb-6">
-          {step === 1 && (
-            <PersonalDetails
-              formData={formData}
-              errors={errors.personal}
-              status={status.personal}
-              onChange={handlePersonalChange}
-            />
-          )}
-
-          {step === 2 && (
-            <SchoolDetails
-              schoolData={formData.school}
-              errors={errors.school}
-              status={status.school}
-              onChange={handleSchoolChange}
-            />
-          )}
+    // 1. Full viewport alignment context wrapper
+    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-6 rounded-2xl p-6 sm:p-10">
+        <div className="w-full">
+          <Stepper
+            steps={signupSteps}
+            currentStep={step}
+            onStepClick={(targetStep) => setStep(targetStep)}
+          />
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
-          {step > 1 && (
+        <form
+          className="w-full mt-4 px-2.5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (step === signupSteps.length) handleSubmit();
+            else handleNext();
+          }}
+        >
+          {/* Managed content area with explicit minimum size requirements */}
+          <div className="min-h-[260px] md:min-h-[240px]">
+            {step === 1 && (
+              <PersonalDetails
+                formData={formData}
+                errors={errors.personal}
+                status={status.personal}
+                onChange={handlePersonalChange}
+              />
+            )}
+
+            {step === 2 && (
+              <SchoolDetails
+                schoolData={formData.school}
+                errors={errors.school}
+                status={status.school}
+                onChange={handleSchoolChange}
+              />
+            )}
+          </div>
+
+          {/* Clean Action Bars with mobile layout safety overrides */}
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-6">
+            {step > 1 && (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleBack}
+                disabled={registerMutation.isPending}
+                className="w-full sm:w-auto"
+              >
+                Back
+              </Button>
+            )}
+
             <Button
-              type="button"
-              variant="secondary"
-              onClick={handleBack}
-              disabled={registerMutation.isPending}
-              className="w-full sm:w-auto"
+              type="submit"
+              variant="primary"
+              isLoading={registerMutation.isPending}
+              className="w-full sm:w-auto min-w-[100px]"
             >
-              Back
+              {step === signupSteps.length ? "Register" : "Next"}
             </Button>
-          )}
-
-          <Button
-            type="submit"
-            variant="primary"
-            isLoading={registerMutation.isPending}
-            className="w-full sm:w-auto"
-          >
-            {step === signupSteps.length ? "Register" : "Next"}
-          </Button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

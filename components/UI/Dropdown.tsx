@@ -150,7 +150,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           type="button"
           onClick={() => setOpen((v) => !v)}
           data-error={hasError}
-          className={`text-sm cursor-pointer h-8 flex items-center border outline-none focus:outline-none transition-all duration-150
+          className={`text-sm cursor-pointer h-10 flex items-center border outline-none focus:outline-none transition-all duration-150
             ${variantStyles[variant]}
             ${statusStyles[status]}
             ${variant === "circle" && !className.includes("w-") ? "w-12" : ""}
