@@ -153,8 +153,8 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           className={`text-sm cursor-pointer h-10 flex items-center border outline-none focus:outline-none transition-all duration-150
             ${variantStyles[variant]}
             ${statusStyles[status]}
-            ${variant === "circle" && !className.includes("w-") ? "w-12" : ""}
-            ${variant === "circle" && !className.includes("h-") ? "h-12" : ""}
+            ${variant === "circle" && !className.includes("w-") ? "w-10" : ""}
+            ${variant === "circle" && !className.includes("h-") ? "h-10" : ""}
           `}
         >
           <span className="truncate">{displayValue()}</span>
