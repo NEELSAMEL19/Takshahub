@@ -62,7 +62,6 @@ const Navbar = () => {
           placeholder={initials || ""}
           variant="circle"
           menuWidth="w-32"
-          className=""
           onSelect={(_, value) => {
             if (value === "logout") handleLogout();
           }}
