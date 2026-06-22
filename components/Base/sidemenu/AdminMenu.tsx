@@ -92,7 +92,7 @@ const AdminMenu = () => {
     }
   `}
               >
-                {item.icon ? <item.icon className="text-lg" /> : null}
+                {item.icon ? <item.icon className="text-xl" /> : null}
 
                 <span className="text-lg font-medium">{item.name}</span>
               </button>
@@ -102,7 +102,7 @@ const AdminMenu = () => {
       </div>
 
       {/* Desktop Sidebar - Your Existing One */}
-      <div className="hidden sm:block sm:w-16 theme-primary-background">
+      <div className="hidden sm:block sm:w-20 theme-primary-background">
         <div className="flex flex-col h-full p-4 justify-center items-center space-y-4">
           {menuItems.map((item) => {
             const isActive = item.path ? pathname.startsWith(item.path) : false;
@@ -124,7 +124,7 @@ const AdminMenu = () => {
     }
   `}
                 >
-                  {item.icon ? <item.icon className="text-lg" /> : null}
+                  {item.icon ? <item.icon className="text-xl" /> : null}
                 </button>
               </Tooltip>
             );
