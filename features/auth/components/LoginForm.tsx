@@ -113,7 +113,6 @@ export function LoginForm() {
       const role = response?.data?.auth?.role;
 
       if (role === "ADMIN") {
-        // 1. Fetch menu configurations imperatively to prime TanStack's cache
         const menuData = await queryClient.fetchQuery({
           queryKey: ["sideMenu", "admin"],
           queryFn: sideMenuApi.adminMenu,
