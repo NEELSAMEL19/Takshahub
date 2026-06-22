@@ -250,8 +250,6 @@ export function RegisterForm() {
   };
 
   return (
-    // 1. Full viewport alignment context wrapper
-    <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-6 rounded-2xl p-6 sm:p-10">
         <div className="w-full">
           <Stepper
