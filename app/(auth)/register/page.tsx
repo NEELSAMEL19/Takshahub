@@ -10,7 +10,7 @@ export default function RegisterPage() {
         <AuthDesign />
       </div>
 
-      <div className="w-full min-[850px]:w-2/4 h-full theme-secondary-background">
+      <div className="w-full min-[850px]:w-2/3 h-full theme-secondary-background">
         <RegisterForm />
       </div>
     </div>
