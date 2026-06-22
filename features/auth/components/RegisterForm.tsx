@@ -313,6 +313,5 @@ export function RegisterForm() {
           </div>
         </form>
       </div>
-    </div>
   );
 }
