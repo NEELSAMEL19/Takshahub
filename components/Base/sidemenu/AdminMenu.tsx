@@ -8,6 +8,9 @@ import Tooltip from "@/components/UI/Tooltip";
 import { useAppSelector } from "@/store/hooks";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useSidebar } from "@/features/sidebar/useSidebar";
+import Image from "next/image";
+import TakshahubLogo from "../../../public/Takshahub_logo.png";
+
 
 const AdminMenu = () => {
   const router = useRouter();
@@ -25,7 +28,7 @@ const AdminMenu = () => {
   return (
     <>
       {/* Mobile Backdrop */}
-      {isOpen && <div className="fixed inset-0 z-40  md:hidden" />}
+      {isOpen && <div className="fixed inset-0 z-40  sm:hidden" />}
 
       {/* Mobile Sidebar */}
       <div
@@ -34,7 +37,7 @@ const AdminMenu = () => {
     theme-primary-background
     transition-transform duration-300
   
-    md:hidden
+    sm:hidden
     ${isOpen ? "translate-x-0" : "-translate-x-full"}
   `}
       >
@@ -42,15 +45,12 @@ const AdminMenu = () => {
           onClick={toggle}
           className={` flex items-center justify-center
       absolute top-6 -right-5
-      w-6 h-6
+      w-6 h-6 border border-theme-primary-background
       rounded-full ${isOpen ? "bg-white" : "theme-primary-background"}
     `}
         >
           {isOpen ? (
-            <IoChevronBack
-              className="cursor-pointer text-xl text-theme-primary-background
-"
-            />
+            <IoChevronBack className="cursor-pointer text-xl text-theme-primary-background " />
           ) : (
             <IoChevronForward
               className="cursor-pointer text-xl text-white
@@ -58,6 +58,18 @@ const AdminMenu = () => {
             />
           )}
         </button>
+
+        <div className="flex flex-col items-center justify-center gap-3.5 mt-4">
+          <Image
+            src={TakshahubLogo}
+            alt="TakshaHub Logo"
+            className="w-12 h-12 object-contain"
+            loading="eager"
+          />
+          <span className="theme-text text-2xl font-semibold text-theme-text">
+            Takshahub
+          </span>
+        </div>
 
         <div className="flex flex-col h-full p-4 gap-4">
           {menuItems.map((item) => {
@@ -71,7 +83,7 @@ const AdminMenu = () => {
         flex items-center gap-3 p-3 rounded-xl
         text-white cursor-pointer
         transition-all duration-200
-        hover:bg-white/15
+        hover:bg-white/15 mt-2.5
         ${isActive ? "bg-white/20 shadow-lg scale-105" : ""}
       `}
               >
@@ -97,8 +109,8 @@ const AdminMenu = () => {
       </div>
 
       {/* Desktop Sidebar - Your Existing One */}
-      <div className="hidden md:block md:w-20 theme-primary-background">
-        <div className="flex flex-col h-full p-4 items-center space-y-4">
+      <div className="hidden sm:block sm:w-16 theme-primary-background">
+        <div className="flex flex-col h-full p-4 justify-center items-center space-y-4">
           {menuItems.map((item) => {
             const isActive = item.path ? pathname.startsWith(item.path) : false;
 
@@ -109,6 +121,7 @@ const AdminMenu = () => {
                   className={`cursor-pointer
                   group flex items-center justify-center
                   w-6 h-6 rounded-xl
+                  p-6
                   transition-all duration-200
                   hover:bg-white/15
                   ${isActive ? "bg-white/20 shadow-lg scale-105" : ""}
