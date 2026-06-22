@@ -50,7 +50,7 @@ export function TextField({
         maxLength={maxLength}
         autoComplete={autoComplete}
         data-error={hasError}
-        className={`w-full px-3 py-2 h-8 border rounded-md focus:outline-none 
+        className={`w-full px-3 py-2 h-10 border rounded-md focus:outline-none 
           ${
             color === "error"
               ? "hover:bg-red-200 border-red-500"
