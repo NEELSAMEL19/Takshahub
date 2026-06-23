@@ -1,9 +1,12 @@
-import React from 'react'
+import Team from "@/features/organization/Tabs/Team";
+import React from "react";
 
 const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <div>
+      <Team />
+    </div>
+  );
+};
 
-export default page
+export default page;

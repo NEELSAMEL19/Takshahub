@@ -23,7 +23,7 @@ export const Button = ({
   // Cleaned up to only contain primary and secondary mappings
   const variants = {
     primary:
-      "theme-primary-background text-white hover:brightness-110 shadow-sm",
+      "theme-primary-background !text-white hover:brightness-110 shadow-sm",
     secondary:
       "bg-slate-200 text-slate-900 border border-slate-200 hover:bg-slate-300 shadow-md transition-colors",
   };

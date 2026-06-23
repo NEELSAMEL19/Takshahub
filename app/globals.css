@@ -84,3 +84,24 @@ body {
   width: 1.5rem;
   height: 1.5rem;
 }
+
+.rs-nav-item[data-active="true"] {
+  background: rgba(27, 38, 59, 1) !important;
+  color: white !important;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin: 0 2px;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.rs-nav[data-appearance="subtle"] .rs-nav-item[data-active="true"]::before {
+  content: none !important;
+  display: none !important;
+}
+
+.rs-nav[data-appearance="subtle"] .rs-nav-item {
+  position: relative;
+  color: rgba(31, 31, 31, 1);
+}

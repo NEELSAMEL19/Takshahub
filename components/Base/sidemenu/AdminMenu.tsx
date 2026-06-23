@@ -35,7 +35,6 @@ const AdminMenu = () => {
     fixed left-0 top-0 z-50 h-screen w-64
     theme-primary-background
     transition-transform duration-300
-  
     sm:hidden
     ${isOpen ? "translate-x-0" : "-translate-x-full"}
   `}
@@ -44,8 +43,8 @@ const AdminMenu = () => {
           onClick={toggle}
           className={` flex items-center justify-center
       absolute top-6 -right-5
-      w-6 h-6 border border-theme-primary-background
-      rounded-full ${isOpen ? "bg-white" : "theme-primary-background"}
+      w-6 h-6 !border border-theme-primary-background
+      !rounded-full ${isOpen ? "bg-white" : "theme-primary-background"}
     `}
         >
           {isOpen ? (
@@ -72,8 +71,9 @@ const AdminMenu = () => {
 
         <div className="flex flex-col h-full p-4 gap-4">
           {menuItems.map((item) => {
-            const isActive = item.path ? pathname.startsWith(item.path) : false;
-
+            const isActive = pathname
+              .toLowerCase()
+              .includes(`/${item.name.toLowerCase()}/`);
             return (
               <button
                 key={item.id}
@@ -83,7 +83,7 @@ const AdminMenu = () => {
     flex items-center gap-3
     w-full
     px-4 py-3
-    rounded-xl
+    !rounded-xl
     transition-all duration-200
     ${
       isActive
@@ -105,8 +105,9 @@ const AdminMenu = () => {
       <div className="hidden sm:block sm:w-20 theme-primary-background">
         <div className="flex flex-col h-full p-4 justify-center items-center space-y-4">
           {menuItems.map((item) => {
-            const isActive = item.path ? pathname.startsWith(item.path) : false;
-
+            const isActive = pathname
+              .toLowerCase()
+              .includes(`/${item.name.toLowerCase()}/`);
             return (
               <Tooltip key={item.id} content={item.name} placement="right">
                 <button
@@ -114,8 +115,8 @@ const AdminMenu = () => {
                   className={`
     cursor-pointer
     flex items-center justify-center
-    w-12 h-12
-    rounded-xl
+    w-10 h-10
+    !rounded-xl
     transition-all duration-200
     ${
       isActive
