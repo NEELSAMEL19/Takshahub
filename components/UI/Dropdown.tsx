@@ -72,10 +72,10 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     };
 
     const variantStyles = {
-      normal: "w-full px-3 py-2 rounded-md justify-between",
-      rounded: "w-full px-4 py-2 rounded-full justify-between",
+      normal: "w-full px-3 py-2 !rounded-md justify-between",
+      rounded: "w-full px-4 py-2 !rounded-full justify-between",
       circle:
-        "rounded-full justify-center font-bold text-xl border-red-200 cursor-pointer p-0 text-center shrink-0",
+        "!rounded-full justify-center font-bold text-xl !border !border-red-200 cursor-pointer p-0 text-center shrink-0",
     };
 
     useEffect(() => {

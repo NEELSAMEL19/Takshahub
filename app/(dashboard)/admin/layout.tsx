@@ -5,11 +5,12 @@ import { useRouter, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import Footer from "@/components/Base/Footer/Footer";
-import Navbar from "@/components/Base/navbar/Navbar";
-import AdminMenu from "@/components/Base/sidemenu/AdminMenu";
+
 import { useAppSelector } from "@/store/hooks";
 import { sideMenuApi } from "@/service/sideMenu";
 import { getSideMenuItems } from "@/utils/permission";
+import Navbar from "@/components/Base/Navbar/Navbar";
+import AdminMenu from "@/components/Base/SideMenu/AdminMenu";
 
 export default function AdminLayout({
   children,
@@ -56,8 +57,8 @@ export default function AdminLayout({
           <AdminMenu />
         </aside>
 
-        <div className="flex flex-1 flex-col gap-2.5 my-2">
-          <main className="flex-1 overflow-y-auto theme-secondary-background bg-white mx-2 rounded-sm">
+        <div className="flex flex-1 flex-col my-2">
+          <main className="flex-1 overflow-y-auto theme-secondary-background mx-2 px-6 py-4 rounded-sm">
             {children}
           </main>
 
