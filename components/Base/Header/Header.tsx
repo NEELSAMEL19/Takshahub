@@ -8,7 +8,7 @@ const Header = ({
   statisticsClassName = "",
 }) => {
   return (
-    <div className={`${className} flex flex-col rounded gap-5`}>
+    <div className={`${className} flex flex-col rounded gap-5 px-6`}>
       <div
         className={`${headerContainerClassName} flex items-center justify-between rounded gap-2.5`}
       >

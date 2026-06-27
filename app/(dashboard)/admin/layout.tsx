@@ -40,11 +40,11 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen flex-col theme-primary-background">
-      <header className="bg-white">
+      <header className="bg-white shrink-0">
         <Navbar />
       </header>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 min-h-0">
         <aside
           className={`
             shrink-0
@@ -57,8 +57,9 @@ export default function AdminLayout({
           <AdminMenu />
         </aside>
 
-        <div className="flex flex-1 flex-col my-2">
-          <main className="flex-1 overflow-y-auto theme-secondary-background mx-2 px-6 py-4 rounded-sm">
+        {/* min-w-0 allows this flex child to shrink below its content width */}
+        <div className="flex flex-1 flex-col my-2 min-h-0 min-w-0 ">
+          <main className="flex-1 overflow-auto h-screen mx-2  py-4 rounded-sm bg-white">
             {children}
           </main>
 
