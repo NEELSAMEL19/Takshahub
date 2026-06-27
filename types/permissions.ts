@@ -21,8 +21,8 @@ export interface PermissionResponse {
 export type Permission = {
   module: string;
   feature: string;
-  canRead?: boolean;
-  canCreate?: boolean;
-  canUpdate?: boolean;
-  canDelete?: boolean;
+  canRead: boolean;
+  canCreate: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
 };

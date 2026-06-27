@@ -16,9 +16,16 @@ export const API_ENDPOINTS = {
   ORGANIZATION: {
     ADDROLE: "/api/backend/organization/roles/create_role",
     EDITROLE: "/api/backend/organization/roles/update_role",
-    GETROLE: "/api/backend/organization/roles", 
+    GETROLESPORTALBY: "/api/backend/organization/roles/by-portal",
     GETALLROLES: "/api/backend/organization/roles/all",
+    GETROLEBYID: "/api/backend/organization/roles",
     DELETEROLE: "/api/backend/organization/roles/delete_role",
+
+    ADDMEMBER: "/api/backend/organization/member/add",
+    EDITMEMBER: "/api/backend/organization/member/update",
+    GETALLMEMBER: "/api/backend/organization/member/all",
+    GETMEMBERBYID: "/api/backend/organization/member",
+    DELETEMEMBER: "/api/backend/organization/member/delete",
   },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",

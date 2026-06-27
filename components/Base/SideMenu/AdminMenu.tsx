@@ -15,7 +15,6 @@ const AdminMenu = () => {
   const router = useRouter();
   const pathname = usePathname(); // Gets the current URL path (e.g., "/admin/organization/settings")
   const { data } = useAdminMenu();
-  console.log(data,"data")
   const isOpen = useAppSelector((state) => state.sidebar.isOpen);
   const { toggle } = useSidebar();
   const menuItems = data?.data ? getSideMenuItems(data.data) : [];

@@ -13,7 +13,7 @@ import PermissionTable, {
 import Header from "@/components/Base/Header/Header";
 import { RolePermission } from "@/types/organzation";
 
-const PORTAL_TYPE_OPTIONS = ["STAFF", "TEACHER", "STUDENT"] as const;
+const PORTAL_TYPE_OPTIONS = ["ADMIN","STAFF", "TEACHER", "STUDENT"] as const;
 type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
 
 function mapToPermissions(rolePermissions: RolePermission[]): Permission[] {
@@ -27,7 +27,7 @@ function mapToPermissions(rolePermissions: RolePermission[]): Permission[] {
   }));
 }
 
-const EditRole = () => { 
+const EditRole = () => {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
 
