@@ -1,10 +1,10 @@
-import Roles from '@/features/organization/Tabs/Roles'
+import Role from '@/features/organization/Tabs/Role'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <Roles/>
+      <Role/>
     </div>
   )
 }
