@@ -35,12 +35,10 @@ export interface AddEditRoleResponse {
 }
 
 export interface EditRoleResponse {
-  oldName: string;
-  newName: string;
-  portalType: string;
-  permissions: RolePermission[];
+  success: boolean;
+  message: string;
+  data: Role;
 }
-
 export interface Role {
   id: string;
   schoolId: string;

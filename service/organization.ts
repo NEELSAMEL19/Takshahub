@@ -3,6 +3,7 @@
 import {
   AddEditRoleResponse,
   DeleteRoleResponse,
+  EditRoleResponse,
   GetAllRolesResponse,
   RoleWithPermissions,
 } from "@/types/organzation";
@@ -19,7 +20,8 @@ export interface AddRolePayload {
 export interface EditRolePayload {
   oldName: string;
   newName: string;
-  portalType: string;
+  oldPortalType: string;
+  newPortalType: string;
   permissions: Permission[];
 }
 
@@ -31,7 +33,7 @@ export const organizationApi = {
 
   EditRole: (data: EditRolePayload) =>
     apiClient
-      .put<AddEditRoleResponse>(API_ENDPOINTS.ORGANIZATION.EDITROLE, data)
+      .put<EditRoleResponse>(API_ENDPOINTS.ORGANIZATION.EDITROLE, data)
       .then((res) => res.data),
   GetRoleById: (id: string) =>
     apiClient

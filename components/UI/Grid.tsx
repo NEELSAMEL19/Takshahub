@@ -83,6 +83,12 @@ export interface GridProps<TRow extends RowData = RowData> {
   onSearchChange?: (query: string) => void;
 }
 
+interface SkeletonRowsProps<TRow extends RowData = RowData> {
+  columns: ColumnDef<TRow>[];
+  pageSize?: number;
+  selectable?: boolean;
+}
+
 // ─── localStorage persistence ─────────────────────────────────────────────────
 
 const storage = {
@@ -135,11 +141,11 @@ const exportCSV = <TRow extends RowData>(
 };
 
 // ─── Skeleton rows ────────────────────────────────────────────────────────────
-const SkeletonRows: React.FC<SkeletonRowsProps> = ({
+const SkeletonRows = <TRow extends RowData = RowData>({
   columns,
-  pageSize,
-  selectable,
-}) => (
+  pageSize = 10,
+  selectable = false,
+}: SkeletonRowsProps<TRow>) => (
   <>
     {Array.from({ length: pageSize }).map((_, rowIndex) => (
       <tr
@@ -547,18 +553,6 @@ function Grid<TRow extends RowData = RowData>({
     ? (controlledSearch ?? "")
     : internalSearch;
 
-  const handleSearchChange = useCallback(
-    (q: string) => {
-      if (isServerSearch) {
-        onSearchChangeProp!(q);
-      } else {
-        setInternalSearch(q);
-        setInternalPage(1);
-      }
-    },
-    [isServerSearch, onSearchChangeProp],
-  );
-
   // ── Pagination ─────────────────────────────────────────────────────────────
   const [internalPage, setInternalPage] = useState(1);
   const page = isServerPagination ? (controlledPage ?? 1) : internalPage;
@@ -571,7 +565,17 @@ function Grid<TRow extends RowData = RowData>({
   const [internalSortDir, setInternalSortDir] = useState<"asc" | "desc">("asc");
   const sortField = isServerSort ? controlledSortField : internalSortField;
   const sortDir = isServerSort ? (controlledSortDir ?? "asc") : internalSortDir;
-
+  const handleSearchChange = useCallback(
+    (q: string) => {
+      if (isServerSearch) {
+        onSearchChangeProp!(q);
+      } else {
+        setInternalSearch(q);
+        setInternalPage(1);
+      }
+    },
+    [isServerSearch, onSearchChangeProp],
+  );
   const handleSort = useCallback(
     (field: string) => {
       if (isServerSort) {
@@ -880,22 +884,25 @@ function Grid<TRow extends RowData = RowData>({
             ? `${selected.length} of ${effectiveTotalRows} selected`
             : `${effectiveTotalRows} records`}
         </span>
+
         <div className="flex items-center gap-2">
           <button
             aria-label="Previous page"
             className="px-3 py-1 text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1 || loading}
           >
             Previous
           </button>
+
           <span className="text-sm" aria-live="polite">
             Page {page} of {totalPages}
           </span>
+
           <button
             aria-label="Next page"
             className="px-3 py-1 text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages || loading}
           >
             Next

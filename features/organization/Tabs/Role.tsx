@@ -31,20 +31,19 @@ const Role = () => {
       headerName: "Portal Type",
     },
     {
+      field: "actions",
       headerName: "Action",
-      renderCell: (row: any) => {
-        return (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete(row);
-            }}
-            disabled={isPending}
-          >
-            Delete
-          </button>
-        );
-      },
+      renderCell: (row: any) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(row);
+          }}
+          disabled={isPending}
+        >
+          Delete
+        </button>
+      ),
     },
   ];
 
