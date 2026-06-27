@@ -11,7 +11,6 @@ const OrganizationTabs = () => {
   const { data } = useAdminMenu();
   const pathname = usePathname();
   const router = useRouter();
-
   const organizationTabs = data?.data?.Organization || {};
 
   const currentTab = pathname.split("/").pop();
@@ -30,7 +29,9 @@ const OrganizationTabs = () => {
   );
 
   const handleClick = () => {
-    router.push("/admin/organization/add/role");
+    router.push(
+      `/admin/organization/add/${currentTab === "role" ? "role" : "team"}`,
+    );
   };
 
   return (
@@ -39,7 +40,7 @@ const OrganizationTabs = () => {
         header="Organization"
         actionButtons={
           <Button onClick={handleClick} className="!rounded-lg">
-            Add Role
+            {currentTab === "role" ? "Add role" : "Add team"}
           </Button>
         }
       />

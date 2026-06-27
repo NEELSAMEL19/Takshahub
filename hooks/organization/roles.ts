@@ -1,12 +1,9 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  organizationApi,
-  AddRolePayload,
-  EditRolePayload,
-} from "@/service/organization";
+import { organizationApi } from "@/service/organization";
 import { handleError, handleSuccess } from "@/utils/toast";
+import { AddRolePayload, EditRolePayload } from "@/types/organzation";
 
 type FieldErrors = Record<string, string>;
 
@@ -51,6 +48,15 @@ export const useGetAllRoles = () => {
   return useQuery({
     queryKey: ["roles"],
     queryFn: organizationApi.GetAllRoles,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useGetRolesByPortal = (portalType: string | null) => {
+  return useQuery({
+    queryKey: ["roles", "portal", portalType],
+    queryFn: () => organizationApi.getRolesPortalBy(portalType!),
+    enabled: !!portalType,
     staleTime: 1000 * 60 * 5,
   });
 };
