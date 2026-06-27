@@ -17,6 +17,15 @@ import React, {
 const cx = (...args: (string | false | null | undefined)[]): string =>
   args.filter(Boolean).join(" ");
 
+const getValue = (obj: unknown, path: string): unknown => {
+  return path.split(".").reduce<unknown>((acc, key) => {
+    if (acc && typeof acc === "object") {
+      return (acc as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, obj);
+};
+
 type Align = "left" | "right" | "center";
 const ALIGN: Record<Align, string> = {
   left: "text-left",
@@ -43,9 +52,9 @@ export interface ColumnDef<TRow extends RowData = RowData> {
   columnSeparator?: boolean;
   skeletonWidth?: string;
   renderCell?: (row: TRow) => React.ReactNode;
-  csvValue?: (row: TRow) => string | number;
-  searchValue?: (row: TRow) => string | number;
-  sortValue?: (row: TRow) => string | number;
+  csvValue?: (row: TRow) => unknown;
+  searchValue?: (row: TRow) => unknown;
+  sortValue?: (row: TRow) => unknown;
   cellClassName?: (row: TRow) => string | undefined;
   onCellClick?: (row: TRow) => void;
 }
@@ -121,7 +130,7 @@ const exportCSV = <TRow extends RowData>(
   const body = rows.map((row) =>
     cols
       .map((c) => {
-        const val = c.csvValue ? c.csvValue(row) : (row[c.field] ?? "");
+        const val = c.csvValue ? c.csvValue(row) : getValue(row, c.field);
         return JSON.stringify(String(val));
       })
       .join(","),
@@ -602,7 +611,7 @@ function Grid<TRow extends RowData = RowData>({
       visibleColumns.some((col) => {
         const val = col.searchValue
           ? col.searchValue(row)
-          : (row[col.field] ?? "");
+          : getValue(row, col.field);
         return String(val).toLowerCase().includes(q);
       }),
     );
@@ -613,8 +622,8 @@ function Grid<TRow extends RowData = RowData>({
     if (isServerSort || !sortField) return searchedRows;
     const col = orderedColumns.find((c) => c.field === sortField);
     return [...searchedRows].sort((a, b) => {
-      const av = col?.sortValue ? col.sortValue(a) : a[sortField];
-      const bv = col?.sortValue ? col.sortValue(b) : b[sortField];
+      const av = col?.sortValue ? col.sortValue(a) : getValue(a, sortField);
+      const bv = col?.sortValue ? col.sortValue(b) : getValue(b, sortField);
       if (av == null) return 1;
       if (bv == null) return -1;
       const cmp =
@@ -671,7 +680,7 @@ function Grid<TRow extends RowData = RowData>({
   // ── Cell renderer ──────────────────────────────────────────────────────────
   const renderCell = (row: TRow, col: ColumnDef<TRow>): React.ReactNode => {
     if (col.renderCell) return col.renderCell(row);
-    const val = row[col.field];
+    const val = getValue(row, col.field);
     return (val ?? "—") as React.ReactNode;
   };
 

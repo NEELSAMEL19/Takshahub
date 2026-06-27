@@ -4,7 +4,6 @@ import { Dropdown, TextField } from "@/components/UI";
 import { Status } from "@/features/organization/types";
 import { useAddRole } from "@/hooks/organization/roles";
 import { useGetPermissionTemplate } from "@/hooks/permissions/permissions";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { addRoleSchema } from "./validation";
@@ -16,7 +15,6 @@ type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
 
 const AddRole = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<{
     name: string;

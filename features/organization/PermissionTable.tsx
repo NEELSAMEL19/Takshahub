@@ -3,10 +3,10 @@ import React from "react";
 export type Permission = {
   module: string;
   feature: string;
-  canRead?: boolean;
-  canCreate?: boolean;
-  canUpdate?: boolean;
-  canDelete?: boolean;
+  canRead: boolean;
+  canCreate: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
 };
 
 // --- Types matching your API response ---
@@ -121,13 +121,14 @@ export default function PermissionTable({
 
     // Emit only the actions that exist per feature (driven by allowedActions)
     const updatedPermissions: Permission[] = updatedModules.flatMap((mod) =>
-      mod.features.map((feat) => {
-        const perm: Permission = { module: mod.id, feature: feat.id };
-        feat.allowedActions.forEach((key) => {
-          perm[key] = feat[key] ?? false;
-        });
-        return perm;
-      }),
+      mod.features.map((feat) => ({
+        module: mod.id,
+        feature: feat.id,
+        canRead: feat.canRead ?? false,
+        canCreate: feat.canCreate ?? false,
+        canUpdate: feat.canUpdate ?? false,
+        canDelete: feat.canDelete ?? false,
+      })),
     );
 
     onChange(updatedPermissions);
