@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
   ORGANIZATION: {
     ADDROLE: "/api/backend/organization/roles/create_role",
     EDITROLE: "/api/backend/organization/roles/update_role",
-    GETROLE: "/api/backend/organization/roles", 
+    GETROLEBYID: "/api/backend/organization/roles", 
     GETALLROLES: "/api/backend/organization/roles/all",
     DELETEROLE: "/api/backend/organization/roles/delete_role",
   },

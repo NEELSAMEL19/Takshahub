@@ -35,18 +35,17 @@ export const organizationApi = {
     apiClient
       .put<EditRoleResponse>(API_ENDPOINTS.ORGANIZATION.EDITROLE, data)
       .then((res) => res.data),
+  GetAllRoles: () =>
+    apiClient
+      .get<GetAllRolesResponse>(API_ENDPOINTS.ORGANIZATION.GETALLROLES)
+      .then((res) => res.data),
   GetRoleById: (id: string) =>
     apiClient
       .get<{
         success: boolean;
         data: RoleWithPermissions;
-      }>(`${API_ENDPOINTS.ORGANIZATION.GETROLE}/${id}`)
+      }>(`${API_ENDPOINTS.ORGANIZATION.GETROLEBYID}/${id}`)
       .then((res) => res.data),
-  GetAllRoles: () =>
-    apiClient
-      .get<GetAllRolesResponse>(API_ENDPOINTS.ORGANIZATION.GETALLROLES)
-      .then((res) => res.data),
-
   DeleteRole: (data: { name: string; portalType: string }) =>
     apiClient
       .delete<DeleteRoleResponse>(API_ENDPOINTS.ORGANIZATION.DELETEROLE, {

@@ -27,7 +27,7 @@ function mapToPermissions(rolePermissions: RolePermission[]): Permission[] {
   }));
 }
 
-const EditRole = () => { 
+const EditRole = () => {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
 

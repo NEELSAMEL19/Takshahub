@@ -46,20 +46,20 @@ export const useEditRole = (onFieldError?: (errors: FieldErrors) => void) => {
   });
 };
 
-export const useGetRoleById = (id: string) => {
-  return useQuery({
-    queryKey: ["role", id],
-    queryFn: () => organizationApi.GetRoleById(id),
-    enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-  });
-};
-
 // ---------------- GET ALL ROLES ----------------
 export const useGetAllRoles = () => {
   return useQuery({
     queryKey: ["roles"],
     queryFn: organizationApi.GetAllRoles,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useGetRoleById = (id: string) => {
+  return useQuery({
+    queryKey: ["role", id],
+    queryFn: () => organizationApi.GetRoleById(id),
+    enabled: !!id,
     staleTime: 1000 * 60 * 5,
   });
 };
