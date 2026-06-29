@@ -1,11 +1,14 @@
 import { RiOrganizationChart } from "react-icons/ri";
-import { FaBuilding } from "react-icons/fa";
+import { MdOutlineSchool } from "react-icons/md";
+import { MdOutlineFactCheck } from "react-icons/md";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import type { IconType } from "react-icons";
-import { TbBrandGoogleAnalytics } from "react-icons/tb";
 
 export const menuIcons: Record<string, IconType> = {
-  Analytics: TbBrandGoogleAnalytics,
-  Organization: RiOrganizationChart,
+  Academic: MdOutlineSchool, 
+  Attendance: MdOutlineFactCheck,
+  Management: MdOutlineAdminPanelSettings,
+  Organization: RiOrganizationChart, 
 };
 
 type PathHandler = (
@@ -38,7 +41,7 @@ export const getSideMenuItems = (sideMenus: any) => {
 
       const path = handler("admin", category, subcategories);
 
-      const Icon = menuIcons[category] ?? FaBuilding;
+      const Icon = menuIcons[category] ;
 
       return {
         icon: Icon,
