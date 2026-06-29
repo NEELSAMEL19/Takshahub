@@ -1,4 +1,4 @@
-import OrganizationTabs from "@/features/organization/OrganizationTabs";
+import OrganizationTabs from "@/features/organization/Organization";
 
 export default function TabsLayout({
   children,
