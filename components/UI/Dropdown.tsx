@@ -138,7 +138,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
         {label && (
           <label
             htmlFor={dropdownId}
-            className="block text-sm mb-1 font-medium text-gray-700"
+            className="block text-sm mb-1"
           >
             {label} {required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -150,7 +150,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           type="button"
           onClick={() => setOpen((v) => !v)}
           data-error={hasError}
-          className={`text-sm cursor-pointer h-10 flex items-center border outline-none focus:outline-none transition-all duration-150
+          className={`text-sm cursor-pointer h-10 flex items-center !border !border-gray-300 outline-none focus:outline-none transition-all duration-150
             ${variantStyles[variant]}
             ${statusStyles[status]}
             ${variant === "circle" && !className.includes("w-") ? "w-10" : ""}
@@ -183,7 +183,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="Search..."
-                  className="w-full px-3 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded-md outline-none focus:outline-none focus:bg-white focus:border-gray-300 transition-colors"
+                  className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md outline-none focus:outline-none focus:bg-white focus:border-gray-300 transition-colors"
                 />
               </div>
             )}
@@ -208,7 +208,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                         className="h-4 w-4 rounded border-gray-300 accent-black"
                       />
                     )}
-                    <span className="truncate font-semibold text-typography-primary">{option.label}</span>
+                    <span className="truncate text-typography-primary">{option.label}</span>
                   </div>
                 ))
               )}

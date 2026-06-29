@@ -724,7 +724,7 @@ function Grid<TRow extends RowData = RowData>({
       />
 
       {/* Horizontal scroll only — appears when table content exceeds container width */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto shadow-sm">
         <table
           id={tableId}
           role="grid"
@@ -887,7 +887,7 @@ function Grid<TRow extends RowData = RowData>({
       </div>
 
       {/* Footer / pagination */}
-      <div className="flex items-center justify-between px-5 py-3 flex-wrap gap-2">
+      <div className="flex mt-2 text-typography-secondary border-t-0 items-center justify-between px-5 py-3 flex-wrap gap-2">
         <span className="text-sm" aria-live="polite" aria-atomic="true">
           {isSelectable && selected.length > 0
             ? `${selected.length} of ${effectiveTotalRows} selected`

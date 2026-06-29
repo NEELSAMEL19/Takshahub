@@ -7,7 +7,7 @@ import { useAdminMenu } from "@/hooks/sideMenu/useSideMenu";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-const OrganizationTabs = () => {
+const Organization = () => {
   const { data } = useAdminMenu();
   const pathname = usePathname();
   const router = useRouter();
@@ -54,4 +54,4 @@ const OrganizationTabs = () => {
   );
 };
 
-export default OrganizationTabs;
+export default Organization;
