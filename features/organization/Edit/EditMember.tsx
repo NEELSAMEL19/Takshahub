@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/components/Base/Header/Header";
-import { Dropdown, TextField } from "@/components/UI";
+import { Button, Dropdown, TextField } from "@/components/UI";
 import { Status } from "@/features/organization/types";
 import { useEditMember, useGetMemberById } from "@/hooks/organization/member";
 import { useGetRolesByPortal } from "@/hooks/organization/roles";
@@ -256,16 +256,17 @@ const EditMember = () => {
     );
   }
 
+  const handleCancle = () => {
+    router.back();
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-row gap-2.5 items-center px-5">
-        <span onClick={() => router.back()} className="cursor-pointer">
-          back
-        </span>
+      <div>
         <Header header="Edit Member" />
       </div>
 
-      <div className="px-5 flex flex-row gap-2.5 w-2xl">
+      <div className="px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
         <TextField
           label="Full Name"
           type="text"
@@ -333,14 +334,17 @@ const EditMember = () => {
         />
       </div>
 
-      <div className="px-5">
-        <button
-          onClick={onSubmit}
+      <div className="px-5 flex flex-row gap-2.5">
+        <Button
+          onClick={handleCancle}
           disabled={editMemberMutation.isPending}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          variant="secondary"
         >
-          {editMemberMutation.isPending ? "Saving..." : "Update Member"}
-        </button>
+          Cancle
+        </Button>
+        <Button onClick={onSubmit} disabled={editMemberMutation.isPending}>
+          {editMemberMutation.isPending ? "Saving..." : "Save"}
+        </Button>
       </div>
     </div>
   );
