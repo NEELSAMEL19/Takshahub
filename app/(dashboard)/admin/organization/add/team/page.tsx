@@ -1,4 +1,4 @@
-import AddMember from "@/features/organization/AddMember";
+import AddMember from "@/features/organization/Add/AddMember";
 
 const page = () => {
   return (

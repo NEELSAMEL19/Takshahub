@@ -1,13 +1,13 @@
 "use client";
 
-import { Dropdown, TextField } from "@/components/UI";
+import { Button, Dropdown, TextField } from "@/components/UI";
 import { Status } from "@/features/organization/types";
 import { useAddRole } from "@/hooks/organization/roles";
 import { useGetPermissionTemplate } from "@/hooks/permissions/permissions";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { addRoleSchema } from "./validation";
-import PermissionTable, { Permission } from "./PermissionTable";
+import { addRoleSchema } from "../validation";
+import PermissionTable, { Permission } from "../components/PermissionTable";
 import Header from "@/components/Base/Header/Header";
 
 const PORTAL_TYPE_OPTIONS = ["STAFF", "TEACHER", "STUDENT"] as const;
@@ -130,16 +130,17 @@ const AddRole = () => {
 
   const template = templateData?.data ?? [];
 
+  const handleCancle = () => {
+    router.back();
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-row gap-2.5 items-center px-5">
-        <span onClick={() => router.back()} className="cursor-pointer">
-          back
-        </span>
+      <div>
         <Header header="Add role" />
       </div>
 
-      <div className="px-5 flex flex-row gap-2.5 w-2xl">
+      <div className="max-w-lg px-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <TextField
           label="Name"
           type="text"
@@ -191,14 +192,21 @@ const AddRole = () => {
         </div>
       )}
 
-      <div className="px-5">
-        <button
+      <div className="px-5 flex flex-row gap-2.5">
+        <Button
+          onClick={handleCancle}
+          disabled={addRoleMutation.isPending}
+          variant="secondary"
+        >
+          Cancle
+        </Button>
+        <Button
           onClick={onSubmit}
           disabled={addRoleMutation.isPending}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {addRoleMutation.isPending ? "Saving..." : "Save Role"}
-        </button>
+          {addRoleMutation.isPending ? "Saving..." : "Save"}
+        </Button>
       </div>
     </div>
   );

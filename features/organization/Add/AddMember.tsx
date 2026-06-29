@@ -1,13 +1,13 @@
 "use client";
 
 import Header from "@/components/Base/Header/Header";
-import { Dropdown, TextField } from "@/components/UI";
-import { Status } from "./types";
+import { Button, Dropdown, TextField } from "@/components/UI";
+import { Status } from "../types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAddMember } from "@/hooks/organization/member";
 import { useGetRolesByPortal } from "@/hooks/organization/roles"; // adjust import path
-import { addMemberSchema } from "./validation"; // you'll need to create this
+import { addMemberSchema } from "../validation"; // you'll need to create this
 
 const PORTAL_TYPE_OPTIONS = ["STAFF", "TEACHER", "STUDENT"] as const;
 type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
@@ -164,16 +164,17 @@ const AddMember = () => {
 
   const roleOptions = rolesData?.data ?? [];
 
+  const handleCancle = () => {
+    router.back();
+  };
+
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-row gap-2.5 items-center px-5">
-        <span onClick={() => router.back()} className="cursor-pointer">
-          back
-        </span>
+      <div>
         <Header header="Add Member" />
       </div>
 
-      <div className="px-5 flex flex-row gap-2.5 w-2xl">
+      <div className="px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
         <TextField
           label="Full Name"
           type="text"
@@ -242,14 +243,17 @@ const AddMember = () => {
         />
       </div>
 
-      <div className="px-5">
-        <button
-          onClick={onSubmit}
+      <div className="px-5 flex flex-row gap-2.5">
+        <Button
+          onClick={handleCancle}
           disabled={addMemberMutation.isPending}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          variant="secondary"
         >
-          {addMemberMutation.isPending ? "Saving..." : "Save Member"}
-        </button>
+          Cancle
+        </Button>
+        <Button onClick={onSubmit} disabled={addMemberMutation.isPending}>
+          {addMemberMutation.isPending ? "Saving..." : "Save"}
+        </Button>
       </div>
     </div>
   );

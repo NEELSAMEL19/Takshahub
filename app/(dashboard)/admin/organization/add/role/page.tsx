@@ -1,4 +1,4 @@
-import AddRole from "@/features/organization/AddRole";
+import AddRole from "@/features/organization/Add/AddRole";
 import React from "react";
 
 const page = () => {
