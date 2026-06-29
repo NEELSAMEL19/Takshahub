@@ -41,7 +41,7 @@ export const getSideMenuItems = (sideMenus: any) => {
 
       const path = handler("admin", category, subcategories);
 
-      const Icon = menuIcons[category] ?? FaBuilding;
+      const Icon = menuIcons[category] ;
 
       return {
         icon: Icon,
