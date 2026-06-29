@@ -56,7 +56,6 @@ const AdminMenu = () => {
             />
           )}
         </button>
-
         <div className="flex flex-col items-center justify-center gap-3.5 mt-4">
           <Image
             src={TakshahubLogo}
@@ -87,8 +86,8 @@ const AdminMenu = () => {
     transition-all duration-200
     ${
       isActive
-        ? "bg-white text-text-typography-primary shadow-lg scale-105"
-        : "bg-white/15 text-white/80 hover:bg-white hover:text-text-typography-primary"
+        ? "bg-white text-black shadow-lg scale-105"
+        : "bg-white/15 !text-white hover:!bg-white hover:!text-black"
     }
   `}
               >
@@ -120,12 +119,12 @@ const AdminMenu = () => {
     transition-all duration-200
     ${
       isActive
-        ? "bg-white text-text-typography-primary shadow-lg scale-105"
-        : "bg-white/15 text-white/80 hover:bg-white hover:text-text-typography-primary"
+        ? "bg-white shadow-lg scale-105"
+        : "bg-white/15 !text-white hover:bg-white hover:!text-black"
     }
   `}
                 >
-                  {item.icon ? <item.icon className="text-xl" /> : null}
+                  {item.icon ? <item.icon className={`text-xl`} /> : null}
                 </button>
               </Tooltip>
             );
