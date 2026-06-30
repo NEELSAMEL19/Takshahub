@@ -113,10 +113,10 @@ body {
 .rs-nav {
   display: inline-flex;
   align-items: center;
-  background: rgba(107, 114, 128, 1);
-  border-radius: 8px;
-  padding: 0px;
-  gap: 2px;
+  background: rgb(239, 237, 237);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .rs-nav-item {
@@ -127,7 +127,7 @@ body {
   font-size: 16px;
   font-weight: 500;
   color: rgba(31, 31, 31, 1);
-  border-radius: 6px;
+  border-right: rgb(222, 222, 222) 1px solid;
   background: transparent;
   cursor: pointer;
   transition:
@@ -137,15 +137,14 @@ body {
 }
 
 .rs-nav-item:hover {
-  background: rgba(107, 114, 128, 1);
-  color: rgba(31, 31, 31, 1) !important;
+  background: rgba(27, 38, 59, 1) !important;
+  color: #ffffff !important;
 }
 
 /* Keep your active bg — just cleaned up */
 .rs-nav-item[data-active="true"] {
   background: rgba(27, 38, 59, 1) !important;
   color: #ffffff !important;
-  border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
   outline: none !important;
 }

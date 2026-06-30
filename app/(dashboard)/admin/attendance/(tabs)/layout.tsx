@@ -1,4 +1,4 @@
-import Organization from "@/features/organization/Organization";
+import Attendance from "@/features/Attendance/Attendance";
 
 export default function TabsLayout({
   children,
@@ -7,7 +7,7 @@ export default function TabsLayout({
 }) {
   return (
     <>
-      <Organization />
+      <Attendance />
       {children}
     </>
   );

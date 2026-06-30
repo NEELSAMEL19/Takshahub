@@ -6,13 +6,13 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import Stepper from "@/components/UI/Stepper";
 import { Button } from "@/components/UI";
-import PersonalDetails from "./PersonalDetails";
-import SchoolDetails from "./SchoolDetails";
-import { registerSchema, RegisterFormData } from "../validation";
+import PersonalDetails from "./components/PersonalDetails";
+import SchoolDetails from "./components/SchoolDetails";
+import { registerSchema, RegisterFormData } from "./validation";
 import { useRegister } from "@/hooks/auth/useAuth";
 import { sideMenuApi } from "@/service/sideMenu";
 import { getSideMenuItems } from "@/utils/permission";
-import { Status } from "../types";
+import { Status } from "./types";
 
 type SchoolField = keyof typeof registerSchema.shape.school.shape;
 type PersonalFields = "fullName" | "email" | "password" | "phoneNumber";
