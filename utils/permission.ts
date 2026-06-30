@@ -5,10 +5,10 @@ import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import type { IconType } from "react-icons";
 
 export const menuIcons: Record<string, IconType> = {
-  Academic: MdOutlineSchool, 
+  Academic: MdOutlineSchool,
   Attendance: MdOutlineFactCheck,
   Management: MdOutlineAdminPanelSettings,
-  Organization: RiOrganizationChart, 
+  Organization: RiOrganizationChart,
 };
 
 type PathHandler = (
@@ -17,19 +17,24 @@ type PathHandler = (
   subcategories: any,
 ) => string;
 
-const pathTypeHandlers: Record<string, PathHandler> = {
-  Organization: (baseRoute, category, subcategories) => {
-    const basePath = `/${baseRoute}/${category.toLowerCase()}`;
+const defaultPathHandler: PathHandler = (
+  baseRoute,
+  category,
+  subcategories,
+) => {
 
-    if (!subcategories || typeof subcategories !== "object") {
-      return basePath;
-    }
+  const basePath = `/${baseRoute}/${category.toLowerCase()}`;
 
+  if (
+    subcategories &&
+    typeof subcategories === "object" &&
+    Object.keys(subcategories).length > 0
+  ) {
     const firstKey = Object.keys(subcategories)[0];
-    return firstKey ? `${basePath}/${firstKey}` : basePath;
-  },
+    return `${basePath}/${firstKey}`;
+  }
 
-  default: (baseRoute, category) => `/${baseRoute}/${category.toLowerCase()}`,
+  return basePath;
 };
 
 export const getSideMenuItems = (sideMenus: any) => {
@@ -37,11 +42,8 @@ export const getSideMenuItems = (sideMenus: any) => {
 
   return Object.entries(sideMenus).map(
     ([category, subcategories]: [string, any]) => {
-      const handler = pathTypeHandlers[category] ?? pathTypeHandlers.default;
-
-      const path = handler("admin", category, subcategories);
-
-      const Icon = menuIcons[category] ;
+      const path = defaultPathHandler("admin", category, subcategories);
+      const Icon = menuIcons[category];
 
       return {
         icon: Icon,
