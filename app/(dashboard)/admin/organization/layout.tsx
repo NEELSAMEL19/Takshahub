@@ -5,7 +5,6 @@ export default function OrganizationLayout({
 }) {
   return (
     <div className="flex flex-col gap-2.5 bg-white">
-
       {children}
     </div>
   );
