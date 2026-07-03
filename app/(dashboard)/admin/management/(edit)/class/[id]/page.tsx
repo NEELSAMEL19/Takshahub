@@ -1,10 +1,10 @@
-import Class from "@/features/management/Tabs/Class";
+import EditClass from "@/features/management/Edit/EditClass";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Class />
+      <EditClass />
     </div>
   );
 };

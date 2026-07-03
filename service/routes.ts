@@ -27,6 +27,14 @@ export const API_ENDPOINTS = {
     GETMEMBERBYID: "/api/backend/organization/member",
     DELETEMEMBER: "/api/backend/organization/member/delete",
   },
+  MANAGEMENT: {
+    CREATECLASS: "/api/backend/management/class/create",
+    GETALLCLASS: "/api/backend/management/class/all",
+    GETCLASSDROPDOWN: "/api/backend/management/class/dropdown",
+    EDITCLASS: "/api/backend/management/class",
+    GETCLASSBYID: "/api/backend/management/class",
+    DELETECLASS: "/api/backend/management/class",
+  },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",
   },
