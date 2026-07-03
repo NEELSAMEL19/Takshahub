@@ -1,10 +1,10 @@
-import Subject from "@/features/management/Tabs/Subject";
+import AddSubject from "@/features/management/Add/AddSubject";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Subject />
+      <AddSubject />
     </div>
   );
 };

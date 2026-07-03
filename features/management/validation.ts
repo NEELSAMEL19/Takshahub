@@ -25,3 +25,11 @@ export const addClassSchema = z.object({
 });
 
 export type AddClassFormData = z.infer<typeof addClassSchema>;
+
+export const addSubjectSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Subject name is required")
+    .max(100, "Subject name must be under 100 characters"),
+});

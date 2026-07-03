@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
@@ -7,13 +7,18 @@ import { useAdminMenu } from "@/hooks/sideMenu/useSideMenu";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
+const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
+  class: { label: "Add Class", addPath: "/admin/management/add/class" },
+  subject: { label: "Add Subject", addPath: "/admin/management/add/subject" },
+};
+
 const Management = () => {
   const { data } = useAdminMenu();
   const pathname = usePathname();
   const router = useRouter();
   const managementTabs = data?.data?.Management || {};
-  const currentTab = pathname.split("/").pop();
-  
+  const currentTab = pathname.split("/").pop() ?? "";
+
   const tabItems = Object.entries(managementTabs).map(
     ([key, value], index) => ({
       index,
@@ -23,12 +28,16 @@ const Management = () => {
     }),
   );
 
-    const activeTabIndex = tabItems.findIndex(
+  const activeTabIndex = tabItems.findIndex(
     (tab) => String(tab.name).toLowerCase() === currentTab,
   );
 
+  const config = TAB_CONFIG[currentTab];
+
   const handleClick = () => {
-        router.push("/admin/management/add/class");
+    if (config) {
+      router.push(config.addPath);
+    }
   };
 
   return (
@@ -36,7 +45,11 @@ const Management = () => {
       <Header
         header="Management"
         actionButtons={
-          <Button onClick={handleClick} className="!rounded-lg">Add Class</Button>
+          config && (
+            <Button onClick={handleClick} className="!rounded-lg">
+              {config.label}
+            </Button>
+          )
         }
       />
       <div className="py-4 px-5">
