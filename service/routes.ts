@@ -34,6 +34,13 @@ export const API_ENDPOINTS = {
     EDITCLASS: "/api/backend/management/class",
     GETCLASSBYID: "/api/backend/management/class",
     DELETECLASS: "/api/backend/management/class",
+
+    ADDSUBJECT: "/api/backend/management/subject/create",
+    GETALLSUBJECTS: "/api/backend/management/subject/all",
+    GETSUBJECTSDROPDOWN: "/api/backend/management/subject/dropdown",
+    EDITSUBJECT: "/api/backend/management/subject/update",
+    GETSUBJECTBYID: "/api/backend/management/subject",
+    DELETESUBJECT: "/api/backend/management/subject/delete",
   },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",
