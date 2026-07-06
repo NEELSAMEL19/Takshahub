@@ -2,7 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
-import { Status } from "@/features/organization/types";
+import { Status } from "@/types/ui";
 import { useEditClass, useGetClassById } from "@/hooks/management/class";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -38,12 +38,15 @@ const EditClass = () => {
 
   useEffect(() => {
     if (classItem) {
-      setClassNameOverride(null);
-      const sections = (classItem.sections ?? []).map(
-        (s: { id: string; name: string }) => ({ id: s.id, name: s.name }),
-      );
-      setOriginalSections(sections);
-      setSectionsInput(sections.map((s: SectionInput) => s.name).join(", "));
+      // Avoid synchronous setState inside effect (ESLint rule).
+      setTimeout(() => {
+        setClassNameOverride(null);
+        const sections = (classItem.sections ?? []).map(
+          (s: { id: string; name: string }) => ({ id: s.id, name: s.name }),
+        );
+        setOriginalSections(sections);
+        setSectionsInput(sections.map((s: SectionInput) => s.name).join(", "));
+      }, 0);
     }
   }, [classItem?.id]);
 

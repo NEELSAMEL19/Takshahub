@@ -11,10 +11,12 @@ export const menuIcons: Record<string, IconType> = {
   Organization: RiOrganizationChart,
 };
 
+type Subcategories = Record<string, unknown> | null;
+
 type PathHandler = (
   baseRoute: string,
   category: string,
-  subcategories: any,
+  subcategories: Subcategories,
 ) => string;
 
 const defaultPathHandler: PathHandler = (
@@ -37,11 +39,11 @@ const defaultPathHandler: PathHandler = (
   return basePath;
 };
 
-export const getSideMenuItems = (sideMenus: any) => {
+export const getSideMenuItems = (sideMenus: Record<string, unknown> | null) => {
   if (!sideMenus) return [];
 
-  return Object.entries(sideMenus).map(
-    ([category, subcategories]: [string, any]) => {
+  return Object.entries(sideMenus as Record<string, Subcategories>).map(
+    ([category, subcategories]: [string, Subcategories]) => {
       const path = defaultPathHandler("admin", category, subcategories);
       const Icon = menuIcons[category];
 

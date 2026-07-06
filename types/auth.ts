@@ -93,3 +93,8 @@ export interface LogoutResponse {
   success: boolean;
   message: string;
 }
+
+// Re-export form data inferred from Zod schemas
+import type { RegisterFormData as _RegisterFormData, LoginFormData as _LoginFormData } from "@/features/auth/validation";
+export type RegisterFormData = _RegisterFormData;
+export type LoginFormData = _LoginFormData;

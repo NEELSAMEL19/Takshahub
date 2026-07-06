@@ -3,13 +3,14 @@
 import Grid from "@/components/UI/Grid";
 import { useDeleteRole, useGetAllRoles } from "@/hooks/organization/roles";
 import { useRouter } from "next/navigation";
+import type { Role as RoleType } from "@/types/organzation";
 
 const Role = () => {
   const { data, isLoading } = useGetAllRoles();
   const { mutate: deleteRole, isPending } = useDeleteRole();
   const router = useRouter();
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: RoleType) => {
     deleteRole({
       name: row.name,
       portalType: row.portalType,
@@ -32,7 +33,7 @@ const Role = () => {
     {
       field: "actions",
       headerName: "Action",
-      renderCell: (row: any) => (
+      renderCell: (row: RoleType) => (
         <button
           onClick={(e) => {
             e.stopPropagation();

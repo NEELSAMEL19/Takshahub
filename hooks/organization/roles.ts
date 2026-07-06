@@ -5,7 +5,7 @@ import { organizationApi } from "@/service/organization";
 import { handleError, handleSuccess } from "@/utils/toast";
 import { AddRolePayload, EditRolePayload } from "@/types/organzation";
 
-type FieldErrors = Record<string, string>;
+import type { FieldErrors } from "@/types/management";
 
 // ---------------- ADD ROLE ----------------
 export const useAddRole = (onFieldError?: (errors: FieldErrors) => void) => {

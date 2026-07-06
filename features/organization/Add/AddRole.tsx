@@ -1,7 +1,8 @@
 "use client";
 
 import { Button, Dropdown, TextField } from "@/components/UI";
-import { Status } from "@/features/organization/types";
+import { Status } from "@/types/ui";
+import type { PortalType } from "@/types/organzation";
 import { useAddRole } from "@/hooks/organization/roles";
 import { useGetPermissionTemplate } from "@/hooks/permissions/permissions";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,6 @@ import PermissionTable, { Permission } from "../components/PermissionTable";
 import Header from "@/components/Base/Header/Header";
 
 const PORTAL_TYPE_OPTIONS = ["STAFF", "TEACHER", "STUDENT"] as const;
-type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
 
 const AddRole = () => {
   const router = useRouter();

@@ -2,11 +2,24 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
-import { Status } from "../types";
+import { Status } from "@/types/ui";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAddClass } from "@/hooks/management/class"; // adjust path to match your hooks file
 import { addClassSchema } from "../validation";
+
+// Splits raw input into clean, deduped, uppercased section names.
+// Handles both "A" (single) and "A,B,C" (comma-separated) in one entry.
+const parseSectionInput = (raw: string): string[] => {
+  return Array.from(
+    new Set(
+      raw
+        .split(",")
+        .map((s) => s.trim().toUpperCase())
+        .filter(Boolean),
+    ),
+  );
+};
 
 const AddClass = () => {
   const router = useRouter();
@@ -58,15 +71,30 @@ const AddClass = () => {
     validateClassName(value);
   };
 
-  const addSection = () => {
-    const trimmed = sectionInput.trim().toUpperCase();
-    if (!trimmed) return;
-    if (sections.includes(trimmed)) {
-      setErrors((prev) => ({ ...prev, sections: "Section already added" }));
+  // Adds one or more sections from the current input, merging into
+  // `existing` and returning the updated list (or null if nothing valid
+  // was found, or a duplicate was rejected).
+  const mergeSections = (raw: string, existing: string[]): string[] | null => {
+    const candidates = parseSectionInput(raw);
+    if (candidates.length === 0) return null;
+
+    const duplicates = candidates.filter((c) => existing.includes(c));
+    if (duplicates.length > 0) {
+      setErrors((prev) => ({
+        ...prev,
+        sections: `Section already added: ${duplicates.join(", ")}`,
+      }));
       setStatus((prev) => ({ ...prev, sections: "error" }));
-      return;
+      return null;
     }
-    const updated = [...sections, trimmed];
+
+    return [...existing, ...candidates];
+  };
+
+  const addSection = () => {
+    const updated = mergeSections(sectionInput, sections);
+    if (!updated) return;
+
     setSections(updated);
     setSectionInput("");
     setErrors((prev) => ({ ...prev, sections: undefined }));
@@ -91,13 +119,20 @@ const AddClass = () => {
   };
 
   const onSubmit = async () => {
-    // safety net: commit any typed-but-not-added section (in case Enter didn't fire)
+    // Safety net: commit any typed-but-not-added section (in case Enter/click
+    // never fired), using the same parsing/dedup logic as addSection so a
+    // comma-separated leftover can never slip through as one bad entry.
     let finalSections = sections;
-    const pending = sectionInput.trim().toUpperCase();
-    if (pending && !sections.includes(pending)) {
-      finalSections = [...sections, pending];
-      setSections(finalSections);
-      setSectionInput("");
+    if (sectionInput.trim()) {
+      const updated = mergeSections(sectionInput, sections);
+      if (updated) {
+        finalSections = updated;
+        setSections(updated);
+        setSectionInput("");
+      } else {
+        // mergeSections already set an error (duplicate) — stop submit.
+        return;
+      }
     }
 
     const payload = { className, sections: finalSections };
@@ -155,7 +190,7 @@ const AddClass = () => {
           label="Add Section"
           type="text"
           name="sectionInput"
-          placeholder="e.g. A (press Enter)"
+          placeholder="e.g. A or A,B,C (press Enter)"
           value={sectionInput}
           onChange={(e) => setSectionInput(e.target.value)}
           onKeyDown={handleSectionKeyDown}

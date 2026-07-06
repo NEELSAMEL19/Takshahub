@@ -2,16 +2,15 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, Dropdown, TextField } from "@/components/UI";
-import { Status } from "@/features/organization/types";
+import { Status } from "@/types/ui";
 import { useEditMember, useGetMemberById } from "@/hooks/organization/member";
 import { useGetRolesByPortal } from "@/hooks/organization/roles";
 import { useRouter, useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { addMemberSchema } from "@/features/organization/validation";
-import { EditMemberPayload } from "@/types/organzation";
+import { EditMemberPayload, PortalType } from "@/types/organzation";
 
 const PORTAL_TYPE_OPTIONS = ["ADMIN", "STAFF", "TEACHER", "STUDENT"] as const;
-type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
 
 const EditMember = () => {
   const router = useRouter();
@@ -63,14 +62,17 @@ const EditMember = () => {
 
   useEffect(() => {
     if (member) {
-      setOverrides({
-        fullName: null,
-        email: null,
-        phoneNumber: null,
-        portalType: null,
-        roleName: null,
-        password: null,
-      });
+      // Avoid synchronous setState inside effect (ESLint rule).
+      setTimeout(() => {
+        setOverrides({
+          fullName: null,
+          email: null,
+          phoneNumber: null,
+          portalType: null,
+          roleName: null,
+          password: null,
+        });
+      }, 0);
     }
   }, [member?.id]);
 

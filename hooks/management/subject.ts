@@ -6,10 +6,9 @@ import {
   CreateSubjectPayload,
   UpdateSubjectPayload,
   DeleteSubjectPayload,
+  FieldErrors,
 } from "@/types/management";
 import { handleError, handleSuccess } from "@/utils/toast";
-
-type FieldErrors = Record<string, string>;
 
 // ---------------- ADD SUBJECT ----------------
 export const useAddSubject = (onFieldError?: (errors: FieldErrors) => void) => {
