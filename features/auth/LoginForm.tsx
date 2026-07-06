@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { loginSchema, LoginFormData } from "./validation";
+import { loginSchema } from "./validation";
+import type { LoginFormData } from "@/types/auth";
 import { useLogin } from "@/hooks/auth/useAuth";
 import { sideMenuApi } from "@/service/sideMenu";
 import { getSideMenuItems } from "@/utils/permission";
 import { TextField, Button } from "@/components/UI";
-import { Status } from "./types";
+import { Status } from "@/types/ui";
 
 export function LoginForm() {
   const router = useRouter();

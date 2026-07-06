@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField } from "@/components/UI";
-import { Status } from "../types";
-import { RegisterFormData } from "../validation";
+import { Status } from "@/types/ui";
+import type { RegisterFormData } from "@/types/auth";
 
 type PersonalDetailsFields = "fullName" | "email" | "password" | "phoneNumber";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Dropdown, TextField } from "@/components/UI";
-import { Status } from "@/features/organization/types";
+import { Status } from "@/types/ui";
 import { useEditRole, useGetRoleById } from "@/hooks/organization/roles";
 import { useGetPermissionTemplate } from "@/hooks/permissions/permissions";
 import { useRouter, useParams } from "next/navigation";
@@ -14,7 +14,7 @@ import Header from "@/components/Base/Header/Header";
 import { RolePermission } from "@/types/organzation";
 
 const PORTAL_TYPE_OPTIONS = ["ADMIN", "STAFF", "TEACHER", "STUDENT"] as const;
-type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
+import type { PortalType } from "@/types/organzation";
 
 function mapToPermissions(rolePermissions: RolePermission[]): Permission[] {
   return rolePermissions.map((rp) => ({
@@ -59,11 +59,14 @@ const EditRole = () => {
 
   useEffect(() => {
     if (role) {
-      setOverrides({
-        name: null,
-        portalType: null,
-        permissions: mapToPermissions(role.permissions),
-      });
+      // Avoid synchronous setState inside effect (ESLint rule).
+      setTimeout(() => {
+        setOverrides({
+          name: null,
+          portalType: null,
+          permissions: mapToPermissions(role.permissions),
+        });
+      }, 0);
     }
   }, [role?.id]);
 

@@ -9,7 +9,7 @@ import {
 } from "@/types/organzation";
 import { handleError, handleSuccess } from "@/utils/toast";
 
-type FieldErrors = Record<string, string>;
+import type { FieldErrors } from "@/types/management";
 
 // ---------------- ADD MEMBER ----------------
 export const useAddMember = (onFieldError?: (errors: FieldErrors) => void) => {

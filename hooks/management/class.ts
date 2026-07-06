@@ -2,10 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { managementApi } from "@/service/management";
-import { ADDCLASSPAYLOAD, EDITCLASSPAYLOAD } from "@/types/management";
+import { ADDCLASSPAYLOAD, EDITCLASSPAYLOAD, FieldErrors } from "@/types/management";
 import { handleError, handleSuccess } from "@/utils/toast";
-
-type FieldErrors = Record<string, string>;
 
 // ---------------- ADD CLASS ----------------
 export const useAddClass = (onFieldError?: (errors: FieldErrors) => void) => {
@@ -73,6 +71,16 @@ export const useGetClassDropdown = () => {
   return useQuery({
     queryKey: ["classes", "dropdown"],
     queryFn: managementApi.GetClassDropdown,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+// ---------------- GET CLASS DROPDOWN ----------------
+export const useGetSectionDropdown = (classId: string | number | null) => {
+  return useQuery({
+    queryKey: ["section", "dropdown", classId],
+    queryFn: () => managementApi.GetSectionDropdown(String(classId)),
+    enabled: !!classId,
     staleTime: 1000 * 60 * 5,
   });
 };

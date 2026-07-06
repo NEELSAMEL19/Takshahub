@@ -1,10 +1,10 @@
-import Student from "@/features/management/Tabs/Student";
+import AddTeacher from "@/features/management/Add/AddTeacher";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Student />
+      <AddTeacher />
     </div>
   );
 };

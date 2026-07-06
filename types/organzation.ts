@@ -32,6 +32,7 @@ export interface AddUpdateRolePermission {
 }
 
 export interface Role {
+  [key: string]: unknown;
   id: string;
   schoolId: string;
   name: string;
@@ -39,6 +40,9 @@ export interface Role {
   createdAt: string;
   updatedAt: string;
 }
+
+// Canonical portal type used across organization feature
+export type PortalType = "ADMIN" | "STAFF" | "TEACHER" | "STUDENT";
 
 export interface AddRolePayload {
   name: string;
@@ -95,6 +99,7 @@ export interface MemberRole {
 }
 
 export interface MemberData {
+  [key: string]: unknown;
   id: string;
   fullName: string;
   email: string;
@@ -147,3 +152,11 @@ export interface DeleteMemberResponse {
   success: boolean;
   message: string;
 }
+
+// Re-export validation-inferred types from feature schemas
+import type {
+  AddMemberFormData as _AddMemberFormData,
+  AddRoleFormData as _AddRoleFormData,
+} from "@/features/organization/validation";
+export type AddMemberFormData = _AddMemberFormData;
+export type AddRoleFormData = _AddRoleFormData;

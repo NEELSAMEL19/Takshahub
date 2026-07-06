@@ -8,7 +8,7 @@ import {
 } from "@/types/auth";
 import { handleError, handleSuccess } from "@/utils/toast";
 
-type FieldErrors = Record<string, string>;
+import type { FieldErrors } from "@/types/management";
 
 // ---------------- REGISTER ----------------
 export const useRegister = (onFieldError?: (errors: FieldErrors) => void) => {

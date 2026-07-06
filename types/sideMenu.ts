@@ -11,3 +11,7 @@ export interface MenuItem {
   path?: string;
   placement?: string;
 }
+
+export interface SidebarState {
+  isOpen: boolean;
+}

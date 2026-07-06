@@ -3,13 +3,14 @@
 import Grid from "@/components/UI/Grid";
 import { useDeleteMember, useGetAllMembers } from "@/hooks/organization/member";
 import { useRouter } from "next/navigation";
+import type { MemberData } from "@/types/organzation";
 
 const Team = () => {
   const { data, isLoading } = useGetAllMembers();
   const { mutate: deleteMember, isPending } = useDeleteMember();
   const router = useRouter();
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: MemberData) => {
     deleteMember({
       email: row.email,
     });
@@ -31,7 +32,7 @@ const Team = () => {
     {
       field: "isActive",
       headerName: "Status",
-      renderCell: (row: any) => (row.isActive ? "Active" : "Inactive"),
+      renderCell: (row: MemberData) => (row.isActive ? "Active" : "Inactive"),
     },
     {
       field: "role.name",
@@ -44,7 +45,7 @@ const Team = () => {
     {
       field: "actions",
       headerName: "Action",
-      renderCell: (row: any) => (
+      renderCell: (row: MemberData) => (
         <button
           onClick={(e) => {
             e.stopPropagation();

@@ -1,8 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-export interface SidebarState {
-  isOpen: boolean;
-}
+import type { SidebarState } from "@/types/sideMenu";
 
 const initialState: SidebarState = {
   isOpen: false,

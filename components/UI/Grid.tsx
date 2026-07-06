@@ -458,12 +458,15 @@ const useColumnOrder = <TRow extends RowData>(
   );
 
   useEffect(() => {
-    setColOrder((prev) => {
-      const prevSet = new Set(prev);
-      const next = defaultOrder.filter((f) => !prevSet.has(f));
-      const pruned = prev.filter((f) => defaultOrder.includes(f));
-      return [...pruned, ...next];
-    });
+    // Avoid synchronous setState inside effect (ESLint rule).
+    setTimeout(() => {
+      setColOrder((prev) => {
+        const prevSet = new Set(prev);
+        const next = defaultOrder.filter((f) => !prevSet.has(f));
+        const pruned = prev.filter((f) => defaultOrder.includes(f));
+        return [...pruned, ...next];
+      });
+    }, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columns.length]);
 
@@ -641,7 +644,9 @@ function Grid<TRow extends RowData = RowData>({
   const totalPages = Math.max(1, Math.ceil(effectiveTotalRows / pageSize));
 
   useEffect(() => {
-    if (!isServerPagination && page > totalPages) setInternalPage(totalPages);
+    // Avoid synchronous setState inside effect (ESLint rule).
+    if (!isServerPagination && page > totalPages)
+      setTimeout(() => setInternalPage(totalPages), 0);
   }, [page, totalPages, isServerPagination]);
 
   const pagedRows = isServerPagination

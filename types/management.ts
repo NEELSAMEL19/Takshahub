@@ -154,7 +154,7 @@ export interface TeacherAssignment {
 }
 
 export interface SubjectWithAssignments extends Subject {
-  [key: string]: any;
+  [key: string]: unknown;
   teacherAssignments: TeacherAssignment[];
 }
 
@@ -207,3 +207,187 @@ export interface DeleteSubjectResult {
 }
 
 export type DeleteSubjectResponse = ApiSuccessResponse<DeleteSubjectResult>;
+
+//---------------------------------------------------------Student----------------------------------------------------
+
+// =============================================================================
+// SHARED
+// =============================================================================
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  count?: number;
+  data: T;
+}
+
+export interface DropdownOption {
+  label: string;
+  value: string; // bigint serialized as string over JSON
+}
+
+// =============================================================================
+// CLASS
+// =============================================================================
+
+export interface Section {
+  id: string;
+  name: string;
+  classId: string;
+}
+
+export interface ClassWithSections {
+  id: string;
+  schoolId: string;
+  name: string;
+  sections: Section[];
+}
+
+// ---- Create Class ----
+export interface CreateClassPayload {
+  className: string;
+  sections: string[]; // plain names only
+}
+export type CreateClassResponse = ApiResponse<ClassWithSections>;
+
+// ---- Get All Classes ----
+export type GetAllClassesResponse = ApiResponse<ClassWithSections[]>;
+
+// ---- Get Class By Id ----
+export type GetClassByIdResponse = ApiResponse<ClassWithSections>;
+
+// ---- Get Classes Dropdown ----
+export type GetClassesDropdownResponse = ApiResponse<DropdownOption[]>;
+
+// ---- Get Sections Dropdown (scoped to a classId) ----
+export type GetSectionsDropdownResponse = ApiResponse<DropdownOption[]>;
+
+// ---- Update Class (rename + sync sections) ----
+export interface SectionInputPayload {
+  id?: string; // present => update existing, absent => create new
+  name: string;
+}
+export interface UpdateClassPayload {
+  className: string;
+  sections?: SectionInputPayload[]; // omit entirely to skip touching sections
+}
+export type UpdateClassResponse = ApiResponse<ClassWithSections>;
+
+// ---- Delete Class ----
+export type DeleteClassResponse =
+  | ApiResponse<{ deleted: boolean }>
+  | {
+      success: boolean;
+      message: string;
+    };
+
+// =============================================================================
+// STUDENT ENROLLMENT
+// =============================================================================
+
+// ---- Student-specific field errors used by forms like EditStudent ----
+export type StudentFieldErrors = {
+  classId?: string;
+  sectionId?: string;
+  [key: string]: string | undefined;
+};
+
+// Generic field-errors mapping used across management hooks and forms
+export type FieldErrors = Record<string, string>;
+
+
+// Flat student record — matches your Prisma `User` model fields.
+// Used for students NOT yet enrolled anywhere (the "available students"
+// dropdown in AddStudent.tsx).
+export interface Student {
+  id: string;
+  fullName: string; // renamed from `name` to match Prisma User.fullName
+  email?: string;
+  phoneNumber?: string;
+}
+
+// ---- Get Available Students ----
+export type GetAvailableStudentsResponse = ApiResponse<Student[]>;
+
+// A StudentEnrollment row with student/class/section joined in — this is
+// what the enrolled-students table (StudentList.tsx) actually needs to
+// render "Name / Email / Phone / Class / Section" columns and to delete
+// by { studentId, classId }.
+//
+// ⚠️ Inferred from schema.prisma — confirm this matches your actual
+// getAllStudents() service's Prisma `select`/`include` shape.
+export interface EnrolledStudent {
+  [key: string]: unknown;
+  id: string;
+  studentId: string;
+  classId: string;
+  sectionId: string;
+  student: {
+    fullName: string;
+    email: string;
+    phoneNumber: string | null;
+  };
+  class: {
+    name: string;
+  };
+  section: {
+    name: string;
+  };
+}
+
+// ---- Get Enrolled Students ----
+export type GetEnrolledStudentsResponse = ApiResponse<EnrolledStudent[]>;
+
+// ---- Enroll Student ----
+export interface EnrollStudentPayload {
+  studentId: string;
+  classId: string;
+  sectionId: string;
+}
+export interface EnrollStudentResult {
+  id: string;
+  studentId: string;
+  classId: string;
+  sectionId: string;
+}
+export type EnrollStudentResponse = ApiResponse<EnrollStudentResult>;
+
+export interface UpdateEnrollmentPayload {
+  studentId: string;
+  currentClassId: string;
+  newClassId: string;
+  newSectionId: string;
+}
+
+export interface UpdateEnrollmentResponse {
+  success: boolean;
+  message: string;
+  data: {
+    // whatever shape your serialized enrollment has
+    id: string;
+    studentId: string;
+    classId: string;
+    sectionId: string;
+    schoolId: string;
+    student: { id: string; fullName: string; email: string };
+    class: { id: string; name: string };
+    section: { id: string; name: string };
+  };
+}
+
+// ---- Unenroll Student ----
+export interface UnenrollStudentPayload {
+  studentId: string;
+  classId: string;
+}
+export type UnenrollStudentResponse = {
+  success: boolean;
+  message: string;
+};
+
+// NOTE: `Status` and form-schema inferred types should live in UI or validation files
+// to avoid circular imports. See `types/ui.ts` and `features/management/validation.ts`.
+
+// Re-export AddClass form data inferred from validation schema
+import type { AddClassFormData as _AddClassFormData } from "@/features/management/validation";
+export type AddClassFormData = _AddClassFormData;

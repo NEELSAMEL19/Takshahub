@@ -2,7 +2,8 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, Dropdown, TextField } from "@/components/UI";
-import { Status } from "../types";
+import { Status } from "@/types/ui";
+import type { PortalType } from "@/types/organzation";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAddMember } from "@/hooks/organization/member";
@@ -10,7 +11,6 @@ import { useGetRolesByPortal } from "@/hooks/organization/roles"; // adjust impo
 import { addMemberSchema } from "../validation"; // you'll need to create this
 
 const PORTAL_TYPE_OPTIONS = ["STAFF", "TEACHER", "STUDENT"] as const;
-type PortalType = (typeof PORTAL_TYPE_OPTIONS)[number];
 type RoleType = string;
 
 const AddMember = () => {
