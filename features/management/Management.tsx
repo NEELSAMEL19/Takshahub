@@ -10,6 +10,8 @@ import React from "react";
 const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
   class: { label: "Add Class", addPath: "/admin/management/add/class" },
   subject: { label: "Add Subject", addPath: "/admin/management/add/subject" },
+  student: { label: "Enroll Student", addPath: "/admin/management/add/student" },
+  teacher: { label: "Enroll Teacher", addPath: "/admin/management/add/teacher" },
 };
 
 const Management = () => {

@@ -30,7 +30,8 @@ export const API_ENDPOINTS = {
   MANAGEMENT: {
     CREATECLASS: "/api/backend/management/class/create",
     GETALLCLASS: "/api/backend/management/class/all",
-    GETCLASSDROPDOWN: "/api/backend/management/class/dropdown",
+    GETCLASSDROPDOWN: "/api/backend/management/class/class-dropdown",
+    GETSECTIONDROPDOWN: "/api/backend/management/class/section-dropdown",
     EDITCLASS: "/api/backend/management/class",
     GETCLASSBYID: "/api/backend/management/class",
     DELETECLASS: "/api/backend/management/class",
@@ -41,6 +42,13 @@ export const API_ENDPOINTS = {
     EDITSUBJECT: "/api/backend/management/subject/update",
     GETSUBJECTBYID: "/api/backend/management/subject",
     DELETESUBJECT: "/api/backend/management/subject/delete",
+
+    ADDSTUDENT: "/api/backend/management/students/enroll",
+    EDITSTUDENTS: "/api/backend/management/students/enroll",
+    GETALLSTUDENTS: "/api/backend/management/students/enrolled",
+    GETSTUDENTBYID: "/api/backend/management/students/enrolled",
+    GETAVAILABLESTUDENTS: "/api/backend/management/students/available",
+    DELETESTUDENT: "/api/backend/management/students/unenroll",
   },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",

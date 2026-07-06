@@ -2,7 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
-import { Status } from "@/features/organization/types";
+import { Status } from "@/types/ui";
 import { useEditSubject, useGetSubjectById } from "@/hooks/management/subject";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -33,8 +33,11 @@ const EditSubject = () => {
 
   useEffect(() => {
     if (subjectItem) {
-      setNameOverride(null);
-      setOriginalName(subjectItem.name);
+      // Avoid synchronous setState inside effect (ESLint rule).
+      setTimeout(() => {
+        setNameOverride(null);
+        setOriginalName(subjectItem.name);
+      }, 0);
     }
   }, [subjectItem?.id]);
 

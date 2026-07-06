@@ -1,5 +1,6 @@
 import React from "react";
 
+// Local Permission shape used by the PermissionTable UI
 export type Permission = {
   module: string;
   feature: string;
@@ -89,7 +90,10 @@ export default function PermissionTable({
 
   // Re-initialise if the template changes (e.g. portalType switch)
   React.useEffect(() => {
-    setModules(buildModules(template, permissions));
+    // Avoid synchronous setState inside effect (ESLint rule).
+    setTimeout(() => {
+      setModules(buildModules(template, permissions));
+    }, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template]);
 

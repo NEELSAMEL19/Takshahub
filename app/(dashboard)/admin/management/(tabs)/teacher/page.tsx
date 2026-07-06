@@ -1,9 +1,12 @@
-import React from 'react'
+import Teacher from "@/features/management/Tabs/Teacher";
+import React from "react";
 
 const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <div>
+      <Teacher />
+    </div>
+  );
+};
 
-export default page
+export default page;

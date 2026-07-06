@@ -16,14 +16,20 @@ import {
   GetSubjectsForDropdownResponse,
   DeleteSubjectPayload,
   DeleteSubjectResponse,
+  EnrollStudentPayload,
+  EnrollStudentResponse,
+  GetEnrolledStudentsResponse,
+  GetAvailableStudentsResponse,
+  UnenrollStudentPayload,
+  UnenrollStudentResponse,
+  UpdateEnrollmentResponse,
+  UpdateEnrollmentPayload,
 } from "@/types/management";
 import { apiClient } from "./client";
 import { API_ENDPOINTS } from "./routes";
 
 export const managementApi = {
-  // ----------------------------------------------------------------------
-  // CLASS (sections are managed inline via create/edit payloads)
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------ CLASS -------------------------------------------
 
   AddClass: (data: ADDCLASSPAYLOAD) =>
     apiClient
@@ -52,7 +58,12 @@ export const managementApi = {
     apiClient
       .get<GETCLASSDROPDOWNRESPONSE>(API_ENDPOINTS.MANAGEMENT.GETCLASSDROPDOWN)
       .then((res) => res.data),
-
+  GetSectionDropdown: (classId: string) =>
+    apiClient
+      .get<GETCLASSDROPDOWNRESPONSE>(
+        `${API_ENDPOINTS.MANAGEMENT.GETSECTIONDROPDOWN}/${classId}`,
+      )
+      .then((res) => res.data),
   DeleteClass: (classId: string) =>
     apiClient
       .delete<DELETECLASSRESPONSE>(
@@ -60,9 +71,7 @@ export const managementApi = {
       )
       .then((res) => res.data),
 
-  // ----------------------------------------------------------------------
-  // SUBJECT
-  // ----------------------------------------------------------------------
+  // -------------------------------- SUBJECT ---------------------------------------
 
   AddSubject: (data: CreateSubjectPayload) =>
     apiClient
@@ -96,6 +105,42 @@ export const managementApi = {
   DeleteSubject: (data: DeleteSubjectPayload) =>
     apiClient
       .delete<DeleteSubjectResponse>(API_ENDPOINTS.MANAGEMENT.DELETESUBJECT, {
+        data,
+      })
+      .then((res) => res.data),
+
+  // -------------------------------- STUDENT ---------------------------------------
+  AddStudent: (data: EnrollStudentPayload) =>
+    apiClient
+      .post<EnrollStudentResponse>(API_ENDPOINTS.MANAGEMENT.ADDSTUDENT, data)
+      .then((res) => res.data),
+  EditStudent: (data: UpdateEnrollmentPayload) =>
+    apiClient
+      .put<UpdateEnrollmentResponse>(
+        API_ENDPOINTS.MANAGEMENT.EDITSTUDENTS,
+        data,
+      )
+      .then((res) => res.data),
+  GetAllStudents: () =>
+    apiClient
+      .get<GetEnrolledStudentsResponse>(API_ENDPOINTS.MANAGEMENT.GETALLSTUDENTS)
+      .then((res) => res.data),
+  GetStudentById: (studentId: string) =>
+    apiClient
+      .get<GetEnrolledStudentsResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.GETSTUDENTBYID}/${studentId}`,
+      )
+      .then((res) => res.data),
+  GetAvailableStudents: () =>
+    apiClient
+      .get<GetAvailableStudentsResponse>(
+        API_ENDPOINTS.MANAGEMENT.GETAVAILABLESTUDENTS,
+      )
+      .then((res) => res.data),
+
+  DeleteStudent: (data: UnenrollStudentPayload) =>
+    apiClient
+      .delete<UnenrollStudentResponse>(API_ENDPOINTS.MANAGEMENT.DELETESTUDENT, {
         data,
       })
       .then((res) => res.data),

@@ -2,7 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
-import { Status } from "../types";
+import { Status } from "@/types/ui";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAddSubject } from "@/hooks/management/subject"; // adjust path to match your hooks file

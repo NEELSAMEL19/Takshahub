@@ -1,8 +1,8 @@
 import React from "react";
 import { Dropdown, TextField } from "@/components/UI";
-import { Status } from "../types";
+import { Status } from "@/types/ui";
 import { registerSchema } from "../validation";
-import type { RegisterFormData } from "../validation";
+import type { RegisterFormData } from "@/types/auth";
 
 const SCHOOL_TYPES = [
   { label: "Government", value: "PUBLIC" },

@@ -92,8 +92,10 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
     }, []);
 
     const filteredOptions = useMemo(() => {
+      const sv = searchValue ?? "";
+      const lowerSv = sv.toLowerCase();
       return options.filter((o) =>
-        o.label.toLowerCase().includes(searchValue.toLowerCase()),
+        String(o.label).toLowerCase().includes(lowerSv),
       );
     }, [options, searchValue]);
 
@@ -150,7 +152,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           type="button"
           onClick={() => setOpen((v) => !v)}
           data-error={hasError}
-          className={`text-sm cursor-pointer h-10 flex items-center !border !border-gray-300 outline-none focus:outline-none transition-all duration-150
+          className={`text-sm cursor-pointer h-10 flex items-center border! border-gray-300! outline-none focus:outline-none transition-all duration-150
             ${variantStyles[variant]}
             ${statusStyles[status]}
             ${variant === "circle" && !className.includes("w-") ? "w-10" : ""}
