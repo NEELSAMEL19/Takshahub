@@ -1,10 +1,10 @@
-import Teacher from "@/features/management/Tabs/Teacher";
+import ClassTeacher from "@/features/management/Tabs/ClassTeacher";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Teacher />
+      <ClassTeacher />
     </div>
   );
 };

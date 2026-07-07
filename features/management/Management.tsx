@@ -4,14 +4,25 @@ import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
 import { Button } from "@/components/UI";
 import { useAdminMenu } from "@/hooks/sideMenu/useSideMenu";
+import { camelToSnake } from "@/utils/utils";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
   class: { label: "Add Class", addPath: "/admin/management/add/class" },
-  subject: { label: "Add Subject", addPath: "/admin/management/add/subject" },
-  student: { label: "Enroll Student", addPath: "/admin/management/add/student" },
-  teacher: { label: "Enroll Teacher", addPath: "/admin/management/add/teacher" },
+  subject: { label: "Add subject", addPath: "/admin/management/add/subject" },
+  student: {
+    label: "Enroll student",
+    addPath: "/admin/management/add/student",
+  },
+  class_teacher: {
+    label: "Enroll Class teacher",
+    addPath: "/admin/management/add/class_teacher",
+  },
+  subject_teacher: {
+    label: "Enroll Subject Teacher",
+    addPath: "/admin/management/add/subject_teacher",
+  },
 };
 
 const Management = () => {
@@ -24,15 +35,16 @@ const Management = () => {
   const tabItems = Object.entries(managementTabs).map(
     ([key, value], index) => ({
       index,
-      label: key.charAt(0).toUpperCase() + key.slice(1),
-      name: value,
-      path: `/admin/management/${String(value).toLowerCase()}`,
+      label: value,
+      name: key,
+      path: `/admin/management/${camelToSnake(key)}`,
     }),
   );
 
   const activeTabIndex = tabItems.findIndex(
-    (tab) => String(tab.name).toLowerCase() === currentTab,
+    (tab) => camelToSnake(tab.name) === currentTab,
   );
+  console.log(currentTab)
 
   const config = TAB_CONFIG[currentTab];
 
