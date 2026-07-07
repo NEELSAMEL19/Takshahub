@@ -295,7 +295,6 @@ export type StudentFieldErrors = {
 // Generic field-errors mapping used across management hooks and forms
 export type FieldErrors = Record<string, string>;
 
-
 // Flat student record — matches your Prisma `User` model fields.
 // Used for students NOT yet enrolled anywhere (the "available students"
 // dropdown in AddStudent.tsx).
@@ -391,3 +390,129 @@ export type UnenrollStudentResponse = {
 // Re-export AddClass form data inferred from validation schema
 import type { AddClassFormData as _AddClassFormData } from "@/features/management/validation";
 export type AddClassFormData = _AddClassFormData;
+
+// =============================================================================
+// CLASS TEACHER ASSIGNMENT
+// =============================================================================
+
+// Base ClassTeacher entity shape
+export interface ClassTeacher {
+  id: string;
+  schoolId: string;
+  teacherId: string;
+  classId: string;
+  sectionId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// With joined teacher/class/section info for display
+export interface ClassTeacherWithDetails extends ClassTeacher {
+  [key: string]: unknown;
+  teacher?: TeacherRef;
+  class?: ClassRef;
+  section?: SectionRef;
+}
+
+// ---- Get All Class Teachers ----
+export type GetAllClassTeachersResponse = ApiResponse<
+  ClassTeacherWithDetails[]
+>;
+
+// ---- Get Class Teacher By Id ----
+export type GetClassTeacherByIdResponse = ApiResponse<ClassTeacherWithDetails>;
+
+// ---- Get Class Teacher By Section ----
+export type GetClassTeacherBySectionResponse =
+  ApiResponse<ClassTeacherWithDetails>;
+
+// ---- Assign Class Teacher ----
+export interface AssignClassTeacherPayload {
+  teacherId: string | number;
+  classId: string | number;
+  sectionId: string | number;
+}
+export type AssignClassTeacherResponse = ApiResponse<ClassTeacher>;
+
+// ---- Update Class Teacher ----
+export interface UpdateClassTeacherPayload {
+  teacherId: string | number;
+  classId: string | number;
+  sectionId: string | number;
+}
+export type UpdateClassTeacherResponse = ApiResponse<ClassTeacher>;
+
+// ---- Unassign Class Teacher ----
+export type UnassignClassTeacherResponse = {
+  success: boolean;
+  message?: string;
+};
+
+// =============================================================================
+// SUBJECT TEACHER ASSIGNMENT
+// =============================================================================
+
+// Base SubjectTeacher entity shape
+export interface SubjectTeacher {
+  id: string;
+  schoolId: string;
+  teacherId: string;
+  classId: string;
+  sectionId: string;
+  subjectId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// With joined teacher/class/section/subject info for display
+export interface SubjectTeacherWithDetails extends SubjectTeacher {
+  [key: string]: unknown;
+  teacher?: TeacherRef;
+  class?: ClassRef;
+  section?: SectionRef;
+  subject?: SubjectDropdownItem;
+}
+
+// ---- Get All Subject Teachers ----
+export type GetAllSubjectTeachersResponse = ApiResponse<
+  SubjectTeacherWithDetails[]
+>;
+
+// ---- Get Subject Teacher By Id ----
+export type GetSubjectTeacherByIdResponse =
+  ApiResponse<SubjectTeacherWithDetails>;
+
+// ---- Get Subject Teachers By Section ----
+export type GetSubjectTeachersBySectionResponse = ApiResponse<
+  SubjectTeacherWithDetails[]
+>;
+
+// ---- Assign Subject Teacher ----
+export interface AssignSubjectTeacherPayload {
+  teacherId: string | number;
+  classId: string | number;
+  sectionId: string | number;
+  subjectId: string | number;
+}
+export type AssignSubjectTeacherResponse = ApiResponse<SubjectTeacher>;
+
+// ---- Update Subject Teacher ----
+export interface UpdateSubjectTeacherPayload {
+  teacherId: string | number;
+  classId: string | number;
+  sectionId: string | number;
+  subjectId: string | number;
+}
+export type UpdateSubjectTeacherResponse = ApiResponse<SubjectTeacher>;
+
+// ---- Unassign Subject Teacher ----
+export interface UnassignSubjectTeacherPayload {
+  teacherId: string | number;
+  classId: string | number;
+  sectionId: string | number;
+  subjectId: string | number;
+}
+export type UnassignSubjectTeacherResponse = {
+  success: boolean;
+  message?: string;
+};

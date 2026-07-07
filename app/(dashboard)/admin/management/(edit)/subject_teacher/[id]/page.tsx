@@ -1,10 +1,10 @@
-import SubjectTeacher from "@/features/management/Tabs/SubjectTeacher";
+import EditSubjectTeacher from "@/features/management/Edit/EditSubjectTeacher";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <SubjectTeacher />
+      <EditSubjectTeacher />
     </div>
   );
 };

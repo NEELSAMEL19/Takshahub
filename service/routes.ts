@@ -49,6 +49,20 @@ export const API_ENDPOINTS = {
     GETSTUDENTBYID: "/api/backend/management/students/enrolled",
     GETAVAILABLESTUDENTS: "/api/backend/management/students/available",
     DELETESTUDENT: "/api/backend/management/students/unenroll",
+
+    GETALLCLASSTEACHERS: "/api/backend/management/class_teacher",
+    GETCLASSTEACHERBYID: "/api/backend/management/class_teacher",
+    GETCLASSTEACHERBYSECTION: "/api/backend/management/class_teacher/section",
+    ASSIGNCLASSTEACHER: "/api/backend/management/class_teacher/assign",
+    UPDATECLASSTEACHER: "/api/backend/management/class_teacher",
+    UNASSIGNCLASSTEACHER: "/api/backend/management/class_teacher/unassign",
+
+    GETALLSUBJECTTEACHERS: "/api/backend/management/subject_teacher",
+    GETSUBJECTTEACHERBYID: "/api/backend/management/subject_teacher",
+    GETSUBJECTTEACHERSBYSECTION: "/api/backend/management/subject_teacher/section",
+    ASSIGNSUBJECTTEACHER: "/api/backend/management/subject_teacher/assign",
+    UPDATESUBJECTTEACHER: "/api/backend/management/subject_teacher",
+    UNASSIGNSUBJECTTEACHER: "/api/backend/management/subject_teacher/unassign",
   },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",
