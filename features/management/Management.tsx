@@ -16,11 +16,11 @@ const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
     addPath: "/admin/management/add/student",
   },
   class_teacher: {
-    label: "Enroll Class teacher",
+    label: "Enroll class teacher",
     addPath: "/admin/management/add/class_teacher",
   },
   subject_teacher: {
-    label: "Enroll Subject Teacher",
+    label: "Enroll subject teacher",
     addPath: "/admin/management/add/subject_teacher",
   },
 };

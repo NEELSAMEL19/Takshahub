@@ -24,6 +24,23 @@ import {
   UnenrollStudentResponse,
   UpdateEnrollmentResponse,
   UpdateEnrollmentPayload,
+  AssignClassTeacherPayload,
+  AssignClassTeacherResponse,
+  GetAllClassTeachersResponse,
+  GetClassTeacherByIdResponse,
+  GetClassTeacherBySectionResponse,
+  UpdateClassTeacherPayload,
+  UpdateClassTeacherResponse,
+  UnassignClassTeacherResponse,
+  AssignSubjectTeacherPayload,
+  AssignSubjectTeacherResponse,
+  GetAllSubjectTeachersResponse,
+  GetSubjectTeacherByIdResponse,
+  GetSubjectTeachersBySectionResponse,
+  UpdateSubjectTeacherPayload,
+  UpdateSubjectTeacherResponse,
+  UnassignSubjectTeacherPayload,
+  UnassignSubjectTeacherResponse,
 } from "@/types/management";
 import { apiClient } from "./client";
 import { API_ENDPOINTS } from "./routes";
@@ -143,5 +160,96 @@ export const managementApi = {
       .delete<UnenrollStudentResponse>(API_ENDPOINTS.MANAGEMENT.DELETESTUDENT, {
         data,
       })
+      .then((res) => res.data),
+
+  // -------------------------------- CLASS TEACHER --------------------------------
+  GetAllClassTeachers: () =>
+    apiClient
+      .get<GetAllClassTeachersResponse>(
+        API_ENDPOINTS.MANAGEMENT.GETALLCLASSTEACHERS,
+      )
+      .then((res) => res.data),
+
+  GetClassTeacherById: (id: string) =>
+    apiClient
+      .get<GetClassTeacherByIdResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.GETCLASSTEACHERBYID}/${id}`,
+      )
+      .then((res) => res.data),
+
+  GetClassTeacherBySection: (sectionId: string) =>
+    apiClient
+      .get<GetClassTeacherBySectionResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.GETCLASSTEACHERBYSECTION}/${sectionId}`,
+      )
+      .then((res) => res.data),
+
+  AssignClassTeacher: (data: AssignClassTeacherPayload) =>
+    apiClient
+      .post<AssignClassTeacherResponse>(
+        API_ENDPOINTS.MANAGEMENT.ASSIGNCLASSTEACHER,
+        data,
+      )
+      .then((res) => res.data),
+
+  UpdateClassTeacher: (id: string, data: UpdateClassTeacherPayload) =>
+    apiClient
+      .put<UpdateClassTeacherResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.UPDATECLASSTEACHER}/${id}`,
+        data,
+      )
+      .then((res) => res.data),
+
+  UnassignClassTeacher: (sectionId: string) =>
+    apiClient
+      .delete<UnassignClassTeacherResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.UNASSIGNCLASSTEACHER}/${sectionId}`,
+      )
+      .then((res) => res.data),
+
+  // -------------------------------- SUBJECT TEACHER --------------------------------
+  GetAllSubjectTeachers: () =>
+    apiClient
+      .get<GetAllSubjectTeachersResponse>(
+        API_ENDPOINTS.MANAGEMENT.GETALLSUBJECTTEACHERS,
+      )
+      .then((res) => res.data),
+
+  GetSubjectTeacherById: (id: string) =>
+    apiClient
+      .get<GetSubjectTeacherByIdResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.GETSUBJECTTEACHERBYID}/${id}`,
+      )
+      .then((res) => res.data),
+
+  GetSubjectTeachersBySection: (sectionId: string) =>
+    apiClient
+      .get<GetSubjectTeachersBySectionResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.GETSUBJECTTEACHERSBYSECTION}/${sectionId}`,
+      )
+      .then((res) => res.data),
+
+  AssignSubjectTeacher: (data: AssignSubjectTeacherPayload) =>
+    apiClient
+      .post<AssignSubjectTeacherResponse>(
+        API_ENDPOINTS.MANAGEMENT.ASSIGNSUBJECTTEACHER,
+        data,
+      )
+      .then((res) => res.data),
+
+  UpdateSubjectTeacher: (id: string, data: UpdateSubjectTeacherPayload) =>
+    apiClient
+      .put<UpdateSubjectTeacherResponse>(
+        `${API_ENDPOINTS.MANAGEMENT.UPDATESUBJECTTEACHER}/${id}`,
+        data,
+      )
+      .then((res) => res.data),
+
+  UnassignSubjectTeacher: (data: UnassignSubjectTeacherPayload) =>
+    apiClient
+      .delete<UnassignSubjectTeacherResponse>(
+        API_ENDPOINTS.MANAGEMENT.UNASSIGNSUBJECTTEACHER,
+        { data },
+      )
       .then((res) => res.data),
 };
