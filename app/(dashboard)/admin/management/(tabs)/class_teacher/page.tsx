@@ -1,8 +1,11 @@
+import ClassTeacher from '@/features/management/Tabs/ClassTeacher'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <ClassTeacher/>
+    </div>
   )
 }
 
