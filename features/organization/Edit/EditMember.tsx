@@ -86,7 +86,6 @@ const EditMember = () => {
 
   const { data: rolesData } = useGetRolesByPortal(portalType || null);
   const roleOptions = rolesData?.data ?? [];
-  console.log(roleOptions);
   const editMemberMutation = useEditMember(
     (backendErrors: Record<string, string>) => {
       setErrors(backendErrors);

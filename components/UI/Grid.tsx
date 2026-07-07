@@ -68,7 +68,6 @@ export interface GridProps<TRow extends RowData = RowData> {
   rows?: TRow[];
   columns?: ColumnDef<TRow>[];
   storageKey?: string;
-  // Pass both to enable row selection UI
   selectedRows?: (string | number)[];
   onSelectedRowsChange?: (ids: (string | number)[]) => void;
   onRowClick?: (row: TRow) => void;
@@ -79,15 +78,12 @@ export interface GridProps<TRow extends RowData = RowData> {
   exportFilename?: string;
   columnToggleable?: boolean;
   stickyHeader?: boolean;
-  // server pagination
   page?: number;
   totalRows?: number;
   onPageChange?: (page: number) => void;
-  // server sort
   sortField?: string | null;
   sortDir?: "asc" | "desc";
   onSortChange?: (sort: SortState) => void;
-  // server search
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
 }
@@ -150,6 +146,7 @@ const exportCSV = <TRow extends RowData>(
 };
 
 // ─── Skeleton rows ────────────────────────────────────────────────────────────
+// Responsive: cell padding scales down on mobile
 const SkeletonRows = <TRow extends RowData = RowData>({
   columns,
   pageSize = 10,
@@ -164,13 +161,16 @@ const SkeletonRows = <TRow extends RowData = RowData>({
         className="!border-b border-gray-100"
       >
         {selectable && (
-          <td className="!px-6 !py-4">
+          <td className="!px-3 !py-3 sm:!px-4 sm:!py-4 md:!px-6">
             <div className="h-4 w-4 rounded bg-gray-200" />
           </td>
         )}
 
         {columns.map((col, colIndex) => (
-          <td key={col.field} className="!px-6 !py-4">
+          <td
+            key={col.field}
+            className="!px-3 !py-3 sm:!px-4 sm:!py-4 md:!px-6"
+          >
             <div
               className="h-4 rounded-md bg-gray-200"
               style={{
@@ -187,6 +187,7 @@ const SkeletonRows = <TRow extends RowData = RowData>({
 );
 
 // ─── Indeterminate checkbox ───────────────────────────────────────────────────
+// Responsive: slightly larger touch target on mobile
 
 interface IndeterminateCheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   indeterminate?: boolean;
@@ -209,7 +210,7 @@ const IndeterminateCheckbox: React.FC<IndeterminateCheckboxProps> = ({
       type="checkbox"
       checked={checked}
       aria-label={label}
-      className="w-4 h-4 rounded cursor-pointer"
+      className="w-[18px] h-[18px] sm:w-4 sm:h-4 rounded cursor-pointer"
       {...props}
     />
   );
@@ -244,6 +245,7 @@ const SortIcon: React.FC<SortIconProps> = ({ active, dir }) => (
 );
 
 // ─── Column visibility panel ──────────────────────────────────────────────────
+// Responsive: panel width and position adapt so it doesn't overflow small viewports
 
 interface VisibilityPanelProps {
   columns: ColumnDef[];
@@ -272,7 +274,7 @@ const VisibilityPanel: React.FC<VisibilityPanelProps> = ({
       ref={ref}
       role="dialog"
       aria-label="Column visibility"
-      className="absolute right-0 top-full mt-1 z-30 rounded-lg shadow-lg border border-gray-200 bg-white p-3 w-52"
+      className="absolute right-0 top-full mt-1 z-30 rounded-lg shadow-lg border border-gray-200 bg-white p-3 w-[min(13rem,calc(100vw-2rem))]"
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
         Columns
@@ -280,11 +282,11 @@ const VisibilityPanel: React.FC<VisibilityPanelProps> = ({
       {columns.map((col) => (
         <label
           key={col.field}
-          className="flex items-center gap-2 py-1 px-1 rounded cursor-pointer hover:bg-gray-50"
+          className="flex items-center gap-2 py-1.5 sm:py-1 px-1 rounded cursor-pointer hover:bg-gray-50"
         >
           <input
             type="checkbox"
-            className="w-4 h-4 rounded cursor-pointer"
+            className="w-[18px] h-[18px] sm:w-4 sm:h-4 rounded cursor-pointer"
             checked={!hidden.includes(col.field)}
             onChange={() => onToggle(col.field)}
           />
@@ -296,6 +298,7 @@ const VisibilityPanel: React.FC<VisibilityPanelProps> = ({
 };
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
+// Responsive: search takes full width on mobile, buttons collapse to icon-only labels via aria-label already; text hides on very small screens
 
 interface ToolbarProps {
   searchable: boolean;
@@ -326,9 +329,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const inputId = useId();
 
   return (
-    <div className="flex items-center gap-2 px-4 py-3 flex-wrap">
+    <div className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 flex-wrap">
       {searchable && (
-        <div className="relative flex-1 min-w-[180px] max-w-xs">
+        <div className="relative flex-1 min-w-full sm:min-w-[180px] sm:max-w-xs">
           <label htmlFor={inputId} className="sr-only">
             Search
           </label>
@@ -347,7 +350,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             }
             placeholder="Search…"
             aria-controls={tableId}
-            className="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2"
+            className="w-full pl-8 pr-3 py-2 sm:py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2"
           />
         </div>
       )}
@@ -357,9 +360,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
           <button
             onClick={onExport}
             aria-label="Export as CSV"
-            className="px-3 py-1.5 text-sm rounded-lg transition flex items-center gap-1.5"
+            className="px-2.5 py-2 sm:px-3 sm:py-1.5 text-sm rounded-lg transition flex items-center gap-1.5"
           >
-            <span aria-hidden="true">↓</span> Export CSV
+            <span aria-hidden="true">↓</span>
+            <span className="hidden sm:inline">Export CSV</span>
           </button>
         )}
         {columnToggleable && (
@@ -367,9 +371,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <button
               onClick={() => setShowCols((v) => !v)}
               aria-label="Toggle column visibility"
-              className="px-3 py-1.5 text-sm transition flex items-center gap-1.5"
+              className="px-2.5 py-2 sm:px-3 sm:py-1.5 text-sm transition flex items-center gap-1.5"
             >
-              <span aria-hidden="true">⊞</span> Columns
+              <span aria-hidden="true">⊞</span>
+              <span className="hidden sm:inline">Columns</span>
               {hiddenColumns.length > 0 && (
                 <span className="ml-1 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                   {hiddenColumns.length}
@@ -458,7 +463,6 @@ const useColumnOrder = <TRow extends RowData>(
   );
 
   useEffect(() => {
-    // Avoid synchronous setState inside effect (ESLint rule).
     setTimeout(() => {
       setColOrder((prev) => {
         const prevSet = new Set(prev);
@@ -524,19 +528,16 @@ function Grid<TRow extends RowData = RowData>({
   const isServerSort = typeof onSortChange === "function";
   const isServerSearch = typeof onSearchChangeProp === "function";
 
-  // Selection is only enabled when BOTH selectedRows and onSelectedRowsChange are provided
   const isSelectable =
     Array.isArray(selectedRows) && typeof onSelectedRowsChange === "function";
 
   const tableId = useId();
 
-  // ── Column order + resize ──────────────────────────────────────────────────
   const { orderedColumns, reorder } = useColumnOrder<TRow>(columns, storageKey);
   const { colWidths, startResize } = useColumnResize(
     orderedColumns as ColumnDef[],
   );
 
-  // ── Column visibility ──────────────────────────────────────────────────────
   const [hiddenColumns, setHiddenColumns] = useState<string[]>(() =>
     storageKey ? storage.get<string[]>(`${storageKey}-hidden-cols`, []) : [],
   );
@@ -559,18 +560,15 @@ function Grid<TRow extends RowData = RowData>({
     [orderedColumns, hiddenColumns],
   );
 
-  // ── Search ─────────────────────────────────────────────────────────────────
   const [internalSearch, setInternalSearch] = useState("");
   const searchQuery = isServerSearch
     ? (controlledSearch ?? "")
     : internalSearch;
 
-  // ── Pagination ─────────────────────────────────────────────────────────────
   const [internalPage, setInternalPage] = useState(1);
   const page = isServerPagination ? (controlledPage ?? 1) : internalPage;
   const setPage = isServerPagination ? onPageChange! : setInternalPage;
 
-  // ── Sort ───────────────────────────────────────────────────────────────────
   const [internalSortField, setInternalSortField] = useState<string | null>(
     null,
   );
@@ -606,7 +604,6 @@ function Grid<TRow extends RowData = RowData>({
     [isServerSort, sortField, sortDir, internalSortField, onSortChange],
   );
 
-  // ── Client-side search ─────────────────────────────────────────────────────
   const searchedRows = useMemo<TRow[]>(() => {
     if (isServerSearch || !searchQuery.trim()) return rows;
     const q = searchQuery.toLowerCase();
@@ -620,7 +617,6 @@ function Grid<TRow extends RowData = RowData>({
     );
   }, [rows, visibleColumns, searchQuery, isServerSearch]);
 
-  // ── Client-side sort ───────────────────────────────────────────────────────
   const sortedRows = useMemo<TRow[]>(() => {
     if (isServerSort || !sortField) return searchedRows;
     const col = orderedColumns.find((c) => c.field === sortField);
@@ -637,14 +633,12 @@ function Grid<TRow extends RowData = RowData>({
     });
   }, [searchedRows, orderedColumns, sortField, sortDir, isServerSort]);
 
-  // ── Pagination math ────────────────────────────────────────────────────────
   const effectiveTotalRows = isServerPagination
     ? (totalRows ?? 0)
     : sortedRows.length;
   const totalPages = Math.max(1, Math.ceil(effectiveTotalRows / pageSize));
 
   useEffect(() => {
-    // Avoid synchronous setState inside effect (ESLint rule).
     if (!isServerPagination && page > totalPages)
       setTimeout(() => setInternalPage(totalPages), 0);
   }, [page, totalPages, isServerPagination]);
@@ -653,7 +647,6 @@ function Grid<TRow extends RowData = RowData>({
     ? rows
     : sortedRows.slice((page - 1) * pageSize, page * pageSize);
 
-  // ── Selection state (only computed when selectable) ────────────────────────
   const selected = isSelectable ? selectedRows! : [];
   const pageIds = pagedRows.map((r) => r.id);
   const selectedOnPage = pageIds.filter((id) => selected.includes(id));
@@ -682,14 +675,12 @@ function Grid<TRow extends RowData = RowData>({
     }
   };
 
-  // ── Cell renderer ──────────────────────────────────────────────────────────
   const renderCell = (row: TRow, col: ColumnDef<TRow>): React.ReactNode => {
     if (col.renderCell) return col.renderCell(row);
     const val = getValue(row, col.field);
     return (val ?? "—") as React.ReactNode;
   };
 
-  // ── Drag-to-reorder ────────────────────────────────────────────────────────
   const dragSrc = useRef<string | null>(null);
 
   const headerPointerDown =
@@ -728,7 +719,7 @@ function Grid<TRow extends RowData = RowData>({
         tableId={tableId}
       />
 
-      {/* Horizontal scroll only — appears when table content exceeds container width */}
+      {/* Horizontal scroll — table scrolls sideways on narrow viewports instead of breaking layout */}
       <div className="overflow-x-auto shadow-sm">
         <table
           id={tableId}
@@ -739,12 +730,11 @@ function Grid<TRow extends RowData = RowData>({
         >
           <thead className={cx(stickyHeader && "sticky top-0 z-20")}>
             <tr role="row" className="bg-gray-100">
-              {/* Select-all checkbox — only rendered when selection is enabled */}
               {isSelectable && (
                 <th
                   role="columnheader"
                   scope="col"
-                  className="!px-6 text-left w-10 bg-gray-100"
+                  className="!px-3 sm:!px-6 text-left w-10 bg-gray-100"
                 >
                   <IndeterminateCheckbox
                     checked={allOnPageSelected}
@@ -767,7 +757,7 @@ function Grid<TRow extends RowData = RowData>({
                     scope="col"
                     aria-sort={col.sortable ? ariaSort(col.field) : undefined}
                     className={cx(
-                      "relative text-sm font-semibold select-none bg-gray-100 !px-6 !py-3",
+                      "relative text-xs sm:text-sm font-semibold select-none bg-gray-100 !px-3 !py-2.5 sm:!px-4 sm:!py-3 md:!px-6",
                       ALIGN[headerAlign],
                       col.sortable &&
                         "cursor-pointer hover:bg-gray-200 transition-colors",
@@ -787,7 +777,7 @@ function Grid<TRow extends RowData = RowData>({
                   >
                     <span
                       className={cx(
-                        "flex items-center gap-0.5 pr-3",
+                        "flex items-center gap-0.5 pr-2 sm:pr-3",
                         headerAlign === "left" && "justify-start",
                         headerAlign === "center" && "justify-center",
                         headerAlign === "right" && "justify-end",
@@ -815,7 +805,7 @@ function Grid<TRow extends RowData = RowData>({
               <tr role="row">
                 <td
                   colSpan={visibleColumns.length + (isSelectable ? 1 : 0)}
-                  className="!px-6 text-center text-sm text-gray-400"
+                  className="!px-3 sm:!px-6 text-center text-sm text-gray-400"
                   style={{ height: "200px" }}
                 >
                   {searchQuery
@@ -835,17 +825,16 @@ function Grid<TRow extends RowData = RowData>({
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
                   className={cx(onRowClick && "cursor-pointer")}
                 >
-                  {/* Row checkbox — only rendered when selection is enabled */}
                   {isSelectable && (
                     <td
                       role="gridcell"
-                      className="!p-6 w-20"
+                      className="!p-3 sm:!p-4 md:!p-6 w-16 sm:w-20"
                       onClick={(e: MouseEvent) => e.stopPropagation()}
                     >
                       <input
                         type="checkbox"
                         aria-label={`Select row ${row.id}`}
-                        className="w-4 h-4 rounded cursor-pointer"
+                        className="w-[18px] h-[18px] sm:w-4 sm:h-4 rounded cursor-pointer"
                         checked={selected.includes(row.id)}
                         onChange={() =>
                           updateSelected((prev) =>
@@ -865,7 +854,7 @@ function Grid<TRow extends RowData = RowData>({
                         key={`${row.id}-${col.field}`}
                         role="gridcell"
                         className={cx(
-                          "text-sm !px-6 !py-3",
+                          "text-xs sm:text-sm !px-3 !py-2.5 sm:!px-4 sm:!py-3 md:!px-6",
                           ALIGN[col.align ?? "left"],
                           col.cellClassName?.(row),
                           col.onCellClick && "cursor-pointer hover:underline",
@@ -891,9 +880,13 @@ function Grid<TRow extends RowData = RowData>({
         </table>
       </div>
 
-      {/* Footer / pagination */}
-      <div className="flex mt-2 text-typography-secondary border-t-0 items-center justify-between px-5 py-3 flex-wrap gap-2">
-        <span className="text-sm" aria-live="polite" aria-atomic="true">
+      {/* Footer / pagination — stacks on mobile, larger touch targets on buttons */}
+      <div className="flex mt-2 text-typography-secondary border-t-0 items-center justify-between px-3 py-3 sm:px-5 flex-wrap gap-2">
+        <span
+          className="text-xs sm:text-sm"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {isSelectable && selected.length > 0
             ? `${selected.length} of ${effectiveTotalRows} selected`
             : `${effectiveTotalRows} records`}
@@ -902,20 +895,20 @@ function Grid<TRow extends RowData = RowData>({
         <div className="flex items-center gap-2">
           <button
             aria-label="Previous page"
-            className="px-3 py-1 text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-3 py-2 sm:py-1 text-xs sm:text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1 || loading}
           >
             Previous
           </button>
 
-          <span className="text-sm" aria-live="polite">
+          <span className="text-xs sm:text-sm" aria-live="polite">
             Page {page} of {totalPages}
           </span>
 
           <button
             aria-label="Next page"
-            className="px-3 py-1 text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-3 py-2 sm:py-1 text-xs sm:text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages || loading}
           >
