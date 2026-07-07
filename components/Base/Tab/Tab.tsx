@@ -31,24 +31,30 @@ const Tab = ({
   };
 
   return (
-    <div className={`flex justify-between ${button ? "gap-5" : ""} flex-wrap`}>
-      <Nav
-        appearance="subtle"
-        activeKey={active}
-        onSelect={handleSelect}
-        className={`
-    ${className}
-  `}
-      >
-        {items.map((item, index) => (
-          <Nav.Item key={item.path} eventKey={index} as={Link} href={item.path}>
-            {item.label}
-          </Nav.Item>
-        ))}
-      </Nav>
+    <div
+      className={`flex items-center justify-between min-w-0 gap-2 sm:gap-3 ${
+        button ? "sm:gap-5" : ""
+      }`}
+    >
+      <div className="min-w-0 max-w-full">
+        <Nav
+          appearance="subtle"
+          activeKey={active}
+          onSelect={handleSelect}
+          className={className}
+        >
+          {items.map((item, index) => (
+            <Nav.Item key={item.path} eventKey={index} as={Link} href={item.path}>
+              {item.label}
+            </Nav.Item>
+          ))}
+        </Nav>
+      </div>
 
       {button && (
-        <div className="flex items-center justify-center w-fit">{button}</div>
+        <div className="flex items-center justify-center w-fit shrink-0">
+          {button}
+        </div>
       )}
     </div>
   );
