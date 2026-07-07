@@ -29,7 +29,10 @@ const Management = () => {
   const { data } = useAdminMenu();
   const pathname = usePathname();
   const router = useRouter();
-  const managementTabs = data?.data?.Management || {};
+  const managementTabs = (data?.data?.Management || {}) as Record<
+    string,
+    string
+  >;
   const currentTab = pathname.split("/").pop() ?? "";
 
   const tabItems = Object.entries(managementTabs).map(
@@ -44,7 +47,6 @@ const Management = () => {
   const activeTabIndex = tabItems.findIndex(
     (tab) => camelToSnake(tab.name) === currentTab,
   );
-  console.log(currentTab)
 
   const config = TAB_CONFIG[currentTab];
 
