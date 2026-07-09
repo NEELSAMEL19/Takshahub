@@ -71,6 +71,15 @@ export const API_ENDPOINTS = {
     GETSTUDENTSATTENDANCE: "/api/backend/attendance/students/",
     UPDATESTUDENTATTENDANCE: "/api/backend/attendance/students/toggle",
   },
+  Academic: {
+    ADDACADEMICYEAR: "/api/backend/academic/academic_years/add",
+    GETALLACADEMICYEARS: "/api/backend/academic/academic_years/all",
+    GETACTIVEACADEMICYEAR: "/api/backend/academic/academic_years/active",
+    GETACADEMICYEARBYID: "/api/backend/academic/academic_years",
+    EDITACADEMICYEAR: "/api/backend/academic/academic_years",
+    ACTIVATEACADEMICYEAR: "/api/backend/academic/academic_years",
+    DELETEACADEMICYEAR: "/api/backend/academic/academic_years",
+  },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",
   },

@@ -1,10 +1,10 @@
-import AcademicYear from "@/features/academic/Tabs/AcademicYear";
+import EditAcademicYear from "@/features/academic/Edit/EditAcademicYear";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <AcademicYear />
+      <EditAcademicYear />
     </div>
   );
 };
