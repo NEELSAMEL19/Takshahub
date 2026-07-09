@@ -1,10 +1,10 @@
-import Students from "@/features/attendance/Tabs/Students";
+import AcademicYear from "@/features/academic/Tabs/AcademicYear";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <Students />
+      <AcademicYear />
     </div>
   );
 };
