@@ -2,7 +2,10 @@
 // Core Entity
 // ==========================================
 
+export type FieldErrors = Record<string, string>;
+
 export interface AcademicYear {
+  [key: string]: unknown;
   id: string; // BigInt serialized as string
   schoolId: string; // BigInt serialized as string
   label: string;

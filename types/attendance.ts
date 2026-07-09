@@ -13,6 +13,7 @@ export interface GetStudentsAttendanceParams {
   classId: string;
   sectionId: string;
   date: string; // "YYYY-MM-DD"
+  academicYearId: string;
 }
 
 export interface GetStudentsAttendanceResponse {
