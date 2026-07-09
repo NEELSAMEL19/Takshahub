@@ -1,3 +1,5 @@
+import Attendance from "@/features/Attendance/Attendance";
+
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://takshahub.onrender.com";
 
@@ -59,10 +61,15 @@ export const API_ENDPOINTS = {
 
     GETALLSUBJECTTEACHERS: "/api/backend/management/subject_teacher",
     GETSUBJECTTEACHERBYID: "/api/backend/management/subject_teacher",
-    GETSUBJECTTEACHERSBYSECTION: "/api/backend/management/subject_teacher/section",
+    GETSUBJECTTEACHERSBYSECTION:
+      "/api/backend/management/subject_teacher/section",
     ASSIGNSUBJECTTEACHER: "/api/backend/management/subject_teacher/assign",
     UPDATESUBJECTTEACHER: "/api/backend/management/subject_teacher",
     UNASSIGNSUBJECTTEACHER: "/api/backend/management/subject_teacher/unassign",
+  },
+  Attendance: {
+    GETSTUDENTSATTENDANCE: "/api/backend/attendance/students/",
+    UPDATESTUDENTATTENDANCE: "/api/backend/attendance/students/toggle",
   },
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",

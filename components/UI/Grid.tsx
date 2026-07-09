@@ -12,33 +12,16 @@ import React, {
   PointerEvent as ReactPointerEvent,
 } from "react";
 
-// ─── Utils ────────────────────────────────────────────────────────────────────
-
-const cx = (...args: (string | false | null | undefined)[]): string =>
-  args.filter(Boolean).join(" ");
-
-const getValue = (obj: unknown, path: string): unknown => {
-  return path.split(".").reduce<unknown>((acc, key) => {
-    if (acc && typeof acc === "object") {
-      return (acc as Record<string, unknown>)[key];
-    }
-    return undefined;
-  }, obj);
-};
-
-type Align = "left" | "right" | "center";
-const ALIGN: Record<Align, string> = {
-  left: "text-left",
-  right: "text-right",
-  center: "text-center",
-};
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// Types
+// ════════════════════════════════════════════════════════════════════════════
 
 export interface RowData {
   id: string | number;
   [key: string]: unknown;
 }
+
+type Align = "left" | "right" | "center";
 
 export interface ColumnDef<TRow extends RowData = RowData> {
   field: string;
@@ -86,15 +69,29 @@ export interface GridProps<TRow extends RowData = RowData> {
   onSortChange?: (sort: SortState) => void;
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
+  filters?: React.ReactNode;
 }
 
-interface SkeletonRowsProps<TRow extends RowData = RowData> {
-  columns: ColumnDef<TRow>[];
-  pageSize?: number;
-  selectable?: boolean;
-}
+// ════════════════════════════════════════════════════════════════════════════
+// Small utils
+// ════════════════════════════════════════════════════════════════════════════
 
-// ─── localStorage persistence ─────────────────────────────────────────────────
+const cx = (...args: (string | false | null | undefined)[]): string =>
+  args.filter(Boolean).join(" ");
+
+const ALIGN: Record<Align, string> = {
+  left: "text-left",
+  right: "text-right",
+  center: "text-center",
+};
+
+const getValue = (obj: unknown, path: string): unknown =>
+  path.split(".").reduce<unknown>((acc, key) => {
+    if (acc && typeof acc === "object") {
+      return (acc as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, obj);
 
 const storage = {
   get<T>(key: string, fallback: T): T {
@@ -113,8 +110,6 @@ const storage = {
     }
   },
 };
-
-// ─── Export CSV ───────────────────────────────────────────────────────────────
 
 const exportCSV = <TRow extends RowData>(
   rows: TRow[],
@@ -145,13 +140,19 @@ const exportCSV = <TRow extends RowData>(
   URL.revokeObjectURL(url);
 };
 
-// ─── Skeleton rows ────────────────────────────────────────────────────────────
-// Responsive: cell padding scales down on mobile
+// ════════════════════════════════════════════════════════════════════════════
+// Presentational subcomponents
+// ════════════════════════════════════════════════════════════════════════════
+
 const SkeletonRows = <TRow extends RowData = RowData>({
   columns,
   pageSize = 10,
   selectable = false,
-}: SkeletonRowsProps<TRow>) => (
+}: {
+  columns: ColumnDef<TRow>[];
+  pageSize?: number;
+  selectable?: boolean;
+}) => (
   <>
     {Array.from({ length: pageSize }).map((_, rowIndex) => (
       <tr
@@ -165,7 +166,6 @@ const SkeletonRows = <TRow extends RowData = RowData>({
             <div className="h-4 w-4 rounded bg-gray-200" />
           </td>
         )}
-
         {columns.map((col, colIndex) => (
           <td
             key={col.field}
@@ -185,9 +185,6 @@ const SkeletonRows = <TRow extends RowData = RowData>({
     ))}
   </>
 );
-
-// ─── Indeterminate checkbox ───────────────────────────────────────────────────
-// Responsive: slightly larger touch target on mobile
 
 interface IndeterminateCheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   indeterminate?: boolean;
@@ -216,14 +213,10 @@ const IndeterminateCheckbox: React.FC<IndeterminateCheckboxProps> = ({
   );
 };
 
-// ─── Sort icon ────────────────────────────────────────────────────────────────
-
-interface SortIconProps {
-  active: boolean;
-  dir: "asc" | "desc";
-}
-
-const SortIcon: React.FC<SortIconProps> = ({ active, dir }) => (
+const SortIcon: React.FC<{ active: boolean; dir: "asc" | "desc" }> = ({
+  active,
+  dir,
+}) => (
   <span className="inline-flex flex-col ml-1 leading-none" aria-hidden="true">
     <span
       className={cx(
@@ -244,22 +237,12 @@ const SortIcon: React.FC<SortIconProps> = ({ active, dir }) => (
   </span>
 );
 
-// ─── Column visibility panel ──────────────────────────────────────────────────
-// Responsive: panel width and position adapt so it doesn't overflow small viewports
-
-interface VisibilityPanelProps {
+const VisibilityPanel: React.FC<{
   columns: ColumnDef[];
   hidden: string[];
   onToggle: (field: string) => void;
   onClose: () => void;
-}
-
-const VisibilityPanel: React.FC<VisibilityPanelProps> = ({
-  columns,
-  hidden,
-  onToggle,
-  onClose,
-}) => {
+}> = ({ columns, hidden, onToggle, onClose }) => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onDown = (e: Event) => {
@@ -297,10 +280,7 @@ const VisibilityPanel: React.FC<VisibilityPanelProps> = ({
   );
 };
 
-// ─── Toolbar ──────────────────────────────────────────────────────────────────
-// Responsive: search takes full width on mobile, buttons collapse to icon-only labels via aria-label already; text hides on very small screens
-
-interface ToolbarProps {
+const Toolbar: React.FC<{
   searchable: boolean;
   searchQuery: string;
   onSearchChange: (q: string) => void;
@@ -311,9 +291,8 @@ interface ToolbarProps {
   hiddenColumns: string[];
   onToggleColumn: (field: string) => void;
   tableId: string;
-}
-
-const Toolbar: React.FC<ToolbarProps> = ({
+  filters?: React.ReactNode;
+}> = ({
   searchable,
   searchQuery,
   onSearchChange,
@@ -324,12 +303,17 @@ const Toolbar: React.FC<ToolbarProps> = ({
   hiddenColumns,
   onToggleColumn,
   tableId,
+  filters,
 }) => {
   const [showCols, setShowCols] = useState(false);
   const inputId = useId();
 
   return (
     <div className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 flex-wrap">
+      {filters && (
+        <div className="flex items-center gap-2 flex-wrap">{filters}</div>
+      )}
+
       {searchable && (
         <div className="relative flex-1 min-w-full sm:min-w-[180px] sm:max-w-xs">
           <label htmlFor={inputId} className="sr-only">
@@ -396,18 +380,89 @@ const Toolbar: React.FC<ToolbarProps> = ({
   );
 };
 
-// ─── useColumnResize ──────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// Hooks — controllable (controlled/uncontrolled) state
+// ════════════════════════════════════════════════════════════════════════════
 
-interface UseColumnResizeReturn {
-  colWidths: Record<string, number>;
-  startResize: (
-    e: ReactPointerEvent<HTMLSpanElement>,
-    field: string,
-    currentWidth: number,
-  ) => void;
+/**
+ * Resolves a piece of state that may be either controlled by a parent
+ * (via `controlledValue` + a change callback) or managed internally.
+ * Returns the effective value plus a setter that only affects internal state
+ * (callers are responsible for invoking the external callback themselves when
+ * the state is controlled).
+ */
+function useControllableState<T>(
+  isControlled: boolean,
+  controlledValue: T | undefined,
+  defaultValue: T,
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [internalValue, setInternalValue] = useState<T>(defaultValue);
+  const value = isControlled ? (controlledValue as T) : internalValue;
+  return [value, setInternalValue];
 }
 
-const useColumnResize = (columns: ColumnDef[]): UseColumnResizeReturn => {
+// ════════════════════════════════════════════════════════════════════════════
+// Hooks — column order / resize / visibility
+// ════════════════════════════════════════════════════════════════════════════
+
+function useColumnOrder<TRow extends RowData>(
+  columns: ColumnDef<TRow>[],
+  storageKey?: string,
+) {
+  const defaultOrder = useMemo(() => columns.map((c) => c.field), [columns]);
+
+  const [colOrder, setColOrder] = useState<string[]>(() =>
+    storageKey
+      ? storage.get<string[]>(`${storageKey}-col-order`, defaultOrder)
+      : defaultOrder,
+  );
+
+  // Only re-sync when the *set* of available fields changes (columns added
+  // or removed), not when column objects are re-created or reordered by the
+  // parent. A sorted signature avoids the eslint-disable this used to need.
+  const columnFieldsSignature = useMemo(
+    () => [...defaultOrder].sort().join("|"),
+    [defaultOrder],
+  );
+
+  useEffect(() => {
+    setTimeout(() => {
+      setColOrder((prev) => {
+        const prevSet = new Set(prev);
+        const additions = defaultOrder.filter((f) => !prevSet.has(f));
+        const pruned = prev.filter((f) => defaultOrder.includes(f));
+        return [...pruned, ...additions];
+      });
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnFieldsSignature]);
+
+  const reorder = useCallback(
+    (fromField: string, toField: string) => {
+      if (fromField === toField) return;
+      setColOrder((prev) => {
+        const next = [...prev];
+        const fromIndex = next.indexOf(fromField);
+        const toIndex = next.indexOf(toField);
+        if (fromIndex === -1 || toIndex === -1) return prev;
+        next.splice(fromIndex, 1);
+        next.splice(toIndex, 0, fromField);
+        if (storageKey) storage.set(`${storageKey}-col-order`, next);
+        return next;
+      });
+    },
+    [storageKey],
+  );
+
+  const orderedColumns = useMemo<ColumnDef<TRow>[]>(() => {
+    const byField = Object.fromEntries(columns.map((c) => [c.field, c]));
+    return colOrder.map((f) => byField[f]).filter(Boolean) as ColumnDef<TRow>[];
+  }, [columns, colOrder]);
+
+  return { orderedColumns, reorder };
+}
+
+function useColumnResize(columns: ColumnDef[]) {
   const [colWidths, setColWidths] = useState<Record<string, number>>({});
 
   const startResize = useCallback(
@@ -419,14 +474,16 @@ const useColumnResize = (columns: ColumnDef[]): UseColumnResizeReturn => {
       e.preventDefault();
       const el = e.currentTarget;
       const startX = e.clientX;
-      const startW = currentWidth;
-      const col = columns.find((c) => c.field === field);
-      const minW = col?.minWidth ?? 60;
+      const startWidth = currentWidth;
+      const minWidth = columns.find((c) => c.field === field)?.minWidth ?? 60;
 
       el.setPointerCapture(e.pointerId);
 
-      const onMove = (me: PointerEvent) => {
-        const next = Math.max(minW, startW + me.clientX - startX);
+      const onMove = (moveEvent: PointerEvent) => {
+        const next = Math.max(
+          minWidth,
+          startWidth + moveEvent.clientX - startX,
+        );
         setColWidths((prev) => ({ ...prev, [field]: next }));
       };
       const onUp = () => {
@@ -441,70 +498,214 @@ const useColumnResize = (columns: ColumnDef[]): UseColumnResizeReturn => {
   );
 
   return { colWidths, startResize };
-};
-
-// ─── useColumnOrder ───────────────────────────────────────────────────────────
-
-interface UseColumnOrderReturn<TRow extends RowData> {
-  orderedColumns: ColumnDef<TRow>[];
-  reorder: (fromField: string, toField: string) => void;
 }
 
-const useColumnOrder = <TRow extends RowData>(
-  columns: ColumnDef<TRow>[],
-  storageKey?: string,
-): UseColumnOrderReturn<TRow> => {
-  const defaultOrder = columns.map((c) => c.field);
-
-  const [colOrder, setColOrder] = useState<string[]>(() =>
-    storageKey
-      ? storage.get<string[]>(`${storageKey}-col-order`, defaultOrder)
-      : defaultOrder,
+function useColumnVisibility(storageKey?: string) {
+  const [hiddenColumns, setHiddenColumns] = useState<string[]>(() =>
+    storageKey ? storage.get<string[]>(`${storageKey}-hidden-cols`, []) : [],
   );
 
-  useEffect(() => {
-    setTimeout(() => {
-      setColOrder((prev) => {
-        const prevSet = new Set(prev);
-        const next = defaultOrder.filter((f) => !prevSet.has(f));
-        const pruned = prev.filter((f) => defaultOrder.includes(f));
-        return [...pruned, ...next];
-      });
-    }, 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns.length]);
-
-  const reorder = useCallback(
-    (fromField: string, toField: string) => {
-      if (fromField === toField) return;
-      setColOrder((prev) => {
-        const next = [...prev];
-        const fi = next.indexOf(fromField);
-        const ti = next.indexOf(toField);
-        if (fi === -1 || ti === -1) return prev;
-        next.splice(fi, 1);
-        next.splice(ti, 0, fromField);
-        if (storageKey) storage.set(`${storageKey}-col-order`, next);
+  const toggleColumn = useCallback(
+    (field: string) => {
+      setHiddenColumns((prev) => {
+        const next = prev.includes(field)
+          ? prev.filter((f) => f !== field)
+          : [...prev, field];
+        if (storageKey) storage.set(`${storageKey}-hidden-cols`, next);
         return next;
       });
     },
     [storageKey],
   );
 
-  const orderedColumns = useMemo<ColumnDef<TRow>[]>(() => {
-    const map = Object.fromEntries(columns.map((c) => [c.field, c]));
-    return colOrder.map((f) => map[f]).filter(Boolean) as ColumnDef<TRow>[];
-  }, [columns, colOrder]);
+  return { hiddenColumns, toggleColumn };
+}
 
-  return { orderedColumns, reorder };
-};
+/** Drag-to-reorder for header cells, sharing a single "currently dragged" ref. */
+function useHeaderDragReorder(reorder: (from: string, to: string) => void) {
+  const dragSrc = useRef<string | null>(null);
 
-// ─── Grid ─────────────────────────────────────────────────────────────────────
+  const onPointerDown = useCallback(
+    (field: string) => (e: ReactPointerEvent<HTMLTableCellElement>) => {
+      if (e.button !== 0) return;
+      dragSrc.current = field;
+    },
+    [],
+  );
+
+  const onPointerUp = useCallback(
+    (field: string) => () => {
+      if (dragSrc.current && dragSrc.current !== field) {
+        reorder(dragSrc.current, field);
+      }
+      dragSrc.current = null;
+    },
+    [reorder],
+  );
+
+  const onPointerEnter = useCallback(
+    (field: string) => () => {
+      if (dragSrc.current && dragSrc.current !== field) {
+        reorder(dragSrc.current, field);
+        dragSrc.current = field;
+      }
+    },
+    [reorder],
+  );
+
+  return { onPointerDown, onPointerUp, onPointerEnter };
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Hooks — search / sort / pagination pipeline
+// ════════════════════════════════════════════════════════════════════════════
+
+interface UseGridPipelineArgs<TRow extends RowData> {
+  rows: TRow[];
+  visibleColumns: ColumnDef<TRow>[];
+  pageSize: number;
+  isServerSearch: boolean;
+  isServerSort: boolean;
+  isServerPagination: boolean;
+  searchQuery: string;
+  sortField: string | null | undefined;
+  sortDir: "asc" | "desc";
+  page: number;
+  totalRows?: number;
+}
+
+/**
+ * Pure(ish) pipeline: filters -> sorts -> paginates. When search/sort/paging
+ * are server-controlled, the corresponding step is skipped locally because
+ * the parent is assumed to have already applied it to `rows`.
+ */
+function useGridPipeline<TRow extends RowData>({
+  rows,
+  visibleColumns,
+  pageSize,
+  isServerSearch,
+  isServerSort,
+  isServerPagination,
+  searchQuery,
+  sortField,
+  sortDir,
+  page,
+  totalRows,
+}: UseGridPipelineArgs<TRow>) {
+  const searchedRows = useMemo<TRow[]>(() => {
+    if (isServerSearch || !searchQuery.trim()) return rows;
+    const q = searchQuery.toLowerCase();
+    return rows.filter((row) =>
+      visibleColumns.some((col) => {
+        const val = col.searchValue
+          ? col.searchValue(row)
+          : getValue(row, col.field);
+        return String(val).toLowerCase().includes(q);
+      }),
+    );
+  }, [rows, visibleColumns, searchQuery, isServerSearch]);
+
+  const sortedRows = useMemo<TRow[]>(() => {
+    if (isServerSort || !sortField) return searchedRows;
+    const col = visibleColumns.find((c) => c.field === sortField);
+    return [...searchedRows].sort((a, b) => {
+      const av = col?.sortValue ? col.sortValue(a) : getValue(a, sortField);
+      const bv = col?.sortValue ? col.sortValue(b) : getValue(b, sortField);
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const cmp =
+        typeof av === "number" && typeof bv === "number"
+          ? av - bv
+          : String(av).localeCompare(String(bv));
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [searchedRows, visibleColumns, sortField, sortDir, isServerSort]);
+
+  const effectiveTotalRows = isServerPagination
+    ? (totalRows ?? 0)
+    : sortedRows.length;
+  const totalPages = Math.max(1, Math.ceil(effectiveTotalRows / pageSize));
+
+  const pagedRows = isServerPagination
+    ? rows
+    : sortedRows.slice((page - 1) * pageSize, page * pageSize);
+
+  return { sortedRows, pagedRows, effectiveTotalRows, totalPages };
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Hooks — row selection
+// ════════════════════════════════════════════════════════════════════════════
+
+function useRowSelection<TRow extends RowData>(
+  pagedRows: TRow[],
+  selectedRows: (string | number)[] | undefined,
+  onSelectedRowsChange: ((ids: (string | number)[]) => void) | undefined,
+) {
+  const isSelectable =
+    Array.isArray(selectedRows) && typeof onSelectedRowsChange === "function";
+
+  const selected = isSelectable ? selectedRows! : [];
+  const pageIds = useMemo(() => pagedRows.map((r) => r.id), [pagedRows]);
+  const selectedOnPage = pageIds.filter((id) => selected.includes(id));
+  const allOnPageSelected =
+    pagedRows.length > 0 && selectedOnPage.length === pageIds.length;
+  const someOnPageSelected = selectedOnPage.length > 0 && !allOnPageSelected;
+
+  const updateSelected = useCallback(
+    (
+      updater:
+        | ((prev: (string | number)[]) => (string | number)[])
+        | (string | number)[],
+    ) => {
+      if (!isSelectable) return;
+      const next = typeof updater === "function" ? updater(selected) : updater;
+      onSelectedRowsChange!(next);
+    },
+    [selected, isSelectable, onSelectedRowsChange],
+  );
+
+  const selectAllOnPage = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.checked) {
+        updateSelected((prev) => [...new Set([...prev, ...pageIds])]);
+      } else {
+        updateSelected((prev) => prev.filter((id) => !pageIds.includes(id)));
+      }
+    },
+    [pageIds, updateSelected],
+  );
+
+  const toggleRow = useCallback(
+    (id: string | number) => {
+      updateSelected((prev) =>
+        prev.includes(id)
+          ? prev.filter((existing) => existing !== id)
+          : [...prev, id],
+      );
+    },
+    [updateSelected],
+  );
+
+  return {
+    isSelectable,
+    selected,
+    allOnPageSelected,
+    someOnPageSelected,
+    selectAllOnPage,
+    toggleRow,
+  };
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Grid
+// ════════════════════════════════════════════════════════════════════════════
 
 function Grid<TRow extends RowData = RowData>({
   rows = [],
   columns = [],
   storageKey,
+  filters,
   selectedRows,
   onSelectedRowsChange,
   onRowClick,
@@ -524,67 +725,63 @@ function Grid<TRow extends RowData = RowData>({
   searchQuery: controlledSearch,
   onSearchChange: onSearchChangeProp,
 }: GridProps<TRow>): React.ReactElement {
+  const tableId = useId();
+
   const isServerPagination = typeof onPageChange === "function";
   const isServerSort = typeof onSortChange === "function";
   const isServerSearch = typeof onSearchChangeProp === "function";
 
-  const isSelectable =
-    Array.isArray(selectedRows) && typeof onSelectedRowsChange === "function";
-
-  const tableId = useId();
-
+  // ── Columns: order, resize, visibility ──────────────────────────────────
   const { orderedColumns, reorder } = useColumnOrder<TRow>(columns, storageKey);
   const { colWidths, startResize } = useColumnResize(
     orderedColumns as ColumnDef[],
   );
-
-  const [hiddenColumns, setHiddenColumns] = useState<string[]>(() =>
-    storageKey ? storage.get<string[]>(`${storageKey}-hidden-cols`, []) : [],
-  );
-
-  const handleToggleColumn = useCallback(
-    (field: string) => {
-      setHiddenColumns((prev) => {
-        const next = prev.includes(field)
-          ? prev.filter((f) => f !== field)
-          : [...prev, field];
-        if (storageKey) storage.set(`${storageKey}-hidden-cols`, next);
-        return next;
-      });
-    },
-    [storageKey],
-  );
+  const { hiddenColumns, toggleColumn } = useColumnVisibility(storageKey);
+  const headerDrag = useHeaderDragReorder(reorder);
 
   const visibleColumns = useMemo(
     () => orderedColumns.filter((c) => !hiddenColumns.includes(c.field)),
     [orderedColumns, hiddenColumns],
   );
 
-  const [internalSearch, setInternalSearch] = useState("");
-  const searchQuery = isServerSearch
-    ? (controlledSearch ?? "")
-    : internalSearch;
-
-  const [internalPage, setInternalPage] = useState(1);
-  const page = isServerPagination ? (controlledPage ?? 1) : internalPage;
-  const setPage = isServerPagination ? onPageChange! : setInternalPage;
-
-  const [internalSortField, setInternalSortField] = useState<string | null>(
-    null,
+  // ── Search ────────────────────────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useControllableState(
+    isServerSearch,
+    controlledSearch,
+    "",
   );
-  const [internalSortDir, setInternalSortDir] = useState<"asc" | "desc">("asc");
-  const sortField = isServerSort ? controlledSortField : internalSortField;
-  const sortDir = isServerSort ? (controlledSortDir ?? "asc") : internalSortDir;
   const handleSearchChange = useCallback(
     (q: string) => {
       if (isServerSearch) {
         onSearchChangeProp!(q);
       } else {
-        setInternalSearch(q);
-        setInternalPage(1);
+        setSearchQuery(q);
+        setPage(1);
       }
     },
-    [isServerSearch, onSearchChangeProp],
+    // setPage defined below; safe because it's stable across renders in both branches
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isServerSearch, onSearchChangeProp, setSearchQuery],
+  );
+
+  // ── Pagination ────────────────────────────────────────────────────────
+  const [page, setPage] = useControllableState(
+    isServerPagination,
+    controlledPage,
+    1,
+  );
+  const setPageResolved = isServerPagination ? onPageChange! : setPage;
+
+  // ── Sort ──────────────────────────────────────────────────────────────
+  const [sortField, setSortField] = useControllableState<string | null>(
+    isServerSort,
+    controlledSortField,
+    null,
+  );
+  const [sortDir, setSortDir] = useControllableState(
+    isServerSort,
+    controlledSortDir,
+    "asc" as "asc" | "desc",
   );
   const handleSort = useCallback(
     (field: string) => {
@@ -592,108 +789,54 @@ function Grid<TRow extends RowData = RowData>({
         const nextDir: "asc" | "desc" =
           sortField === field ? (sortDir === "asc" ? "desc" : "asc") : "asc";
         onSortChange!({ field, dir: nextDir });
+      } else if (sortField === field) {
+        setSortDir((d) => (d === "asc" ? "desc" : "asc"));
       } else {
-        if (internalSortField === field) {
-          setInternalSortDir((d) => (d === "asc" ? "desc" : "asc"));
-        } else {
-          setInternalSortField(field);
-          setInternalSortDir("asc");
-        }
+        setSortField(field);
+        setSortDir("asc");
       }
     },
-    [isServerSort, sortField, sortDir, internalSortField, onSortChange],
+    [isServerSort, sortField, sortDir, onSortChange, setSortField, setSortDir],
   );
 
-  const searchedRows = useMemo<TRow[]>(() => {
-    if (isServerSearch || !searchQuery.trim()) return rows;
-    const q = searchQuery.toLowerCase();
-    return rows.filter((row) =>
-      visibleColumns.some((col) => {
-        const val = col.searchValue
-          ? col.searchValue(row)
-          : getValue(row, col.field);
-        return String(val).toLowerCase().includes(q);
-      }),
-    );
-  }, [rows, visibleColumns, searchQuery, isServerSearch]);
-
-  const sortedRows = useMemo<TRow[]>(() => {
-    if (isServerSort || !sortField) return searchedRows;
-    const col = orderedColumns.find((c) => c.field === sortField);
-    return [...searchedRows].sort((a, b) => {
-      const av = col?.sortValue ? col.sortValue(a) : getValue(a, sortField);
-      const bv = col?.sortValue ? col.sortValue(b) : getValue(b, sortField);
-      if (av == null) return 1;
-      if (bv == null) return -1;
-      const cmp =
-        typeof av === "number" && typeof bv === "number"
-          ? av - bv
-          : String(av).localeCompare(String(bv));
-      return sortDir === "asc" ? cmp : -cmp;
+  // ── Data pipeline: search -> sort -> paginate ────────────────────────
+  const { sortedRows, pagedRows, effectiveTotalRows, totalPages } =
+    useGridPipeline({
+      rows,
+      visibleColumns,
+      pageSize,
+      isServerSearch,
+      isServerSort,
+      isServerPagination,
+      searchQuery,
+      sortField,
+      sortDir,
+      page,
+      totalRows,
     });
-  }, [searchedRows, orderedColumns, sortField, sortDir, isServerSort]);
 
-  const effectiveTotalRows = isServerPagination
-    ? (totalRows ?? 0)
-    : sortedRows.length;
-  const totalPages = Math.max(1, Math.ceil(effectiveTotalRows / pageSize));
-
+  // Clamp the page if it now exceeds the available pages (e.g. after a
+  // search narrows the result set). Deferred to avoid updating state
+  // synchronously during another component's render/effect phase.
   useEffect(() => {
-    if (!isServerPagination && page > totalPages)
-      setTimeout(() => setInternalPage(totalPages), 0);
-  }, [page, totalPages, isServerPagination]);
-
-  const pagedRows = isServerPagination
-    ? rows
-    : sortedRows.slice((page - 1) * pageSize, page * pageSize);
-
-  const selected = isSelectable ? selectedRows! : [];
-  const pageIds = pagedRows.map((r) => r.id);
-  const selectedOnPage = pageIds.filter((id) => selected.includes(id));
-  const allOnPageSelected =
-    pagedRows.length > 0 && selectedOnPage.length === pageIds.length;
-  const someOnPageSelected = selectedOnPage.length > 0 && !allOnPageSelected;
-
-  const updateSelected = useCallback(
-    (
-      updater:
-        | ((prev: (string | number)[]) => (string | number)[])
-        | (string | number)[],
-    ) => {
-      if (!isSelectable) return;
-      const next = typeof updater === "function" ? updater(selected) : updater;
-      onSelectedRowsChange!(next);
-    },
-    [selected, isSelectable, onSelectedRowsChange],
-  );
-
-  const handleSelectAll = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      updateSelected((prev) => [...new Set([...prev, ...pageIds])]);
-    } else {
-      updateSelected((prev) => prev.filter((id) => !pageIds.includes(id)));
+    if (!isServerPagination && page > totalPages) {
+      setTimeout(() => setPage(totalPages), 0);
     }
-  };
+  }, [page, totalPages, isServerPagination, setPage]);
+
+  // ── Selection ─────────────────────────────────────────────────────────
+  const {
+    isSelectable,
+    selected,
+    allOnPageSelected,
+    someOnPageSelected,
+    selectAllOnPage,
+    toggleRow,
+  } = useRowSelection(pagedRows, selectedRows, onSelectedRowsChange);
 
   const renderCell = (row: TRow, col: ColumnDef<TRow>): React.ReactNode => {
     if (col.renderCell) return col.renderCell(row);
-    const val = getValue(row, col.field);
-    return (val ?? "—") as React.ReactNode;
-  };
-
-  const dragSrc = useRef<string | null>(null);
-
-  const headerPointerDown =
-    (field: string) => (e: ReactPointerEvent<HTMLTableCellElement>) => {
-      if (e.button !== 0) return;
-      dragSrc.current = field;
-    };
-
-  const headerPointerUp = (field: string) => () => {
-    if (dragSrc.current && dragSrc.current !== field) {
-      reorder(dragSrc.current, field);
-    }
-    dragSrc.current = null;
+    return (getValue(row, col.field) ?? "—") as React.ReactNode;
   };
 
   const ariaSort = (field: string): React.AriaAttributes["aria-sort"] => {
@@ -701,7 +844,7 @@ function Grid<TRow extends RowData = RowData>({
     return sortDir === "asc" ? "ascending" : "descending";
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────
   return (
     <div className="w-full">
       <Toolbar
@@ -715,11 +858,11 @@ function Grid<TRow extends RowData = RowData>({
         columnToggleable={columnToggleable}
         columns={orderedColumns as ColumnDef[]}
         hiddenColumns={hiddenColumns}
-        onToggleColumn={handleToggleColumn}
+        onToggleColumn={toggleColumn}
         tableId={tableId}
+        filters={filters}
       />
 
-      {/* Horizontal scroll — table scrolls sideways on narrow viewports instead of breaking layout */}
       <div className="overflow-x-auto shadow-sm">
         <table
           id={tableId}
@@ -740,7 +883,7 @@ function Grid<TRow extends RowData = RowData>({
                     checked={allOnPageSelected}
                     indeterminate={someOnPageSelected}
                     label="Select all rows on this page"
-                    onChange={handleSelectAll}
+                    onChange={selectAllOnPage}
                     disabled={loading}
                   />
                 </th>
@@ -766,14 +909,9 @@ function Grid<TRow extends RowData = RowData>({
                     onClick={
                       col.sortable ? () => handleSort(col.field) : undefined
                     }
-                    onPointerDown={headerPointerDown(col.field)}
-                    onPointerUp={headerPointerUp(col.field)}
-                    onPointerEnter={() => {
-                      if (dragSrc.current && dragSrc.current !== col.field) {
-                        reorder(dragSrc.current, col.field);
-                        dragSrc.current = col.field;
-                      }
-                    }}
+                    onPointerDown={headerDrag.onPointerDown(col.field)}
+                    onPointerUp={headerDrag.onPointerUp(col.field)}
+                    onPointerEnter={headerDrag.onPointerEnter(col.field)}
                   >
                     <span
                       className={cx(
@@ -836,13 +974,7 @@ function Grid<TRow extends RowData = RowData>({
                         aria-label={`Select row ${row.id}`}
                         className="w-[18px] h-[18px] sm:w-4 sm:h-4 rounded cursor-pointer"
                         checked={selected.includes(row.id)}
-                        onChange={() =>
-                          updateSelected((prev) =>
-                            prev.includes(row.id)
-                              ? prev.filter((id) => id !== row.id)
-                              : [...prev, row.id],
-                          )
-                        }
+                        onChange={() => toggleRow(row.id)}
                       />
                     </td>
                   )}
@@ -880,7 +1012,6 @@ function Grid<TRow extends RowData = RowData>({
         </table>
       </div>
 
-      {/* Footer / pagination — stacks on mobile, larger touch targets on buttons */}
       <div className="flex mt-2 text-typography-secondary border-t-0 items-center justify-between px-3 py-3 sm:px-5 flex-wrap gap-2">
         <span
           className="text-xs sm:text-sm"
@@ -896,7 +1027,7 @@ function Grid<TRow extends RowData = RowData>({
           <button
             aria-label="Previous page"
             className="px-3 py-2 sm:py-1 text-xs sm:text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
-            onClick={() => setPage(Math.max(1, page - 1))}
+            onClick={() => setPageResolved(Math.max(1, page - 1))}
             disabled={page === 1 || loading}
           >
             Previous
@@ -909,7 +1040,7 @@ function Grid<TRow extends RowData = RowData>({
           <button
             aria-label="Next page"
             className="px-3 py-2 sm:py-1 text-xs sm:text-sm rounded transition disabled:opacity-40 disabled:cursor-not-allowed"
-            onClick={() => setPage(Math.min(totalPages, page + 1))}
+            onClick={() => setPageResolved(Math.min(totalPages, page + 1))}
             disabled={page === totalPages || loading}
           >
             Next
