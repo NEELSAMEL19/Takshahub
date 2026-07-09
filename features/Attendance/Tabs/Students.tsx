@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Grid from "@/components/UI/Grid";
 import { Dropdown } from "@/components/UI";
 import type { SelectOption } from "@/components/UI/Dropdown";
@@ -12,6 +12,7 @@ import {
   useGetClassDropdown,
   useGetSectionDropdown,
 } from "@/hooks/management/class";
+import { useGetAcademicYears } from "@/hooks/academic/academicYear"; // adjust path to match your actual hook file
 
 type DropdownItem = {
   id?: string | number;
@@ -22,6 +23,12 @@ type DropdownItem = {
   label?: string;
   className?: string;
   sectionName?: string;
+};
+
+type AcademicYearItem = {
+  id: string | number;
+  label: string;
+  isActive: boolean;
 };
 
 type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | null;
@@ -56,6 +63,11 @@ const toDropdownOption = (item: DropdownItem): SelectOption => {
   };
 };
 
+const toAcademicYearOption = (year: AcademicYearItem): SelectOption => ({
+  label: year.isActive ? `${year.label} (Current)` : year.label,
+  value: String(year.id),
+});
+
 const ALL_VALUE = "all";
 const ALL_OPTION: SelectOption = { label: "All", value: ALL_VALUE };
 
@@ -87,6 +99,12 @@ const Students = () => {
   const [sectionId, setSectionId] = useState<string | number>(ALL_VALUE);
   const [date, setDate] = useState<string>(todayISO());
 
+  // "" means "use active year" (default/current). Once academic years load,
+  // we set this to the active year's id explicitly so the dropdown shows
+  // the right selection. Selecting a past year sends its id to the backend
+  // and switches the roster to view-only mode.
+  const [academicYearId, setAcademicYearId] = useState<string>("");
+
   // Track which row is currently mid-mutation so we can disable/dim just
   // that cell rather than the whole grid.
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -95,6 +113,25 @@ const Students = () => {
   const { data: sectionDropdownData } = useGetSectionDropdown(
     classId === ALL_VALUE ? null : classId,
   );
+  const { data: academicYearsData } = useGetAcademicYears();
+
+  const academicYears = (academicYearsData?.data as AcademicYearItem[]) ?? [];
+
+  // Default the dropdown to the active year once data arrives.
+  useEffect(() => {
+    if (!academicYearId && academicYears.length > 0) {
+      const active = academicYears.find((y) => y.isActive);
+      if (active) setAcademicYearId(String(active.id));
+    }
+  }, [academicYears, academicYearId]);
+
+  const selectedYear = academicYears.find(
+    (y) => String(y.id) === academicYearId,
+  );
+  // Only the active year is editable; any other (past/inactive) year is
+  // view-only — matches the backend, which rejects writes against
+  // non-active years.
+  const isViewOnly = !!selectedYear && !selectedYear.isActive;
 
   const classOptions: SelectOption[] = [
     ALL_OPTION,
@@ -110,10 +147,14 @@ const Students = () => {
     ),
   ];
 
+  const academicYearOptions: SelectOption[] =
+    academicYears.map(toAcademicYearOption);
+
   const { data, isLoading } = useGetStudentsAttendance({
     classId: classId === ALL_VALUE ? "" : String(classId),
     sectionId: sectionId === ALL_VALUE ? "" : String(sectionId),
     date,
+    academicYearId, // NEW — sent through to the backend as-is
   });
 
   const { mutate: updateAttendance } = useUpdateStudentAttendance();
@@ -134,7 +175,17 @@ const Students = () => {
     setSectionId(Array.isArray(value) ? value[0] : value);
   };
 
+  const handleAcademicYearSelect = (
+    _e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLDivElement>,
+    value: string | number | (string | number)[],
+  ) => {
+    const next = Array.isArray(value) ? value[0] : value;
+    setAcademicYearId(String(next));
+  };
+
   const handleToggleStatus = (row: StudentRow) => {
+    if (isViewOnly) return; // guard: past years are not editable
+
     // classId/sectionId come from the ROW itself (per-student, returned by
     // the backend), not from page-level filter state — required so this
     // works correctly in "All" mode where no single class/section is set.
@@ -166,10 +217,12 @@ const Students = () => {
       renderCell: (row: StudentRow) => {
         const config = STATUS_CONFIG[row.status ?? "UNMARKED"];
         const isPending = pendingId === row.studentId;
+        const disabled = isPending || isViewOnly;
         return (
           <button
             type="button"
-            disabled={isPending}
+            disabled={disabled}
+            title={isViewOnly ? "Past academic years are view-only" : undefined}
             onClick={(e) => {
               e.stopPropagation();
               handleToggleStatus(row);
@@ -177,8 +230,8 @@ const Students = () => {
             className={`inline-flex items-center justify-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-lg shadow-sm min-w-[96px] transition-all active:scale-95 ${config.fill} ${config.on} ${
               config.outline ? "border border-gray-300" : ""
             } ${
-              isPending
-                ? "opacity-40 cursor-wait"
+              disabled
+                ? "opacity-40 cursor-not-allowed"
                 : "cursor-pointer hover:brightness-110"
             }`}
           >
@@ -192,6 +245,11 @@ const Students = () => {
 
   const filters = (
     <>
+      <Dropdown
+        options={academicYearOptions}
+        value={academicYearId}
+        onSelect={handleAcademicYearSelect}
+      />
       <Dropdown
         options={classOptions}
         value={classId}
