@@ -29,9 +29,9 @@ const Stepper = ({
               key={index}
               type="button" // Prevents accidental form submissions
               onClick={() => onStepClick(stepNumber)}
-              className={`relative z-10 w-8 h-8 rounded-full shrink-0 flex items-center justify-center font-semibold text-sm transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 focus:outline-none ${
+              className={`relative z-10 w-8 h-8 !rounded-full shrink-0 flex items-center justify-center font-semibold text-sm transition-all duration-300 !cursor-pointer hover:scale-105 active:scale-95 focus:outline-none ${
                 isActive
-                  ? "theme-primary-background text-white shadow-md"
+                  ? "theme-primary-background !text-white shadow-md"
                   : "bg-gray-300 text-gray-500 hover:bg-gray-400"
               }`}
             >

@@ -108,6 +108,10 @@ body {
   animation: shimmer 1.6s infinite;
 }
 
+a:hover {
+  text-decoration: underline;
+}
+
 /*                                                      rsuite-overide-custom-css                                                                      */
 .rs-nav {
   display: flex !important;
