@@ -1,7 +1,10 @@
+import Assignment from "@/features/academic/Tabs/Assignment";
 import React from "react";
 
 const page = () => {
-  return <div>page</div>;
+  return <div>
+    <Assignment/>
+  </div>;
 };
 
 export default page;
