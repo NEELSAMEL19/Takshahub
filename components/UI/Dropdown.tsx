@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { ChevronDown } from "lucide-react";
 
 export interface SelectOption {
   label: string;
@@ -138,10 +138,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
         {...props}
       >
         {label && (
-          <label
-            htmlFor={dropdownId}
-            className="block text-sm mb-1"
-          >
+          <label htmlFor={dropdownId} className="block text-sm mb-1">
             {label} {required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
@@ -162,7 +159,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
           <span className="truncate">{displayValue()}</span>
 
           {variant !== "circle" && (
-            <KeyboardArrowDownIcon
+            <ChevronDown
               fontSize="small"
               className={`text-gray-500 transition-transform duration-200 ${
                 open ? "rotate-180" : "rotate-0"
@@ -210,7 +207,9 @@ export const Dropdown = React.forwardRef<HTMLDivElement, DropdownProps>(
                         className="h-4 w-4 rounded border-gray-300 accent-black"
                       />
                     )}
-                    <span className="truncate text-typography-primary">{option.label}</span>
+                    <span className="truncate text-typography-primary">
+                      {option.label}
+                    </span>
                   </div>
                 ))
               )}
