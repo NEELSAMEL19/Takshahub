@@ -20,6 +20,7 @@ export interface RegisterResponse {
   success: boolean;
   message: string;
   data: {
+<<<<<<< Updated upstream
     user: {
       id: string;
       fullName: string;
@@ -36,6 +37,9 @@ export interface RegisterResponse {
       id: string;
       name: string;
     };
+=======
+    message: string;
+>>>>>>> Stashed changes
   };
 }
 
@@ -59,6 +63,7 @@ export interface LoginResponse {
       role: "ADMIN" | "TEACHER" | "STUDENT";
       schoolId: string;
     };
+<<<<<<< Updated upstream
     school?: {
       id: string;
       name: string;
@@ -98,3 +103,39 @@ export interface LogoutResponse {
 import type { RegisterFormData as _RegisterFormData, LoginFormData as _LoginFormData } from "@/features/auth/validation";
 export type RegisterFormData = _RegisterFormData;
 export type LoginFormData = _LoginFormData;
+=======
+  };
+}
+
+export interface ResendOtpPayload {
+  email: string;
+  otp: string;
+}
+
+export interface ResendOtpResponse {
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+  };
+}
+
+export interface VerifyOtpPayload {
+  email: string;
+}
+export interface VerifyOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    auth: {
+      role: "ADMIN" | "TEACHER" | "STUDENT";
+      schoolId: string;
+    };
+  };
+}
+>>>>>>> Stashed changes

@@ -2,6 +2,21 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z
+<<<<<<< Updated upstream
+=======
+    .string()
+    .min(1, "Please enter email") // ✅ handles empty
+    .email("Invalid email address"), // ✅ handles format
+
+  password: z
+    .string()
+    .min(1, "Please enter password")
+    .min(6, "Password must be at least 6 characters"),
+});
+
+export const otpSchema = z.object({
+  otp: z
+>>>>>>> Stashed changes
     .string()
     .min(1, "Please enter email") // ✅ handles empty
     .email("Invalid email address"), // ✅ handles format

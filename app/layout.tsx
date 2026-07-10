@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+<<<<<<< Updated upstream
 import "rsuite/dist/rsuite.min.css";
+=======
+
+>>>>>>> Stashed changes
 import "./globals.css";
 import Providers from "./providers";
 

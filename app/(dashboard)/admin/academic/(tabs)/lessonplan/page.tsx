@@ -1,9 +1,12 @@
-import React from 'react'
+import LessonPlan from "@/features/academic/Tabs/LessonPlan";
+import React from "react";
 
 const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <div>
+      <LessonPlan />
+    </div>
+  );
+};
 
-export default page
+export default page;

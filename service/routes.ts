@@ -1,7 +1,12 @@
+<<<<<<< Updated upstream
 import Attendance from "@/features/attendance/Attendance";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://takshahub.onrender.com";
+=======
+// API Configuration
+export const API_BASE_URL = process.env.API_BASE_URL 
+>>>>>>> Stashed changes
 
 export const API_ENDPOINTS = {
   AUTH: {

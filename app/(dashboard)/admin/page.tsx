@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React from "react";
 
 const page = () => {
@@ -5,3 +6,14 @@ const page = () => {
 };
 
 export default page;
+=======
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>Admin</div>
+  )
+}
+
+export default page
+>>>>>>> Stashed changes

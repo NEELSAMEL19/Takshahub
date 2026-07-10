@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { ButtonHTMLAttributes } from "react";
 
 // Update props to restrict variants to primary and secondary only
@@ -35,10 +36,46 @@ export const Button = ({
     sm: "px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm",
     md: "px-3 py-1.5 text-sm sm:px-4 sm:py-2 sm:text-base md:px-5 md:py-2.5",
     lg: "px-4 py-2 text-base sm:px-5 sm:py-2.5 sm:text-lg md:px-7 md:py-3",
+=======
+"use client";
+
+import React from "react";
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  loading?: boolean;
+  variant?: "primary" | "secondary" | "danger";
+  size?: "sm" | "md" | "lg";
+}
+
+export function Button({
+  loading = false,
+  variant = "primary",
+  size = "md",
+  className = "",
+  children,
+  disabled,
+  ...props
+}: ButtonProps) {
+  const baseClass =
+    "font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors";
+
+  const variantClass = {
+    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+    secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+  };
+
+  const sizeClass = {
+    sm: "px-3 py-1 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
+>>>>>>> Stashed changes
   };
 
   return (
     <button
+<<<<<<< Updated upstream
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${
         fullWidthOnMobile ? "w-full sm:w-auto" : ""
       } ${className} !rounded-md`}
@@ -75,3 +112,15 @@ export const Button = ({
     </button>
   );
 };
+=======
+      className={`${baseClass} ${variantClass[variant]} ${sizeClass[size]} ${
+        disabled || loading ? "opacity-50 cursor-not-allowed" : ""
+      } ${className}`}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {loading ? "Loading..." : children}
+    </button>
+  );
+}
+>>>>>>> Stashed changes
