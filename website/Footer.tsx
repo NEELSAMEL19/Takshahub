@@ -9,6 +9,7 @@ import {
   FaLinkedinIn,
   FaInstagram,
 } from "react-icons/fa";
+import { Button } from "@/components/UI";
 
 const Footer: React.FC = () => {
   return (
@@ -112,9 +113,9 @@ const Footer: React.FC = () => {
               />
             </div>
 
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-2 h-full rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap">
+            <Button variant="secondary" className="!rounded-none">
               Subscribe
-            </button>
+            </Button>
           </div>
 
           <p className="text-xs text-gray-500 pt-4">

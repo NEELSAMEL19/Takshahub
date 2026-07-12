@@ -3,6 +3,9 @@
 import * as React from "react";
 import NextLink from "next/link";
 import { Menu, X } from "lucide-react";
+import { Button } from "@/components/UI";
+import Image from "next/image";
+import TakshahubLogo from "../public/Takshahub_logo.png";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -16,11 +19,6 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navLinks = [
-    { label: "Features", id: "features" },
-    { label: "Pricing", id: "pricing" },
-  ];
 
   const handleScrollTo = (id: string) => {
     const element = document.getElementById(id);
@@ -40,61 +38,47 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-250 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-gradient-to-br from-[#ebf4f5] to-[#bbc7dc] backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.06)] border-b border-black/[0.06]"
+          ? "bg-gradient-to-br from-[#ebf4f5] to-[#bbc7dc] backdrop-blur-md shadow-md border-b border-black/10"
           : "bg-transparent"
       }`}
     >
-      <div className="flex justify-between items-center px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-32 max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1800px] mx-auto w-full h-16 lg:h-20">
+      <div className="mx-auto flex h-16 lg:h-20 w-full max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-12 xl:px-16 2xl:px-20">
         {/* LOGO */}
-        <NextLink
-          href="/"
-          onClick={() => handleScrollTo("hero")}
-          className="font-bold text-[#0b132b] text-xl xl:text-2xl 2xl:text-3xl !no-underline hover:!no-underline hover:text-[#0b132b]"
-        >
-          TakshaHub
-        </NextLink>
+        <div className="flex items-center gap-2">
+          <Image
+            src={TakshahubLogo}
+            alt="TakshaHub Logo"
+            className="h-12 w-12 object-contain"
+            priority
+          />
 
-        {/* DESKTOP MENU */}
-        <div className="hidden lg:flex items-center gap-6 xl:gap-10 2xl:gap-14">
-          {navLinks.map((link) => (
-            <NextLink
-              key={link.label}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleScrollTo(link.id);
-              }}
-              className="!no-underline hover:!no-underline font-medium whitespace-nowrap text-[#0b132b] hover:text-[#0b132b] text-[0.95rem] xl:text-[1.05rem] transition-all duration-200 hover:opacity-70"
-            >
-              {link.label}
-            </NextLink>
-          ))}
+          <NextLink
+            href="/"
+            onClick={() => handleScrollTo("hero")}
+            className="text-2xl font-semibold text-[#0b132b] no-underline hover:no-underline"
+          >
+            TakshaHub
+          </NextLink>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="hidden lg:flex items-center gap-4 xl:gap-6 2xl:gap-8">
-          <NextLink
-            href="/login"
-            className="!no-underline hover:!no-underline font-medium whitespace-nowrap text-[#0b132b] hover:text-[#0b132b] text-[0.95rem] xl:text-[1.05rem] transition-all duration-200 hover:opacity-70"
-          >
-            Login
+        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
+          <NextLink href="/login">
+            <Button variant="secondary">Login</Button>
           </NextLink>
 
-          <NextLink
-            href="/register"
-            className="flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white hover:text-white font-bold text-[1.05rem] px-6 py-3 rounded-xl !no-underline hover:!no-underline shadow-[0_4px_10px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 transition-all duration-200 w-fit"
-          >
-            Connect Your School
+          <NextLink href="/register">
+            <Button>Connect Your School</Button>
           </NextLink>
         </div>
 
         {/* MOBILE ICON */}
-        <div className="lg:hidden flex items-center gap-2">
+        <div className="flex items-center lg:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-[#0b132b] p-2 rounded-md hover:bg-black/5 transition-colors"
+            className="rounded-md p-2 text-[#0b132b] transition-colors hover:bg-black/5"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -104,35 +88,18 @@ export default function Navbar() {
 
       {/* MOBILE MENU */}
       {mobileMenuOpen && (
-        <div className="lg:hidden flex flex-col gap-5 items-center py-6 px-6 bg-gradient-to-br from-[#ebf4f5] to-[#bbc7dc] backdrop-blur-md transition-all duration-250">
-          {navLinks.map((link) => (
-            <NextLink
-              key={link.label}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleScrollTo(link.id);
-                setMobileMenuOpen(false);
-              }}
-              className="!no-underline hover:!no-underline font-medium whitespace-nowrap text-[#0b132b] hover:text-[#0b132b] text-[0.95rem]"
-            >
-              {link.label}
+        <div className="absolute right-4 top-full mt-2 w-64 rounded-2xl border border-black/10 bg-gradient-to-br from-[#ebf4f5] to-[#bbc7dc] p-4 shadow-xl backdrop-blur-md lg:hidden">
+          <div className="flex flex-col gap-3">
+            <NextLink href="/login" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="secondary" className="w-full">
+                Login
+              </Button>
             </NextLink>
-          ))}
 
-          <NextLink
-            href="/login"
-            className="!no-underline hover:!no-underline font-medium whitespace-nowrap text-[#0b132b] hover:text-[#0b132b] text-[0.95rem]"
-          >
-            Login
-          </NextLink>
-
-          <NextLink
-            href="/register"
-            className="flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-[#15803d] text-white hover:text-white font-bold text-[1.05rem] px-6 py-3 rounded-xl !no-underline hover:!no-underline shadow-[0_4px_10px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 transition-all duration-200 w-fit"
-          >
-            Connect Your School
-          </NextLink>
+            <NextLink href="/register" onClick={() => setMobileMenuOpen(false)}>
+              <Button className="w-full">Connect Your School</Button>
+            </NextLink>
+          </div>
         </div>
       )}
     </header>
