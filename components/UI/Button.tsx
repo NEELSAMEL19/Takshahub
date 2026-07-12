@@ -27,7 +27,7 @@ export const Button = ({
     primary:
       "theme-primary-background !text-white hover:brightness-110 shadow-sm",
     secondary:
-      "bg-slate-200 text-slate-900 border border-slate-200 hover:bg-slate-300 shadow-md transition-colors",
+      "bg-slate-200 text-typography-primary border border-slate-200 hover:bg-slate-300 shadow-md transition-colors",
   };
 
   // Dimensional padding variations — scale up with breakpoints
