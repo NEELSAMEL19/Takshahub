@@ -11,9 +11,7 @@ export const API_ENDPOINTS = {
     LOGOUT: "/api/backend/auth/logout",
   },
   SIDEMENU: {
-    ADMINMENU: "/api/backend/sidebar",
-    TEACHERMENU: "/api/backend/sidebar/teacher",
-    STUDENTMENU: "/api/backend/sidebar/student",
+    MENU: "/api/backend/sidebar",
   },
   ORGANIZATION: {
     ADDROLE: "/api/backend/organization/roles/create_role",
