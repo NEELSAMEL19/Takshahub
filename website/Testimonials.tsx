@@ -16,21 +16,21 @@ const testimonialsData: Testimonial[] = [
     role: "Principal, Green Valley High School",
     message:
       "This system has transformed the way we manage our school. It's intuitive and saves us so much time!",
-    image: "/images/user1.png",
+    image: "/default-avatar.png",
   },
   {
     name: "David Williams",
     role: "Headmaster, Crestwood Academy",
     message:
       "An outstanding tool for school administration. Our workflow has become more efficient and organized.",
-    image: "/images/user2.png",
+    image: "/default-avatar.png",
   },
   {
     name: "Michael Roberts",
     role: "Director, Sunnydale Elementary",
     message:
       "Excellent support and powerful features. This system has made a huge difference in our daily operations.",
-    image: "/images/user3.png",
+    image: "/default-avatar.png",
   },
 ];
 
@@ -80,9 +80,7 @@ const Testimonials = () => {
                   {item.name}
                 </h3>
 
-                <p className="text-sm text-gray-500 text-center">
-                  {item.role}
-                </p>
+                <p className="text-sm text-gray-500 text-center">{item.role}</p>
               </div>
             </div>
           ))}
