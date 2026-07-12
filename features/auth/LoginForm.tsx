@@ -3,19 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { loginSchema } from "./validation";
 import type { LoginFormData } from "@/types/auth";
 import { useLogin } from "@/hooks/auth/useAuth";
-import { sideMenuApi } from "@/service/sideMenu";
-import { getSideMenuItems } from "@/utils/permission";
+
 import { TextField, Button } from "@/components/UI";
 import { Status } from "@/types/ui";
 
 export function LoginForm() {
   const router = useRouter();
-  const queryClient = useQueryClient(); // Access the query cache client
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -108,39 +105,19 @@ export function LoginForm() {
     }
 
     setErrors({});
-
     try {
       const response = await loginMutation.mutateAsync(formData);
-      const role = response?.data?.auth?.role;
 
-      if (role === "ADMIN") {
-        const menuData = await queryClient.fetchQuery({
-          queryKey: ["sideMenu", "admin"],
-          queryFn: sideMenuApi.adminMenu,
-          staleTime: 1000 * 60 * 5,
-        });
+      const role = response?.data?.auth?.role?.toLowerCase();
 
-        if (menuData?.data) {
-          const menuItems = getSideMenuItems(menuData.data);
-          const firstModulePath = menuItems[0]?.path;
-
-          if (firstModulePath) {
-            router.replace(firstModulePath);
-            return;
-          }
-        }
-
-        // Fallback if the admin menu endpoint data is empty
-        router.replace("/admin");
-      } else if (role === "TEACHER") {
-        router.replace("/teacher");
-      } else if (role === "STUDENT") {
-        router.replace("/student");
-      } else {
+      if (!role) {
         router.replace("/dashboard");
+        return;
       }
+
+      router.replace(`/${role}`);
     } catch (error) {
-      console.error("Redirection failure:", error);
+      console.error("Login failed:", error);
     }
   };
 

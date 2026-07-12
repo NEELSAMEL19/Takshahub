@@ -2,13 +2,13 @@
 
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
-import { useAdminMenu } from "@/hooks/sideMenu/useSideMenu";
+import { useSideMenu } from "@/hooks/sideMenu/useSideMenu";
 import { camelToSnake } from "@/utils/utils";
 import { usePathname } from "next/navigation";
 import React from "react";
 
 const Attendance = () => {
-  const { data } = useAdminMenu();
+  const { data } = useSideMenu();
   const pathname = usePathname();
   const attendanceTabs = (data?.data?.Attendance || {}) as Record<
     string,

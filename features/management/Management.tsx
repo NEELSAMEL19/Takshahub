@@ -3,7 +3,7 @@
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
 import { Button } from "@/components/UI";
-import { useAdminMenu } from "@/hooks/sideMenu/useSideMenu";
+import { useSideMenu } from "@/hooks/sideMenu/useSideMenu";
 import { camelToSnake } from "@/utils/utils";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
@@ -26,7 +26,7 @@ const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
 };
 
 const Management = () => {
-  const { data } = useAdminMenu();
+  const { data } = useSideMenu();
   const pathname = usePathname();
   const router = useRouter();
   const managementTabs = (data?.data?.Management || {}) as Record<
