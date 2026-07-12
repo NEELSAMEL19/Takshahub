@@ -57,7 +57,7 @@ export default function Navbar() {
           <NextLink
             href="/"
             onClick={() => handleScrollTo("hero")}
-            className="text-2xl font-semibold text-[#0b132b] no-underline hover:no-underline"
+            className="theme-text text-2xl font-semibold text-theme-text no-underline hover:no-underline"
           >
             TakshaHub
           </NextLink>
