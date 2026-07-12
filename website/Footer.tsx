@@ -59,12 +59,8 @@ const Footer: React.FC = () => {
           {["Home", "About Us", "Admissions", "Contact"].map((item, i) => (
             <Link
               key={i}
-              href={
-                item === "Home"
-                  ? "/"
-                  : `/${item.toLowerCase().replace(/\s+/g, "-")}`
-              }
-              className="block text-gray-600 text-sm pb-3 hover:text-blue-500 cursor-pointer transition"
+              href="#"
+              className="block text-gray-600 text-sm pb-3 cursor-pointer transition hover:!no-underline"
             >
               › {item}
             </Link>
@@ -113,7 +109,10 @@ const Footer: React.FC = () => {
               />
             </div>
 
-            <Button variant="secondary" className="!rounded-none">
+            <Button
+              variant="secondary"
+              className="!rounded-none active:!scale-100"
+            >
               Subscribe
             </Button>
           </div>
