@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/UI";
 
 const plans = [
   { name: "STANDARD", price: 480, apps: "1" },
@@ -113,34 +114,11 @@ export default function Pricing() {
                   <p className="text-xs text-gray-400 mb-4">billed annually</p>
 
                   {/* Buttons */}
-                  <div className="flex flex-col gap-2">
-                    {/* Secondary */}
-                    <Link
-                      href="#"
-                      onClick={() => setOpenModal(true)}
-                      className="flex items-center justify-center 
-                                 bg-orange-500 hover:bg-orange-600 
-                                 text-white text-sm font-medium
-                                 px-4 py-2 
-                                 rounded-lg 
-                                 shadow-sm hover:shadow-md
-                                 transition-all duration-200"
-                    >
-                      Try for Free
-                    </Link>
-
-                    {/* Primary */}
-                    <Link
-                      href="/register"
-                      className="flex items-center justify-center 
-                                 bg-green-600 hover:bg-green-700 
-                                 text-white text-sm font-medium
-                                 px-4 py-2 
-                                 rounded-lg 
-                                 shadow-sm hover:shadow-md
-                                 transition-all duration-200"
-                    >
-                      Buy Now
+                  <div>
+                    <Link href="/register">
+                      <Button className="shadow-sm hover:shadow-md transition-all duration-200 w-full">
+                        Buy Now
+                      </Button>
                     </Link>
                   </div>
                 </div>

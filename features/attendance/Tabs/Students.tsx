@@ -244,7 +244,7 @@ const Students = () => {
   ];
 
   const filters = (
-    <>
+    <div className="flex gap-2.5 items-center">
       <Dropdown
         options={academicYearOptions}
         value={academicYearId}
@@ -266,7 +266,7 @@ const Students = () => {
         onChange={(e) => setDate(e.target.value)}
         className="px-3 py-2 sm:py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2"
       />
-    </>
+    </div>
   );
 
   return (
@@ -275,6 +275,7 @@ const Students = () => {
       columns={columns}
       loading={isLoading}
       filters={filters}
+      searchable
     />
   );
 };

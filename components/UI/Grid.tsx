@@ -309,49 +309,51 @@ const Toolbar: React.FC<{
   const inputId = useId();
 
   return (
-    <div className="flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 flex-wrap">
-      {filters && (
-        <div className="flex items-center gap-2 flex-wrap">{filters}</div>
-      )}
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
+      {(filters || searchable) && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-1">
+          {filters && <div>{filters}</div>}
 
-      {searchable && (
-        <div className="relative flex-1 min-w-full sm:min-w-[180px] sm:max-w-xs">
-          <label htmlFor={inputId} className="sr-only">
-            Search
-          </label>
-          <span
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm"
-            aria-hidden="true"
-          >
-            🔍
-          </span>
-          <input
-            id={inputId}
-            type="search"
-            value={searchQuery}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              onSearchChange(e.target.value)
-            }
-            placeholder="Search…"
-            aria-controls={tableId}
-            className="w-full pl-8 pr-3 py-2 sm:py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2"
-          />
+          {searchable && (
+            <div className="relative w-full sm:flex-1 sm:min-w-[180px] sm:max-w-xs">
+              <label htmlFor={inputId} className="sr-only">
+                Search
+              </label>
+              <span
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-sm pointer-events-none"
+                aria-hidden="true"
+              >
+                🔍
+              </span>
+              <input
+                id={inputId}
+                type="search"
+                value={searchQuery}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  onSearchChange(e.target.value)
+                }
+                placeholder="Search…"
+                aria-controls={tableId}
+                className="w-full pl-8 pr-3 py-2 sm:py-1.5 text-sm rounded-lg focus:outline-none focus:ring-2"
+              />
+            </div>
+          )}
         </div>
       )}
 
-      <div className="flex items-center gap-2 ml-auto relative">
+      <div className="flex items-center justify-end gap-2 sm:ml-auto sm:shrink-0 relative">
         {exportable && (
           <button
             onClick={onExport}
             aria-label="Export as CSV"
-            className="px-2.5 py-2 sm:px-3 sm:py-1.5 text-sm rounded-lg transition flex items-center gap-1.5"
+            className="px-2.5 py-2 sm:px-3 sm:py-1.5 text-sm rounded-lg transition flex items-center gap-1.5 shrink-0"
           >
             <span aria-hidden="true">↓</span>
             <span className="hidden sm:inline">Export CSV</span>
           </button>
         )}
         {columnToggleable && (
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setShowCols((v) => !v)}
               aria-label="Toggle column visibility"
@@ -366,12 +368,14 @@ const Toolbar: React.FC<{
               )}
             </button>
             {showCols && (
-              <VisibilityPanel
-                columns={columns}
-                hidden={hiddenColumns}
-                onToggle={onToggleColumn}
-                onClose={() => setShowCols(false)}
-              />
+              <div className="absolute right-0 top-full mt-1 z-20 w-[calc(100vw-1.5rem)] max-w-xs sm:w-64">
+                <VisibilityPanel
+                  columns={columns}
+                  hidden={hiddenColumns}
+                  onToggle={onToggleColumn}
+                  onClose={() => setShowCols(false)}
+                />
+              </div>
             )}
           </div>
         )}
