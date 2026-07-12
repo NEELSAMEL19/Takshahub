@@ -3,12 +3,12 @@
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
 import { Button } from "@/components/UI";
-import { useAdminMenu } from "@/hooks/sideMenu/useSideMenu";
+import { useSideMenu } from "@/hooks/sideMenu/useSideMenu";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 const Organization = () => {
-  const { data } = useAdminMenu();
+  const { data } = useSideMenu();
   const pathname = usePathname();
   const router = useRouter();
   const organizationTabs = data?.data?.Organization || {};
