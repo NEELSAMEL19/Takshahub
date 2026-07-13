@@ -3,6 +3,7 @@
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
 import { Button } from "@/components/UI";
+import { useMe } from "@/hooks/auth/useAuth";
 import { useSideMenu } from "@/hooks/sideMenu/useSideMenu";
 import { camelToSnake } from "@/utils/utils";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,14 +17,21 @@ const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
 };
 
 const Academic = () => {
-  const { data } = useSideMenu();
-  
   const pathname = usePathname();
   const router = useRouter();
-  const AcademicTabs = (data?.data?.Academic || {}) as Record<string, string>;
+
+  // Get logged-in user
+  const { data: me } = useMe();
+  const userId = me?.data.user?.id;
+
+  // Uses React Query cache if already fetched in SideMenu
+  const { data } = useSideMenu(userId);
+
+  const academicTabs = (data?.data?.Academic as Record<string, string>) || {};
+
   const currentTab = pathname.split("/").pop() ?? "";
 
-  const tabItems = Object.entries(AcademicTabs).map(([key, value], index) => ({
+  const tabItems = Object.entries(academicTabs).map(([key, value], index) => ({
     index,
     label: value,
     name: key,
@@ -54,7 +62,8 @@ const Academic = () => {
           )
         }
       />
-      <div className="py-4 px-5">
+
+      <div className="px-5 py-4">
         <Tab
           items={tabItems}
           active={activeTabIndex === -1 ? 0 : activeTabIndex}
