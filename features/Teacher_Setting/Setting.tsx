@@ -4,12 +4,12 @@ import Header from "@/components/Base/Header/Header";
 
 import React from "react";
 
-const StudentDashboard = () => {
+const Setting = () => {
   return (
     <div className="flex flex-col gap-2.5 bg-white">
-      <Header header="Dashboard" />
+      <Header header="Setting" />
     </div>
   );
 };
 
-export default StudentDashboard;
+export default Setting;
