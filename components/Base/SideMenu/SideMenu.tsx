@@ -47,9 +47,13 @@ const SideMenu = () => {
   }, [role, menuItems, pathname, router]);
 
   const handleClick = (path: string) => {
-    if (path) {
-      router.push(path);
-    }
+    router.push(path);
+  };
+
+  const isMenuActive = (path: string) => {
+    const modulePath = path.split("/").slice(0, 3).join("/");
+
+    return pathname === modulePath || pathname.startsWith(`${modulePath}/`);
   };
 
   return (
@@ -71,14 +75,14 @@ const SideMenu = () => {
           className="
             absolute top-6 -right-5
             flex h-6 w-6 items-center justify-center
-            rounded-full border border-theme-primary-background
+            !rounded-full !border border-theme-primary-background
             bg-white
           "
         >
           {isOpen ? (
-            <IoChevronBack className="text-xl text-theme-primary-background" />
+            <IoChevronBack className="text-xl !text-theme-primary-background" />
           ) : (
-            <IoChevronForward className="text-xl text-white" />
+            <IoChevronForward className="text-xl !text-theme-primary-background" />
           )}
         </button>
 
@@ -95,7 +99,7 @@ const SideMenu = () => {
 
         <nav className="flex h-full flex-col gap-4 p-4">
           {menuItems.map((item) => {
-            const isActive = pathname.startsWith(item.path);
+            const isActive = isMenuActive(item.path);
 
             return (
               <button
@@ -103,7 +107,7 @@ const SideMenu = () => {
                 onClick={() => handleClick(item.path)}
                 className={`
                   flex w-full items-center gap-3
-                  rounded-xl px-4 py-3
+                  !rounded-xl px-4 py-3
                   transition-all duration-200
                   ${
                     isActive
@@ -113,7 +117,6 @@ const SideMenu = () => {
                 `}
               >
                 {item.icon && <item.icon className="text-xl" />}
-
                 <span className="text-lg font-medium">{item.name}</span>
               </button>
             );
@@ -125,7 +128,7 @@ const SideMenu = () => {
       <aside className="hidden w-20 theme-primary-background sm:block">
         <nav className="flex h-full flex-col items-center justify-center space-y-4 p-4">
           {menuItems.map((item) => {
-            const isActive = pathname.startsWith(item.path);
+            const isActive = isMenuActive(item.path);
 
             return (
               <Tooltip key={item.id} content={item.name} placement="right">
@@ -133,7 +136,7 @@ const SideMenu = () => {
                   onClick={() => handleClick(item.path)}
                   className={`
                     flex h-10 w-10 items-center justify-center
-                    rounded-xl
+                    !rounded-xl
                     transition-all duration-200
                     ${
                       isActive

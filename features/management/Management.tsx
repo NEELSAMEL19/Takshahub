@@ -1,38 +1,52 @@
 "use client";
 
+import React from "react";
+import { usePathname, useRouter } from "next/navigation";
+
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
 import { Button } from "@/components/UI";
+import { useMe } from "@/hooks/auth/useAuth";
 import { useSideMenu } from "@/hooks/sideMenu/useSideMenu";
 import { camelToSnake } from "@/utils/utils";
-import { usePathname, useRouter } from "next/navigation";
-import React from "react";
 
 const TAB_CONFIG: Record<string, { label: string; addPath: string }> = {
-  class: { label: "Add Class", addPath: "/admin/management/add/class" },
-  subject: { label: "Add subject", addPath: "/admin/management/add/subject" },
+  class: {
+    label: "Add Class",
+    addPath: "/admin/management/add/class",
+  },
+  subject: {
+    label: "Add Subject",
+    addPath: "/admin/management/add/subject",
+  },
   student: {
-    label: "Enroll student",
+    label: "Enroll Student",
     addPath: "/admin/management/add/student",
   },
   class_teacher: {
-    label: "Enroll class teacher",
+    label: "Enroll Class Teacher",
     addPath: "/admin/management/add/class_teacher",
   },
   subject_teacher: {
-    label: "Enroll subject teacher",
+    label: "Enroll Subject Teacher",
     addPath: "/admin/management/add/subject_teacher",
   },
 };
 
 const Management = () => {
-  const { data } = useSideMenu();
   const pathname = usePathname();
   const router = useRouter();
-  const managementTabs = (data?.data?.Management || {}) as Record<
-    string,
-    string
-  >;
+
+  // Get logged-in user
+  const { data: me } = useMe();
+  const userId = me?.data.user?.id;
+
+  // Uses cached data if already fetched by SideMenu
+  const { data } = useSideMenu(userId);
+
+  const managementTabs =
+    (data?.data?.Management as Record<string, string>) || {};
+
   const currentTab = pathname.split("/").pop() ?? "";
 
   const tabItems = Object.entries(managementTabs).map(
@@ -68,7 +82,8 @@ const Management = () => {
           )
         }
       />
-      <div className="py-4 px-5">
+
+      <div className="px-5 py-4">
         <Tab
           items={tabItems}
           active={activeTabIndex === -1 ? 0 : activeTabIndex}
