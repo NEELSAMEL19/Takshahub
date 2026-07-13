@@ -1,4 +1,4 @@
-import StudentDashboard from "@/features/Student_Dashboard/StudentDashboard";
+import StudentDashboard from "@/features/Student_Setting/Setting";
 
 export default function TabsLayout({
   children,

@@ -81,4 +81,8 @@ export const API_ENDPOINTS = {
   PERMISSIONS: {
     PERMISSIONSTEMPLATE: "/api/backend/permissions/template",
   },
+  Setting: {
+    GETPROFILE: "/api/backend/setting/profile/me",
+    EDITPROFILE: "/api/backend/setting/profile/update",
+  },
 };
