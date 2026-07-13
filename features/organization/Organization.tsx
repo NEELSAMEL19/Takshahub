@@ -3,17 +3,25 @@
 import Header from "@/components/Base/Header/Header";
 import Tab from "@/components/Base/Tab/Tab";
 import { Button } from "@/components/UI";
+import { useMe } from "@/hooks/auth/useAuth";
 import { useSideMenu } from "@/hooks/sideMenu/useSideMenu";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Organization = () => {
-  const { data } = useSideMenu();
   const pathname = usePathname();
   const router = useRouter();
-  const organizationTabs = data?.data?.Organization || {};
 
-  const currentTab = pathname.split("/").pop();
+  // Get logged-in user
+  const { data: me } = useMe();
+  const userId = me?.data.user?.id;
+
+  // Uses React Query cache if already fetched
+  const { data } = useSideMenu(userId);
+
+  const organizationTabs =
+    (data?.data?.Organization as Record<string, string>) || {};
+
+  const currentTab = pathname.split("/").pop() ?? "";
 
   const tabItems = Object.entries(organizationTabs).map(
     ([key, value], index) => ({
@@ -40,11 +48,12 @@ const Organization = () => {
         header="Organization"
         actionButtons={
           <Button onClick={handleClick} className="!rounded-lg">
-            {currentTab === "role" ? "Add role" : "Add team"}
+            {currentTab === "role" ? "Add Role" : "Add Team"}
           </Button>
         }
       />
-      <div className="py-4 px-5">
+
+      <div className="px-5 py-4">
         <Tab
           items={tabItems}
           active={activeTabIndex === -1 ? 0 : activeTabIndex}
