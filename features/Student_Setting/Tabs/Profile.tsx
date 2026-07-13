@@ -2,14 +2,11 @@
 import { Button, TextField } from "@/components/UI";
 import { Status } from "@/types/ui";
 import { useGetProfile, useUpdateProfile } from "@/hooks/setting/profile";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { updateProfileSchema } from "../validation";
+import { updateProfileBaseSchema } from "../validation";
 import { UpdateProfilePayload } from "@/types/setting";
 
 const Profile = () => {
-  const router = useRouter();
-
   const { data: profileData, isLoading: isProfileLoading } = useGetProfile();
   const profile = profileData?.data;
 
@@ -99,7 +96,7 @@ const Profile = () => {
         setStatus((prev) => ({ ...prev, [field]: "info" }));
         return;
       }
-      const schemaField = updateProfileSchema.shape[field];
+      const schemaField = updateProfileBaseSchema.shape[field];
       const result = schemaField.safeParse(value);
       if (!result.success) {
         setErrors((prev) => ({
@@ -114,10 +111,10 @@ const Profile = () => {
       return;
     }
 
-    const schemaField = field as keyof typeof updateProfileSchema.shape;
-    if (!(schemaField in updateProfileSchema.shape)) return;
+    const schemaField = field as keyof typeof updateProfileBaseSchema.shape;
+    if (!(schemaField in updateProfileBaseSchema.shape)) return;
 
-    const result = updateProfileSchema.shape[schemaField].safeParse(value);
+    const result = updateProfileBaseSchema.shape[schemaField].safeParse(value);
     if (!result.success) {
       setErrors((prev) => ({
         ...prev,
@@ -174,7 +171,7 @@ const Profile = () => {
 
     if (newPassword) {
       const passResult =
-        updateProfileSchema.shape.newPassword.safeParse(newPassword);
+        updateProfileBaseSchema.shape.newPassword.safeParse(newPassword);
       if (!passResult.success) {
         setErrors((prev) => ({
           ...prev,
@@ -185,7 +182,7 @@ const Profile = () => {
       }
     }
 
-    const result = updateProfileSchema
+    const result = updateProfileBaseSchema
       .omit({ currentPassword: true, newPassword: true })
       .safeParse({ fullName, email, phoneNumber });
 
