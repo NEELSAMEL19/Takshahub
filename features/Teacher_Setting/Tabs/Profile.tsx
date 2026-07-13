@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
 import { Status } from "@/types/ui";
 import { useGetProfile, useUpdateProfile } from "@/hooks/setting/profile";

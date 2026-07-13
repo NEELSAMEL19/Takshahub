@@ -24,7 +24,6 @@ const SideMenu = () => {
   const role = me?.data.auth.role ?? "";
 
   const { data: menuData } = useSideMenu(userId);
-
   const isOpen = useAppSelector((state) => state.sidebar.isOpen);
   const { toggle } = useSidebar();
 

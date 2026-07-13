@@ -1,4 +1,4 @@
-import StudentDashboard from "@/features/Student_Dashboard/StudentDashboard";
+import Setting from "@/features/Teacher_Setting/Setting";
 
 export default function TabsLayout({
   children,
@@ -7,7 +7,7 @@ export default function TabsLayout({
 }) {
   return (
     <>
-      <StudentDashboard />
+      <Setting />
       {children}
     </>
   );

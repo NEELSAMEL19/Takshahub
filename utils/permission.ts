@@ -5,13 +5,13 @@ import {
   MdOutlineAdminPanelSettings,
   MdOutlineFactCheck,
   MdOutlineSchool,
-  MdMenuBook,
+  MdSettings,
 } from "react-icons/md";
-import { FaChalkboardTeacher } from "react-icons/fa";
 
 export const menuIcons: Record<string, IconType> = {
   // Common
   Dashboard: MdDashboard,
+  Setting: MdSettings,
 
   // Academic
   Academic: MdOutlineSchool,
@@ -20,12 +20,6 @@ export const menuIcons: Record<string, IconType> = {
   // Admin
   Management: MdOutlineAdminPanelSettings,
   Organization: RiOrganizationChart,
-
-  // Teacher
-  Teaching: FaChalkboardTeacher,
-
-  // Teacher
-  Learning: MdMenuBook,
 };
 
 type Subcategories = Record<string, unknown> | null;
