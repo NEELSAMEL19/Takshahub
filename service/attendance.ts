@@ -3,12 +3,16 @@ import {
   GetStudentsAttendanceResponse,
   UpdateStudentAttendancePayload,
   UpdateStudentAttendanceResponse,
+  GetTeachersAttendanceParams,
+  GetTeachersAttendanceResponse,
+  UpdateTeacherAttendancePayload,
+  UpdateTeacherAttendanceResponse,
 } from "@/types/attendance";
 import { apiClient } from "./client";
 import { API_ENDPOINTS } from "./routes";
 
 export const attendanceApi = {
-  // -------------------------------- ATTENDANCE ---------------------------------------
+  // -------------------------------- STUDENT ATTENDANCE ---------------------------------------
 
   GetStudentsAttendance: (params: GetStudentsAttendanceParams) =>
     apiClient
@@ -22,6 +26,24 @@ export const attendanceApi = {
     apiClient
       .put<UpdateStudentAttendanceResponse>(
         API_ENDPOINTS.Attendance.UPDATESTUDENTATTENDANCE,
+        data,
+      )
+      .then((res) => res.data),
+
+  // -------------------------------- TEACHER ATTENDANCE ---------------------------------------
+
+  GetTeachersAttendance: (params: GetTeachersAttendanceParams) =>
+    apiClient
+      .get<GetTeachersAttendanceResponse>(
+        API_ENDPOINTS.Attendance.GETTEACHERSATTENDANCE,
+        { params },
+      )
+      .then((res) => res.data),
+
+  UpdateTeacherAttendance: (data: UpdateTeacherAttendancePayload) =>
+    apiClient
+      .put<UpdateTeacherAttendanceResponse>(
+        API_ENDPOINTS.Attendance.UPDATETEACHERATTENDANCE,
         data,
       )
       .then((res) => res.data),

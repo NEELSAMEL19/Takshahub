@@ -66,8 +66,12 @@ export const API_ENDPOINTS = {
     UNASSIGNSUBJECTTEACHER: "/api/backend/management/subject_teacher/unassign",
   },
   Attendance: {
+    // Student
     GETSTUDENTSATTENDANCE: "/api/backend/attendance/students/",
     UPDATESTUDENTATTENDANCE: "/api/backend/attendance/students/toggle",
+    // Teacher
+    GETTEACHERSATTENDANCE: "/api/backend/attendance/teachers/",
+    UPDATETEACHERATTENDANCE: "/api/backend/attendance/teachers/toggle",
   },
   Academic: {
     ADDACADEMICYEAR: "/api/backend/academic/academic_years/add",
