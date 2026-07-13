@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/service/auth";
 
@@ -36,16 +38,9 @@ export const useLogin = (onFieldError?: (errors: FieldErrors) => void) => {
     onSuccess: async (response: LoginResponse) => {
       handleSuccess(response.message, "Login successful");
 
-      // Clear previous logged-in user's cached data
-      queryClient.removeQueries({
-        queryKey: ["me"],
-      });
+      queryClient.clear();
 
-      queryClient.removeQueries({
-        queryKey: ["sideMenu"],
-      });
-
-      // Fetch new logged-in user
+      // Fetch the newly logged-in user's data fresh
       await queryClient.invalidateQueries({
         queryKey: ["me"],
       });
@@ -55,6 +50,28 @@ export const useLogin = (onFieldError?: (errors: FieldErrors) => void) => {
 
     onError: (error) => {
       handleError(error, "Login failed", onFieldError);
+    },
+  });
+};
+
+// ---------------- LOGOUT ----------------
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => authApi.logout(),
+
+    onSuccess: (response) => {
+      handleSuccess(response.message, "Logged out successfully");
+
+      queryClient.clear();
+      window.location.href = "/login";
+    },
+
+    onError: (error) => {
+      queryClient.clear();
+      window.location.href = "/login";
+      handleError(error, "Logout failed");
     },
   });
 };

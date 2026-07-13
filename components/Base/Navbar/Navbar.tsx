@@ -1,24 +1,18 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { authApi } from "../../../service/auth";
 import { Dropdown } from "@/components/UI";
 import { useMe } from "../../../hooks/auth/useAuth";
+import { useLogout } from "../../../hooks/auth/useAuth"; // adjust path if useLogout lives elsewhere
 import Image from "next/image";
 import TakshahubLogo from "../../../public/Takshahub_logo.png";
 
 const Navbar = () => {
-  const router = useRouter();
   const { data } = useMe();
+  const logoutMutation = useLogout();
 
-  const handleLogout = async () => {
-    try {
-      await authApi.logout();
-      router.replace("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+  const handleLogout = () => {
+    logoutMutation.mutate();
   };
 
   const getInitials = (fullName?: string) => {
