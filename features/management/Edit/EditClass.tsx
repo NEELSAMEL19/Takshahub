@@ -2,6 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
+import NotFoundPage from "@/components/UI/NotFound";
 import { Status } from "@/types/ui";
 import { useEditClass, useGetClassById } from "@/hooks/management/class";
 import { useRouter, useParams } from "next/navigation";
@@ -170,12 +171,9 @@ const EditClass = () => {
     );
   }
 
+  // Invalid / non-existent id → show 404 UI, but layout (navbar/sidebar) stays intact
   if (!classItem) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <span className="text-sm text-red-400">Class not found.</span>
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   const handleCancel = () => {

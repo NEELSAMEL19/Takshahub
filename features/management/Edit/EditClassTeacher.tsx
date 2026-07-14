@@ -2,6 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, Dropdown } from "@/components/UI";
+import NotFoundPage from "@/components/UI/NotFound";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
@@ -189,12 +190,9 @@ const EditClassTeacher = () => {
     );
   }
 
+  // Invalid / non-existent id → show 404 UI, but layout (navbar/sidebar) stays intact
   if (!classTeacherItem) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <span className="text-sm text-red-400">Class teacher not found.</span>
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   return (

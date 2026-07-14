@@ -2,6 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, TextField } from "@/components/UI";
+import NotFoundPage from "@/components/UI/NotFound";
 import { Status } from "@/types/ui";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -25,7 +26,12 @@ const EditAcademicYear = () => {
   const params = useParams();
   const id = params.id as string;
 
-  const { data, isLoading: isFetching } = useGetAcademicYearById(id);
+  const {
+    data,
+    isLoading: isFetching,
+    isError,
+    isFetched,
+  } = useGetAcademicYearById(id);
 
   const [label, setLabel] = useState("");
   const [range, setRange] = useState<DateRangeValue>(null);
@@ -140,6 +146,11 @@ const EditAcademicYear = () => {
 
   if (isFetching) {
     return <p className="px-5">Loading academic year...</p>;
+  }
+
+  // Invalid / non-existent id → show 404 UI, but layout (navbar/sidebar) stays intact
+  if (isError || (isFetched && !data?.data)) {
+    return <NotFoundPage />;
   }
 
   return (
