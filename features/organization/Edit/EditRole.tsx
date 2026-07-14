@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Dropdown, TextField } from "@/components/UI";
+import NotFoundPage from "@/components/UI/NotFound";
 import { Status } from "@/types/ui";
 import { useEditRole, useGetRoleById } from "@/hooks/organization/roles";
 import { useGetPermissionTemplate } from "@/hooks/permissions/permissions";
@@ -168,12 +169,9 @@ const EditRole = () => {
     );
   }
 
+  // Invalid / non-existent id → show 404 UI, but layout (navbar/sidebar) stays intact
   if (!role) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <span className="text-sm text-red-400">Role not found.</span>
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   const handleCancle = () => {
