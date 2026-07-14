@@ -28,17 +28,11 @@ const Hero: React.FC = () => {
   to-blue-100
 "
       >
-        {/* Background Glow */}
-        <div className="absolute -top-40 -left-40 h-[400px] w-[400px] rounded-full bg-blue-400/20 blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full bg-indigo-400/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.12),transparent_40%)]" />
-
         <div
           className="
     relative z-10
     flex
-    min-h-[calc(100vh-4rem)]
-    lg:min-h-[calc(100vh-5rem)]
+
     flex-col-reverse
     lg:flex-row
     items-center
@@ -122,13 +116,24 @@ const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Image — full-bleed, always touches viewport right edge on lg+ */}
-          <div className="relative w-full lg:w-1/2 self-stretch min-h-[350px] lg:min-h-[calc(100vh-5rem)]">
+          {/* Right Image — same fixed height for all sizes below 1024px, different at lg+ */}
+          <div
+            className="
+    relative
+    w-full
+    h-[400px]
+    lg:h-[600px]
+    xl:h-[680px]
+    2xl:h-[720px]
+    lg:w-1/2
+  "
+          >
             <Image
               src="/hero-children.png"
               alt="Children learning"
               fill
               priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover object-center !rounded"
             />
             <Image
@@ -136,6 +141,7 @@ const Hero: React.FC = () => {
               alt="Student using platform"
               fill
               priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-contain object-bottom"
             />
           </div>
