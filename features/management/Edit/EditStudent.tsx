@@ -2,6 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, Dropdown } from "@/components/UI";
+import NotFoundPage from "@/components/UI/NotFound";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
 import { useEditStudent, useGetStudentById } from "@/hooks/management/student";
@@ -51,16 +52,11 @@ const EditStudent = () => {
 
   const { data: studentData, isLoading: isStudentLoading } =
     useGetStudentById(id);
-  console.log("Fetched student data:", studentData); // Debugging log
   // getEnrolledStudentById returns an array of enrollments — take the first
   const enrollment = studentData?.data?.[0];
 
-  const [classIdOverride, setClassIdOverride] = useState<
-    string | number | null
-  >(null);
-  const [sectionIdOverride, setSectionIdOverride] = useState<
-    string | number | null
-  >(null);
+const [classIdOverride, setClassIdOverride] = useState<string | number | null>(null);
+   const [sectionIdOverride, setSectionIdOverride] = useState<string | number | null>(null);
   const [errors, setErrors] = useState<StudentFieldErrors>({});
 
   const classId = classIdOverride ?? enrollment?.classId ?? "";
@@ -146,12 +142,9 @@ const EditStudent = () => {
     );
   }
 
+  // Invalid / non-existent id → show 404 UI, but layout (navbar/sidebar) stays intact
   if (!enrollment) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <span className="text-sm text-red-400">Enrollment not found.</span>
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   return (

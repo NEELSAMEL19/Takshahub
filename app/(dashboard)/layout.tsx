@@ -1,19 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import Navbar from "@/components/Base/Navbar/Navbar";
 import Footer from "@/components/Base/Footer/Footer";
 import SideMenu from "@/components/Base/SideMenu/SideMenu";
-
+import { notFound } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
+import { useMe } from "@/hooks/auth/useAuth";
 
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const isOpen = useAppSelector((state) => state.sidebar.isOpen);
+  const { data: me, isLoading, isError } = useMe();
+
+  useEffect(() => {
+    if (!isLoading && (isError || !me)) {
+      notFound();
+    }
+  }, [isLoading, isError, me, router]);
+
+  // Don't render layout chrome until auth check resolves
+  if (isLoading || !me) {
+    return null;
+  }
 
   return (
     <div className="flex h-screen flex-col theme-primary-background">

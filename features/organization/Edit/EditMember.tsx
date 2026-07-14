@@ -2,6 +2,7 @@
 
 import Header from "@/components/Base/Header/Header";
 import { Button, Dropdown, TextField } from "@/components/UI";
+import NotFoundPage from "@/components/UI/NotFound";
 import { Status } from "@/types/ui";
 import { useEditMember, useGetMemberById } from "@/hooks/organization/member";
 import { useGetRolesByPortal } from "@/hooks/organization/roles";
@@ -249,12 +250,9 @@ const EditMember = () => {
     );
   }
 
+  // Invalid / non-existent id → show 404 UI, but layout (navbar/sidebar) stays intact
   if (!member) {
-    return (
-      <div className="flex items-center justify-center h-40">
-        <span className="text-sm text-red-400">Member not found.</span>
-      </div>
-    );
+    return <NotFoundPage />;
   }
 
   const handleCancle = () => {
