@@ -1,3 +1,5 @@
+<a href="https://takshahub.vercel.app"><img align="right" src="./frontend-button.svg" width="140" alt="Live Frontend" /></a>
+
 ### TakshaHub
 
 <em>A school management platform for organizing school operations and connecting administrators, teachers, and students.</em>
