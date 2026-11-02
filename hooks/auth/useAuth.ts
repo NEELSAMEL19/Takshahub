@@ -84,9 +84,8 @@ export const useMe = () => {
 
     retry: false,
 
-    // Auth data should always be fresh
-    staleTime: 0,
-    refetchOnMount: "always",
+    // Keep the shared auth result fresh across dashboard consumers.
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
   });
 };
